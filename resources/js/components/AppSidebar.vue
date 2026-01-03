@@ -14,7 +14,7 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
+import { Briefcase, Clock, Code, LayoutGrid } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
@@ -23,43 +23,66 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
+    {
+        title: 'Projects',
+        href: route('admin.projects.index'),
+        icon: Briefcase,
+    },
+    {
+        title: 'Skills',
+        href: route('admin.skills.index'),
+        icon: Code,
+    },
+    {
+        title: 'Experiences',
+        href: route('admin.experiences.index'),
+        icon: Clock,
+    },
 ];
 
 const footerNavItems: NavItem[] = [
-    {
-        title: 'Github Repo',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
-    },
+    // {
+    //     title: 'Github Repo',
+    //     href: 'https://github.com/laravel/vue-starter-kit',
+    //     icon: Folder,
+    // },
+    // {
+    //     title: 'Documentation',
+    //     href: 'https://laravel.com/docs/starter-kits#vue',
+    //     icon: BookOpen,
+    // },
 ];
 </script>
 
 <template>
-    <Sidebar collapsible="icon" variant="inset">
-        <SidebarHeader>
+    <Sidebar
+        collapsible="icon"
+        variant="inset"
+        class="border-r border-white/5 bg-zinc-950"
+    >
+        <SidebarHeader class="border-b border-white/5 px-4 pt-6 pb-4">
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <SidebarMenuButton size="lg" as-child>
+                    <SidebarMenuButton
+                        size="lg"
+                        as-child
+                        class="transition-colors hover:bg-white/5"
+                    >
                         <Link :href="dashboard()">
-                            <AppLogo />
+                            <AppLogo class="h-8 w-auto text-indigo-500" />
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
             </SidebarMenu>
         </SidebarHeader>
 
-        <SidebarContent>
+        <SidebarContent class="px-2 pt-6">
             <NavMain :items="mainNavItems" />
         </SidebarContent>
 
-        <SidebarFooter>
+        <SidebarFooter class="border-t border-white/5 p-4">
             <NavFooter :items="footerNavItems" />
-            <NavUser />
+            <NavUser class="mt-4 rounded-xl bg-white/5 p-2" />
         </SidebarFooter>
     </Sidebar>
     <slot />
