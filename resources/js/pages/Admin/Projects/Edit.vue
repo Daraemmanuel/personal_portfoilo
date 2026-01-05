@@ -3,24 +3,32 @@ import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 const props = defineProps<{
     project: {
         id: number;
         title: string;
         description: string;
+        image: string | null;
+        image_url: string | null;
         link: string | null;
         tags: string[];
         sort_order: number;
     };
 }>();
 
+const imageInput = ref<HTMLInputElement | null>(null);
+const imagePreview = ref<string | null>(props.project.image_url);
+
 const form = useForm({
     title: props.project.title,
     description: props.project.description,
+    image: null as File | null,
     link: props.project.link || '',
     tags: props.project.tags ? props.project.tags.join(', ') : '',
     sort_order: props.project.sort_order || 0,
+    _method: 'PUT',
 });
 
 const submit = () => {
@@ -30,7 +38,24 @@ const submit = () => {
             .split(',')
             .map((tag) => tag.trim())
             .filter(Boolean),
-    })).put(route('admin.projects.update', props.project.id));
+    })).post(route('admin.projects.update', props.project.id));
+};
+
+const handleImageChange = (e: Event) => {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (file) {
+        form.image = file;
+        imagePreview.value = URL.createObjectURL(file);
+    }
+};
+
+const triggerFileInput = () => {
+    imageInput.value?.click();
+};
+
+const clearImage = () => {
+    form.image = null;
+    imagePreview.value = props.project.image_url;
 };
 </script>
 
@@ -59,7 +84,7 @@ const submit = () => {
 
                 <!-- Form Card -->
                 <div
-                    class="max-w-2xl rounded-2xl border border-white/10 bg-zinc-900/50 p-8 shadow-xl backdrop-blur-sm"
+                    class="rounded-2xl border border-white/10 bg-zinc-900/50 p-8 shadow-xl backdrop-blur-sm"
                 >
                     <form @submit.prevent="submit" class="space-y-8">
                         <div class="space-y-2">
@@ -74,6 +99,67 @@ const submit = () => {
                                 class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
                             />
                             <InputError :message="form.errors.title" />
+                        </div>
+
+                        <div class="space-y-4">
+                            <label
+                                class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                >Project Hero Image (Optional)</label
+                            >
+                            <div
+                                class="relative flex min-h-[200px] cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed border-white/10 bg-white/5 transition-all hover:border-indigo-500/50"
+                                @click="triggerFileInput"
+                            >
+                                <input
+                                    ref="imageInput"
+                                    type="file"
+                                    class="hidden"
+                                    accept="image/*"
+                                    @change="handleImageChange"
+                                />
+                                <div v-if="!imagePreview" class="text-center">
+                                    <div
+                                        class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-500/10 text-indigo-400"
+                                    >
+                                        <svg
+                                            class="h-6 w-6"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path
+                                                stroke-linecap="round"
+                                                stroke-linejoin="round"
+                                                stroke-width="2"
+                                                d="M12 4v16m8-8H4"
+                                            />
+                                        </svg>
+                                    </div>
+                                    <p class="mt-3 text-sm text-zinc-400">
+                                        Click to upload project hero shot
+                                    </p>
+                                    <p class="mt-1 text-[10px] text-zinc-600">
+                                        PNG, JPG, WEBP (MAX. 2MB)
+                                    </p>
+                                </div>
+                                <div v-else class="relative w-full p-4">
+                                    <img
+                                        :src="imagePreview"
+                                        class="h-48 w-full rounded-xl object-cover"
+                                    />
+                                    <button
+                                        type="button"
+                                        @click.stop="clearImage"
+                                        class="absolute top-6 right-6 flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white shadow-lg transition-transform hover:scale-110"
+                                    >
+                                        <span v-if="form.image">&times;</span>
+                                        <span v-else class="text-xs"
+                                            >Change</span
+                                        >
+                                    </button>
+                                </div>
+                            </div>
+                            <InputError :message="form.errors.image" />
                         </div>
 
                         <div class="space-y-2">

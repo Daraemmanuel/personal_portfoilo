@@ -12,6 +12,7 @@ class Project extends Model
     protected $fillable = [
         'title',
         'description',
+        'image',
         'link',
         'tags',
         'sort_order',
@@ -20,4 +21,11 @@ class Project extends Model
     protected $casts = [
         'tags' => 'array',
     ];
+
+    protected $appends = ['image_url'];
+
+    public function getImageUrlAttribute()
+    {
+        return $this->image ? asset('storage/' . $this->image) : null;
+    }
 }

@@ -39,7 +39,7 @@ defineProps<{
                     Admin
                 </Link> -->
                 <a
-                    href="mailto:hello@example.com"
+                    href="mailto:immanuelatwork@gmail.com"
                     class="rounded-full bg-white px-4 py-2 text-sm font-semibold text-black transition-colors hover:bg-zinc-200"
                 >
                     Hire Me

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class ProjectController extends Controller
@@ -26,11 +27,16 @@ class ProjectController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
+            'image' => 'nullable|image|max:2048',
             'link' => 'nullable|url',
             'tags' => 'nullable|array',
             'tags.*' => 'string',
             'sort_order' => 'nullable|integer',
         ]);
+
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('projects', 'public');
+        }
 
         Project::create($validated);
 
@@ -49,11 +55,21 @@ class ProjectController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'required|string',
+            'image' => 'nullable|image|max:2048',
             'link' => 'nullable|url',
             'tags' => 'nullable|array',
             'tags.*' => 'string',
             'sort_order' => 'nullable|integer',
         ]);
+
+        if ($request->hasFile('image')) {
+            if ($project->image) {
+                Storage::disk('public')->delete($project->image);
+            }
+            $validated['image'] = $request->file('image')->store('projects', 'public');
+        } else {
+            unset($validated['image']);
+        }
 
         $project->update($validated);
 
@@ -62,6 +78,9 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
+        if ($project->image) {
+            Storage::disk('public')->delete($project->image);
+        }
         $project->delete();
 
         return redirect()->route('admin.projects.index');

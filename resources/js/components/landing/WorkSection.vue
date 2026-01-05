@@ -5,6 +5,7 @@ defineProps<{
     projects?: Array<{
         title: string;
         description: string;
+        image_url?: string | null;
         tags: string[];
         link: string | null;
     }>;
@@ -58,15 +59,22 @@ const defaultProjects = [
                     :key="i"
                     class="group relative overflow-hidden rounded-2xl border border-white/5 bg-zinc-900 transition-all duration-500 hover:border-indigo-500/50"
                 >
-                    <!-- Placeholder Image Gradient -->
+                    <!-- Project Image/Placeholder -->
                     <div
                         class="relative flex aspect-video w-full items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-950 transition-transform duration-700 group-hover:scale-105"
                     >
+                        <img
+                            v-if="'image_url' in project && project.image_url"
+                            :src="project.image_url"
+                            :alt="project.title"
+                            class="absolute inset-0 h-full w-full object-cover opacity-60 transition-opacity duration-500 group-hover:opacity-100"
+                        />
                         <Code2
+                            v-else
                             class="h-12 w-12 text-zinc-700 transition-colors duration-500 group-hover:text-indigo-500"
                         />
                         <div
-                            class="absolute inset-0 bg-black/20 transition-colors group-hover:bg-transparent"
+                            class="absolute inset-0 bg-black/40 transition-colors group-hover:bg-black/20"
                         ></div>
                     </div>
 
