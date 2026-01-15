@@ -4,16 +4,25 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Project;
+use App\Traits\ClearsHomepageCache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class ProjectController extends Controller
 {
+    use ClearsHomepageCache;
     public function index()
     {
         return Inertia::render('Admin/Projects/Index', [
             'projects' => Project::orderBy('sort_order')->latest()->get(),
+        ]);
+    }
+
+    public function show(Project $project)
+    {
+        return Inertia::render('Projects/Show', [
+            'project' => $project,
         ]);
     }
 
@@ -39,6 +48,8 @@ class ProjectController extends Controller
         }
 
         Project::create($validated);
+
+        $this->clearCache('projects');
 
         return redirect()->route('admin.projects.index');
     }
@@ -73,6 +84,8 @@ class ProjectController extends Controller
 
         $project->update($validated);
 
+        $this->clearCache('projects');
+
         return redirect()->route('admin.projects.index');
     }
 
@@ -82,6 +95,8 @@ class ProjectController extends Controller
             Storage::disk('public')->delete($project->image);
         }
         $project->delete();
+
+        $this->clearCache('projects');
 
         return redirect()->route('admin.projects.index');
     }

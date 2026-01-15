@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Skill;
+use App\Traits\ClearsHomepageCache;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class SkillController extends Controller
 {
+    use ClearsHomepageCache;
     public function index()
     {
         return Inertia::render('Admin/Skills/Index', [
@@ -33,6 +35,8 @@ class SkillController extends Controller
 
         Skill::create($validated);
 
+        $this->clearCache('skills');
+
         return redirect()->route('admin.skills.index');
     }
 
@@ -55,12 +59,16 @@ class SkillController extends Controller
 
         $skill->update($validated);
 
+        $this->clearCache('skills');
+
         return redirect()->route('admin.skills.index');
     }
 
     public function destroy(Skill $skill)
     {
         $skill->delete();
+
+        $this->clearCache('skills');
 
         return redirect()->route('admin.skills.index');
     }

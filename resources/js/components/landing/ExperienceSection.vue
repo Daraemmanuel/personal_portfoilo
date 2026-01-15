@@ -1,11 +1,8 @@
 <script setup lang="ts">
+import type { Experience } from '@/types/portfolio';
+
 defineProps<{
-    experiences?: Array<{
-        role: string;
-        company: string;
-        period: string;
-        description: string;
-    }>;
+    experiences?: Experience[];
 }>();
 
 const defaultExperiences = [
@@ -50,7 +47,7 @@ const defaultExperiences = [
                     experiences.length
                         ? experiences
                         : defaultExperiences"
-                    :key="index"
+                    :key="experience.id || index"
                     class="relative border-l border-white/10 pb-12 pl-8 last:pb-0"
                 >
                     <div

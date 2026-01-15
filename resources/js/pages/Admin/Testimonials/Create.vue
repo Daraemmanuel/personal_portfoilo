@@ -9,28 +9,23 @@ const imageInput = ref<HTMLInputElement | null>(null);
 const imagePreview = ref<string | null>(null);
 
 const form = useForm({
-    title: '',
-    description: '',
-    image: null as File | null,
-    link: '',
-    tags: '',
+    name: '',
+    role: '',
+    company: '',
+    content: '',
+    avatar: null as File | null,
+    rating: 5,
     sort_order: 0,
 });
 
 const submit = () => {
-    form.transform((data) => ({
-        ...data,
-        tags: data.tags
-            .split(',')
-            .map((tag) => tag.trim())
-            .filter(Boolean),
-    })).post(route('admin.projects.store'));
+    form.post(route('admin.testimonials.store'));
 };
 
 const handleImageChange = (e: Event) => {
     const file = (e.target as HTMLInputElement).files?.[0];
     if (file) {
-        form.image = file;
+        form.avatar = file;
         imagePreview.value = URL.createObjectURL(file);
     }
 };
@@ -40,7 +35,7 @@ const triggerFileInput = () => {
 };
 
 const clearImage = () => {
-    form.image = null;
+    form.avatar = null;
     imagePreview.value = null;
 };
 </script>
@@ -48,23 +43,23 @@ const clearImage = () => {
 <template>
     <AppLayout
         :breadcrumbs="[
-            { title: 'Projects', href: route('admin.projects.index') },
+            { title: 'Testimonials', href: route('admin.testimonials.index') },
             { title: 'Create', href: '#' },
         ]"
     >
-        <Head title="Create Project" />
+        <Head title="Create Testimonial" />
 
         <div class="min-h-[calc(100vh-64px)] bg-zinc-950 p-6 lg:p-10">
-            <div class="mx-auto max-w-5xl">
+            <div class="mx-auto max-w-4xl">
                 <!-- Header -->
                 <div class="mb-10">
                     <h2
                         class="bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-3xl font-bold tracking-tight text-transparent"
                     >
-                        New Masterpiece
+                        Add Testimonial
                     </h2>
                     <p class="mt-2 text-zinc-400">
-                        Specify the details for your new portfolio project.
+                        Add a new client testimonial or feedback.
                     </p>
                 </div>
 
@@ -73,27 +68,102 @@ const clearImage = () => {
                     class="rounded-2xl border border-white/10 bg-zinc-900/50 p-8 shadow-xl backdrop-blur-sm"
                 >
                     <form @submit.prevent="submit" class="space-y-8">
+                        <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+                            <div class="space-y-2">
+                                <label
+                                    class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                    >Name</label
+                                >
+                                <input
+                                    v-model="form.name"
+                                    type="text"
+                                    placeholder="John Doe"
+                                    class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
+                                />
+                                <InputError :message="form.errors.name" />
+                            </div>
+
+                            <div class="space-y-2">
+                                <label
+                                    class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                    >Role</label
+                                >
+                                <input
+                                    v-model="form.role"
+                                    type="text"
+                                    placeholder="CEO"
+                                    class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
+                                />
+                                <InputError :message="form.errors.role" />
+                            </div>
+                        </div>
+
                         <div class="space-y-2">
                             <label
                                 class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
-                                >Project Title</label
+                                >Company</label
                             >
                             <input
-                                v-model="form.title"
+                                v-model="form.company"
                                 type="text"
-                                placeholder="e.g. AI-Powered Portfolio"
+                                placeholder="TechCorp Inc."
                                 class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
                             />
-                            <InputError :message="form.errors.title" />
+                            <InputError :message="form.errors.company" />
+                        </div>
+
+                        <div class="space-y-2">
+                            <label
+                                class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                >Testimonial Content</label
+                            >
+                            <textarea
+                                v-model="form.content"
+                                rows="6"
+                                placeholder="Enter the testimonial content..."
+                                class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
+                            ></textarea>
+                            <InputError :message="form.errors.content" />
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+                            <div class="space-y-2">
+                                <label
+                                    class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                    >Rating (1-5)</label
+                                >
+                                <input
+                                    v-model.number="form.rating"
+                                    type="number"
+                                    min="1"
+                                    max="5"
+                                    class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
+                                />
+                                <InputError :message="form.errors.rating" />
+                            </div>
+
+                            <div class="space-y-2">
+                                <label
+                                    class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                    >Display Order</label
+                                >
+                                <input
+                                    v-model.number="form.sort_order"
+                                    type="number"
+                                    placeholder="0"
+                                    class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
+                                />
+                                <InputError :message="form.errors.sort_order" />
+                            </div>
                         </div>
 
                         <div class="space-y-4">
                             <label
                                 class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
-                                >Project Hero Image (Optional)</label
+                                >Avatar (Optional)</label
                             >
                             <div
-                                class="relative flex min-h-[200px] cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed border-white/10 bg-white/5 transition-all hover:border-indigo-500/50"
+                                class="relative flex min-h-[150px] cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed border-white/10 bg-white/5 transition-all hover:border-indigo-500/50"
                                 @click="triggerFileInput"
                             >
                                 <input
@@ -122,16 +192,13 @@ const clearImage = () => {
                                         </svg>
                                     </div>
                                     <p class="mt-3 text-sm text-zinc-400">
-                                        Click to upload project hero shot
-                                    </p>
-                                    <p class="mt-1 text-[10px] text-zinc-600">
-                                        PNG, JPG, WEBP (MAX. 2MB)
+                                        Click to upload avatar
                                     </p>
                                 </div>
                                 <div v-else class="relative w-full p-4">
                                     <img
                                         :src="imagePreview"
-                                        class="h-48 w-full rounded-xl object-cover"
+                                        class="mx-auto h-32 w-32 rounded-full object-cover"
                                     />
                                     <button
                                         type="button"
@@ -142,79 +209,13 @@ const clearImage = () => {
                                     </button>
                                 </div>
                             </div>
-                            <InputError :message="form.errors.image" />
-                        </div>
-
-                        <div class="space-y-2">
-                            <label
-                                class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
-                                >Project Description</label
-                            >
-                            <textarea
-                                v-model="form.description"
-                                rows="10"
-                                placeholder="Describe the problem solved and the technology used..."
-                                class="w-full resize-y rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
-                            ></textarea>
-                            <InputError :message="form.errors.description" />
-                        </div>
-
-                        <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
-                            <div class="space-y-2">
-                                <label
-                                    class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
-                                    >Live URL</label
-                                >
-                                <input
-                                    v-model="form.link"
-                                    type="url"
-                                    placeholder="https://example.com"
-                                    class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
-                                />
-                                <InputError :message="form.errors.link" />
-                            </div>
-
-                            <div class="space-y-2">
-                                <label
-                                    class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
-                                    >Display Order</label
-                                >
-                                <input
-                                    v-model="form.sort_order"
-                                    type="number"
-                                    placeholder="0"
-                                    class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
-                                />
-                                <span
-                                    class="text-[10px] font-bold tracking-widest text-zinc-600 uppercase"
-                                    >Lower numbers appear first</span
-                                >
-                                <InputError :message="form.errors.sort_order" />
-                            </div>
-                        </div>
-
-                        <div class="space-y-2">
-                            <label
-                                class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
-                                >Tags</label
-                            >
-                            <input
-                                v-model="form.tags"
-                                type="text"
-                                placeholder="Vue, Tailwind, Laravel"
-                                class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
-                            />
-                            <span
-                                class="text-[10px] font-bold tracking-widest text-zinc-600 uppercase"
-                                >Separate with commas</span
-                            >
-                            <InputError :message="form.errors.tags" />
+                            <InputError :message="form.errors.avatar" />
                         </div>
 
                         <div
                             class="flex items-center justify-end gap-4 border-t border-white/5 pt-4"
                         >
-                            <Link :href="route('admin.projects.index')">
+                            <Link :href="route('admin.testimonials.index')">
                                 <Button
                                     variant="ghost"
                                     type="button"
@@ -228,7 +229,7 @@ const clearImage = () => {
                                 :disabled="form.processing"
                                 class="rounded-full bg-indigo-600 px-8 py-2 font-bold text-white transition-all hover:bg-indigo-700 disabled:opacity-50"
                             >
-                                Publish Project
+                                Add Testimonial
                             </Button>
                         </div>
                     </form>
@@ -237,3 +238,4 @@ const clearImage = () => {
         </div>
     </AppLayout>
 </template>
+

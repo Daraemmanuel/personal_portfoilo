@@ -2,26 +2,21 @@
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import type { Article } from '@/types/portfolio';
+import { Calendar, Eye, FileText } from 'lucide-vue-next';
 
 defineProps<{
-    projects: Array<{
-        id: number;
-        title: string;
-        description: string;
-        image_url: string | null;
-        link: string | null;
-        tags: string[];
-    }>;
+    articles: Article[];
 }>();
 </script>
 
 <template>
     <AppLayout
         :breadcrumbs="[
-            { title: 'Projects', href: route('admin.projects.index') },
+            { title: 'Articles', href: route('admin.articles.index') },
         ]"
     >
-        <Head title="Projects" />
+        <Head title="Articles" />
 
         <div class="min-h-[calc(100vh-64px)] bg-zinc-950 p-6 lg:p-10">
             <div class="mx-auto max-w-6xl">
@@ -33,22 +28,22 @@ defineProps<{
                         <h2
                             class="bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-4xl"
                         >
-                            Project Catalog
+                            Blog Articles
                         </h2>
                         <p class="mt-2 text-zinc-400">
-                            Manage your featured works and portfolio projects.
+                            Manage your blog posts and articles.
                         </p>
                     </div>
-                    <Link :href="route('admin.projects.create')">
+                    <Link :href="route('admin.articles.create')">
                         <Button
                             class="rounded-full bg-indigo-600 px-6 py-6 font-semibold text-white transition-all hover:bg-indigo-700 hover:shadow-[0_0_20px_rgba(79,70,229,0.4)]"
                         >
-                            Add New Project
+                            New Article
                         </Button>
                     </Link>
                 </div>
 
-                <!-- Projects Table/List -->
+                <!-- Articles Table/List -->
                 <div
                     class="relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 backdrop-blur-sm"
                 >
@@ -59,12 +54,17 @@ defineProps<{
                                     <th
                                         class="p-5 text-sm font-semibold tracking-wider text-zinc-300 uppercase"
                                     >
-                                        Project Info
+                                        Article
                                     </th>
                                     <th
                                         class="p-5 text-sm font-semibold tracking-wider text-zinc-300 uppercase"
                                     >
-                                        Technologies
+                                        Status
+                                    </th>
+                                    <th
+                                        class="p-5 text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                    >
+                                        Views
                                     </th>
                                     <th
                                         class="p-5 text-right text-sm font-semibold tracking-wider text-zinc-300 uppercase"
@@ -75,62 +75,89 @@ defineProps<{
                             </thead>
                             <tbody class="divide-y divide-white/5">
                                 <tr
-                                    v-for="project in projects"
-                                    :key="project.id"
+                                    v-for="article in articles"
+                                    :key="article.id"
                                     class="group transition-colors hover:bg-white/[0.02]"
                                 >
                                     <td class="p-5">
                                         <div class="flex items-center gap-4">
                                             <div
-                                                class="h-12 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-white/10 bg-white/5"
+                                                v-if="article.featured_image_url"
+                                                class="h-16 w-24 flex-shrink-0 overflow-hidden rounded-lg border border-white/10 bg-white/5"
                                             >
                                                 <img
-                                                    v-if="project.image_url"
-                                                    :src="project.image_url"
+                                                    :src="article.featured_image_url"
+                                                    :alt="article.title"
                                                     class="h-full w-full object-cover"
                                                 />
-                                                <div
-                                                    v-else
-                                                    class="flex h-full w-full items-center justify-center"
-                                                >
-                                                    <svg
-                                                        class="h-5 w-5 text-zinc-600"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
-                                                    >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                                        />
-                                                    </svg>
-                                                </div>
+                                            </div>
+                                            <div
+                                                v-else
+                                                class="flex h-16 w-24 flex-shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5"
+                                            >
+                                                <FileText class="h-6 w-6 text-zinc-600" />
                                             </div>
                                             <div class="flex flex-col">
                                                 <span
                                                     class="text-lg font-bold text-white transition-colors group-hover:text-indigo-400"
                                                 >
-                                                    {{ project.title }}
+                                                    {{ article.title }}
                                                 </span>
                                                 <span
-                                                    class="mt-1 line-clamp-1 max-w-sm text-sm text-zinc-500"
+                                                    class="mt-1 line-clamp-1 max-w-md text-sm text-zinc-500"
                                                 >
-                                                    {{ project.description }}
+                                                    {{ article.excerpt }}
                                                 </span>
+                                                <div
+                                                    class="mt-2 flex items-center gap-3 text-xs text-zinc-600"
+                                                >
+                                                    <div
+                                                        v-if="article.category"
+                                                        class="rounded-full border border-white/10 bg-white/5 px-2 py-0.5"
+                                                    >
+                                                        {{ article.category }}
+                                                    </div>
+                                                    <div
+                                                        v-if="article.published_at"
+                                                        class="flex items-center gap-1"
+                                                    >
+                                                        <Calendar class="h-3 w-3" />
+                                                        <span>{{
+                                                            new Date(
+                                                                article.published_at,
+                                                            ).toLocaleDateString()
+                                                        }}</span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="p-5">
-                                        <div class="flex flex-wrap gap-1.5">
-                                            <span
-                                                v-for="(tag, index) in project.tags"
-                                                :key="`${project.id}-tag-${index}-${tag}`"
-                                                class="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs font-medium text-zinc-300"
-                                            >
-                                                {{ tag }}
-                                            </span>
+                                        <span
+                                            class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium"
+                                            :class="
+                                                article.published_at &&
+                                                new Date(
+                                                    article.published_at,
+                                                ) <= new Date()
+                                                    ? 'border-green-500/20 bg-green-500/10 text-green-400'
+                                                    : 'border-yellow-500/20 bg-yellow-500/10 text-yellow-400'
+                                            "
+                                        >
+                                            {{
+                                                article.published_at &&
+                                                new Date(
+                                                    article.published_at,
+                                                ) <= new Date()
+                                                    ? 'Published'
+                                                    : 'Draft'
+                                            }}
+                                        </span>
+                                    </td>
+                                    <td class="p-5">
+                                        <div class="flex items-center gap-2 text-sm text-zinc-400">
+                                            <Eye class="h-4 w-4" />
+                                            <span>{{ article.views }}</span>
                                         </div>
                                     </td>
                                     <td class="p-5 text-right">
@@ -140,8 +167,8 @@ defineProps<{
                                             <Link
                                                 :href="
                                                     route(
-                                                        'admin.projects.edit',
-                                                        project.id,
+                                                        'admin.articles.edit',
+                                                        article.id,
                                                     )
                                                 "
                                                 class="text-sm font-medium text-indigo-400 transition-colors hover:text-indigo-300"
@@ -154,8 +181,8 @@ defineProps<{
                                             <Link
                                                 :href="
                                                     route(
-                                                        'admin.projects.destroy',
-                                                        project.id,
+                                                        'admin.articles.destroy',
+                                                        article.id,
                                                     )
                                                 "
                                                 method="delete"
@@ -167,34 +194,20 @@ defineProps<{
                                         </div>
                                     </td>
                                 </tr>
-                                <tr v-if="projects.length === 0">
-                                    <td colspan="3" class="p-12 text-center">
+                                <tr v-if="articles.length === 0">
+                                    <td colspan="4" class="p-12 text-center">
                                         <div
                                             class="flex flex-col items-center justify-center gap-3"
                                         >
                                             <div
                                                 class="flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-zinc-600"
                                             >
-                                                <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    class="h-6 w-6"
-                                                    fill="none"
-                                                    viewBox="0 0 24 24"
-                                                    stroke="currentColor"
-                                                >
-                                                    <path
-                                                        stroke-linecap="round"
-                                                        stroke-linejoin="round"
-                                                        stroke-width="2"
-                                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                                                    />
-                                                </svg>
+                                                <FileText class="h-6 w-6" />
                                             </div>
                                             <p
                                                 class="font-medium text-zinc-500"
                                             >
-                                                No projects found. Ready to add
-                                                your first masterpiece?
+                                                No articles yet. Start writing!
                                             </p>
                                         </div>
                                     </td>
@@ -207,3 +220,4 @@ defineProps<{
         </div>
     </AppLayout>
 </template>
+

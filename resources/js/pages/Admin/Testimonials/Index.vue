@@ -2,26 +2,20 @@
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import type { Testimonial } from '@/types/portfolio';
 
 defineProps<{
-    projects: Array<{
-        id: number;
-        title: string;
-        description: string;
-        image_url: string | null;
-        link: string | null;
-        tags: string[];
-    }>;
+    testimonials: Testimonial[];
 }>();
 </script>
 
 <template>
     <AppLayout
         :breadcrumbs="[
-            { title: 'Projects', href: route('admin.projects.index') },
+            { title: 'Testimonials', href: route('admin.testimonials.index') },
         ]"
     >
-        <Head title="Projects" />
+        <Head title="Testimonials" />
 
         <div class="min-h-[calc(100vh-64px)] bg-zinc-950 p-6 lg:p-10">
             <div class="mx-auto max-w-6xl">
@@ -33,22 +27,22 @@ defineProps<{
                         <h2
                             class="bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-4xl"
                         >
-                            Project Catalog
+                            Client Testimonials
                         </h2>
                         <p class="mt-2 text-zinc-400">
-                            Manage your featured works and portfolio projects.
+                            Manage testimonials and client feedback.
                         </p>
                     </div>
-                    <Link :href="route('admin.projects.create')">
+                    <Link :href="route('admin.testimonials.create')">
                         <Button
                             class="rounded-full bg-indigo-600 px-6 py-6 font-semibold text-white transition-all hover:bg-indigo-700 hover:shadow-[0_0_20px_rgba(79,70,229,0.4)]"
                         >
-                            Add New Project
+                            Add Testimonial
                         </Button>
                     </Link>
                 </div>
 
-                <!-- Projects Table/List -->
+                <!-- Testimonials Table/List -->
                 <div
                     class="relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 backdrop-blur-sm"
                 >
@@ -59,12 +53,12 @@ defineProps<{
                                     <th
                                         class="p-5 text-sm font-semibold tracking-wider text-zinc-300 uppercase"
                                     >
-                                        Project Info
+                                        Testimonial
                                     </th>
                                     <th
                                         class="p-5 text-sm font-semibold tracking-wider text-zinc-300 uppercase"
                                     >
-                                        Technologies
+                                        Rating
                                     </th>
                                     <th
                                         class="p-5 text-right text-sm font-semibold tracking-wider text-zinc-300 uppercase"
@@ -75,61 +69,61 @@ defineProps<{
                             </thead>
                             <tbody class="divide-y divide-white/5">
                                 <tr
-                                    v-for="project in projects"
-                                    :key="project.id"
+                                    v-for="testimonial in testimonials"
+                                    :key="testimonial.id"
                                     class="group transition-colors hover:bg-white/[0.02]"
                                 >
                                     <td class="p-5">
                                         <div class="flex items-center gap-4">
                                             <div
-                                                class="h-12 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-white/10 bg-white/5"
+                                                v-if="testimonial.avatar_url"
+                                                class="h-12 w-12 flex-shrink-0 overflow-hidden rounded-full"
                                             >
                                                 <img
-                                                    v-if="project.image_url"
-                                                    :src="project.image_url"
+                                                    :src="testimonial.avatar_url"
+                                                    :alt="testimonial.name"
                                                     class="h-full w-full object-cover"
                                                 />
-                                                <div
-                                                    v-else
-                                                    class="flex h-full w-full items-center justify-center"
-                                                >
-                                                    <svg
-                                                        class="h-5 w-5 text-zinc-600"
-                                                        fill="none"
-                                                        stroke="currentColor"
-                                                        viewBox="0 0 24 24"
-                                                    >
-                                                        <path
-                                                            stroke-linecap="round"
-                                                            stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                                        />
-                                                    </svg>
-                                                </div>
+                                            </div>
+                                            <div
+                                                v-else
+                                                class="flex h-12 w-12 items-center justify-center rounded-full bg-indigo-500/20 text-indigo-400"
+                                            >
+                                                {{ testimonial.name.charAt(0) }}
                                             </div>
                                             <div class="flex flex-col">
                                                 <span
                                                     class="text-lg font-bold text-white transition-colors group-hover:text-indigo-400"
                                                 >
-                                                    {{ project.title }}
+                                                    {{ testimonial.name }}
                                                 </span>
                                                 <span
-                                                    class="mt-1 line-clamp-1 max-w-sm text-sm text-zinc-500"
+                                                    class="text-sm text-zinc-500"
                                                 >
-                                                    {{ project.description }}
+                                                    {{ testimonial.role }},
+                                                    {{ testimonial.company }}
+                                                </span>
+                                                <span
+                                                    class="mt-1 line-clamp-1 max-w-md text-xs text-zinc-600"
+                                                >
+                                                    {{ testimonial.content }}
                                                 </span>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="p-5">
-                                        <div class="flex flex-wrap gap-1.5">
+                                        <div class="flex gap-1">
                                             <span
-                                                v-for="(tag, index) in project.tags"
-                                                :key="`${project.id}-tag-${index}-${tag}`"
-                                                class="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs font-medium text-zinc-300"
+                                                v-for="i in 5"
+                                                :key="i"
+                                                class="text-sm"
+                                                :class="
+                                                    i <= (testimonial.rating || 5)
+                                                        ? 'text-yellow-400'
+                                                        : 'text-zinc-700'
+                                                "
                                             >
-                                                {{ tag }}
+                                                ★
                                             </span>
                                         </div>
                                     </td>
@@ -140,8 +134,8 @@ defineProps<{
                                             <Link
                                                 :href="
                                                     route(
-                                                        'admin.projects.edit',
-                                                        project.id,
+                                                        'admin.testimonials.edit',
+                                                        testimonial.id,
                                                     )
                                                 "
                                                 class="text-sm font-medium text-indigo-400 transition-colors hover:text-indigo-300"
@@ -154,8 +148,8 @@ defineProps<{
                                             <Link
                                                 :href="
                                                     route(
-                                                        'admin.projects.destroy',
-                                                        project.id,
+                                                        'admin.testimonials.destroy',
+                                                        testimonial.id,
                                                     )
                                                 "
                                                 method="delete"
@@ -167,7 +161,7 @@ defineProps<{
                                         </div>
                                     </td>
                                 </tr>
-                                <tr v-if="projects.length === 0">
+                                <tr v-if="testimonials.length === 0">
                                     <td colspan="3" class="p-12 text-center">
                                         <div
                                             class="flex flex-col items-center justify-center gap-3"
@@ -186,15 +180,15 @@ defineProps<{
                                                         stroke-linecap="round"
                                                         stroke-linejoin="round"
                                                         stroke-width="2"
-                                                        d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                                                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
                                                     />
                                                 </svg>
                                             </div>
                                             <p
                                                 class="font-medium text-zinc-500"
                                             >
-                                                No projects found. Ready to add
-                                                your first masterpiece?
+                                                No testimonials found. Start
+                                                collecting feedback!
                                             </p>
                                         </div>
                                     </td>
@@ -207,3 +201,4 @@ defineProps<{
         </div>
     </AppLayout>
 </template>
+

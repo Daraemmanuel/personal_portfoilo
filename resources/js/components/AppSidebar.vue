@@ -14,7 +14,17 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { Briefcase, Clock, Code, LayoutGrid } from 'lucide-vue-next';
+import {
+    Briefcase,
+    Clock,
+    Code,
+    Layers,
+    LayoutGrid,
+    MessageSquare,
+    FileText,
+    Mail,
+    Star,
+} from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
@@ -26,7 +36,7 @@ const mainNavItems: NavItem[] = [
     {
         title: 'Projects',
         href: route('admin.projects.index'),
-        icon: Briefcase,
+        icon: Layers,
     },
     {
         title: 'Skills',
@@ -37,6 +47,26 @@ const mainNavItems: NavItem[] = [
         title: 'Experiences',
         href: route('admin.experiences.index'),
         icon: Clock,
+    },
+    {
+        title: 'Testimonials',
+        href: route('admin.testimonials.index'),
+        icon: Star,
+    },
+    {
+        title: 'Articles',
+        href: route('admin.articles.index'),
+        icon: FileText,
+    },
+    {
+        title: 'Contact Messages',
+        href: route('admin.contact-messages.index'),
+        icon: Mail,
+    },
+    {
+        title: 'CV',
+        href: route('admin.experiences.index'),
+        icon: Briefcase,
     },
 ];
 

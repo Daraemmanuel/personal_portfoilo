@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Experience;
+use App\Traits\ClearsHomepageCache;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ExperienceController extends Controller
 {
+    use ClearsHomepageCache;
     public function index()
     {
         return Inertia::render('Admin/Experiences/Index', [
@@ -33,6 +35,8 @@ class ExperienceController extends Controller
 
         Experience::create($validated);
 
+        $this->clearCache('experiences');
+
         return redirect()->route('admin.experiences.index');
     }
 
@@ -55,12 +59,16 @@ class ExperienceController extends Controller
 
         $experience->update($validated);
 
+        $this->clearCache('experiences');
+
         return redirect()->route('admin.experiences.index');
     }
 
     public function destroy(Experience $experience)
     {
         $experience->delete();
+
+        $this->clearCache('experiences');
 
         return redirect()->route('admin.experiences.index');
     }

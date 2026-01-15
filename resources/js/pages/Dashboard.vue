@@ -4,13 +4,25 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
 import { Head, Link } from '@inertiajs/vue3';
-import { Briefcase, Clock, Zap } from 'lucide-vue-next';
+import {
+    Briefcase,
+    Clock,
+    Zap,
+    Star,
+    FileText,
+    Mail,
+    MessageSquare,
+} from 'lucide-vue-next';
 
 defineProps<{
     stats: {
         projects: number;
         skills: number;
         experiences: number;
+        testimonials: number;
+        articles: number;
+        contact_messages: number;
+        unread_messages: number;
     };
 }>();
 
@@ -27,18 +39,43 @@ const statCards = [
         value: 'projects',
         icon: Briefcase,
         color: 'bg-indigo-500',
+        href: route('admin.projects.index'),
     },
     {
         title: 'Skills',
         value: 'skills',
         icon: Zap,
         color: 'bg-amber-500',
+        href: route('admin.skills.index'),
     },
     {
-        title: 'Experience',
+        title: 'Experiences',
         value: 'experiences',
         icon: Clock,
         color: 'bg-emerald-500',
+        href: route('admin.experiences.index'),
+    },
+    {
+        title: 'Testimonials',
+        value: 'testimonials',
+        icon: Star,
+        color: 'bg-purple-500',
+        href: route('admin.testimonials.index'),
+    },
+    {
+        title: 'Articles',
+        value: 'articles',
+        icon: FileText,
+        color: 'bg-blue-500',
+        href: route('admin.articles.index'),
+    },
+    {
+        title: 'Messages',
+        value: 'contact_messages',
+        icon: Mail,
+        color: 'bg-pink-500',
+        href: route('admin.contact-messages.index'),
+        badge: 'unread_messages',
     },
 ];
 </script>
@@ -65,11 +102,12 @@ const statCards = [
                 </div>
 
                 <!-- Stats Grid -->
-                <div class="mb-10 grid grid-cols-1 gap-6 md:grid-cols-3">
-                    <div
+                <div class="mb-10 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    <Link
                         v-for="card in statCards"
                         :key="card.title"
-                        class="group relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 p-6 backdrop-blur-sm transition-all hover:border-indigo-500/50"
+                        :href="card.href"
+                        class="group relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 p-6 backdrop-blur-sm transition-all hover:border-indigo-500/50 hover:scale-[1.02]"
                     >
                         <div
                             class="absolute top-0 right-0 p-4 opacity-10 transition-opacity group-hover:opacity-20"
@@ -79,24 +117,37 @@ const statCards = [
                                 class="h-12 w-12 text-white"
                             />
                         </div>
-                        <h4
-                            class="text-sm font-semibold tracking-widest text-zinc-500 uppercase"
-                        >
-                            {{ card.title }}
-                        </h4>
-                        <div class="mt-4 flex items-baseline gap-2">
-                            <span
-                                class="text-4xl font-bold tracking-tight text-white"
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <h4
+                                    class="text-sm font-semibold tracking-widest text-zinc-500 uppercase"
+                                >
+                                    {{ card.title }}
+                                </h4>
+                                <div class="mt-4 flex items-baseline gap-2">
+                                    <span
+                                        class="text-4xl font-bold tracking-tight text-white"
+                                    >
+                                        {{
+                                            stats[
+                                                card.value as keyof typeof stats
+                                            ] || 0
+                                        }}
+                                    </span>
+                                    <span
+                                        class="text-sm font-medium text-indigo-400"
+                                        >Total</span
+                                    >
+                                </div>
+                            </div>
+                            <div
+                                v-if="card.badge && stats[card.badge as keyof typeof stats] > 0"
+                                class="flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-xs font-bold text-white"
                             >
-                                {{
-                                    stats[card.value as keyof typeof stats] || 0
-                                }}
-                            </span>
-                            <span class="text-sm font-medium text-indigo-400"
-                                >Active Items</span
-                            >
+                                {{ stats[card.badge as keyof typeof stats] }}
+                            </div>
                         </div>
-                    </div>
+                    </Link>
                 </div>
 
                 <!-- Main Content Row -->

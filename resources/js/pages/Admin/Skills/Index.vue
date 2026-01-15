@@ -106,8 +106,8 @@ const getIcon = (name: string): any => {
                                     <td class="p-5">
                                         <div class="flex flex-wrap gap-1.5">
                                             <span
-                                                v-for="item in skill.items"
-                                                :key="item"
+                                                v-for="(item, index) in skill.items"
+                                                :key="`${skill.id}-item-${index}-${item}`"
                                                 class="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs font-medium text-zinc-400"
                                             >
                                                 {{ item }}

@@ -5,6 +5,7 @@ import {
     MessageCircleIcon,
     TwitterIcon,
 } from 'lucide-vue-next';
+import ContactForm from './ContactForm.vue';
 
 const socialLinks = [
     {
@@ -50,12 +51,7 @@ const socialLinks = [
                 Whether you have a question or just want to say hi, I'll try my
                 best to get back to you!
             </p>
-            <a
-                href="mailto:immanuelatwork@gmail.com"
-                class="inline-block rounded-xl bg-white px-8 py-4 font-bold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]"
-            >
-                Say Hello
-            </a>
+            <ContactForm />
 
             <div class="mt-20 flex justify-center gap-8">
                 <div

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Link } from '@inertiajs/vue3';
+
 defineProps<{
     canLogin?: boolean;
 }>();
@@ -11,24 +13,43 @@ defineProps<{
         <div
             class="mx-auto flex h-16 max-w-7xl items-center justify-between px-6"
         >
-            <div
+            <Link
+                :href="route('home')"
                 class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-xl font-bold tracking-tighter text-transparent"
             >
                 DE.
-            </div>
+            </Link>
             <div class="hidden gap-8 text-sm font-medium text-zinc-400 md:flex">
-                <a href="#about" class="transition-colors hover:text-white"
-                    >About</a
+                <Link
+                    :href="route('home') + '#about'"
+                    class="transition-colors hover:text-white"
                 >
-                <a href="#work" class="transition-colors hover:text-white"
-                    >Work</a
+                    About
+                </Link>
+                <Link
+                    :href="route('home') + '#work'"
+                    class="transition-colors hover:text-white"
                 >
-                <a href="#skills" class="transition-colors hover:text-white"
-                    >Skills</a
+                    Work
+                </Link>
+                <Link
+                    :href="route('home') + '#skills'"
+                    class="transition-colors hover:text-white"
                 >
-                <a href="#contact" class="transition-colors hover:text-white"
-                    >Contact</a
+                    Skills
+                </Link>
+                <Link
+                    :href="route('articles.index')"
+                    class="transition-colors hover:text-white"
                 >
+                    Articles
+                </Link>
+                <Link
+                    :href="route('home') + '#contact'"
+                    class="transition-colors hover:text-white"
+                >
+                    Contact
+                </Link>
             </div>
             <div class="flex items-center gap-4">
                 <!-- <Link

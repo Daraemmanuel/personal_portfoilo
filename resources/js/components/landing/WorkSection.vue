@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import { ArrowRight, Code2, ExternalLink } from 'lucide-vue-next';
+import type { Project } from '@/types/portfolio';
+import { Link } from '@inertiajs/vue3';
 
 defineProps<{
-    projects?: Array<{
-        title: string;
-        description: string;
-        image_url?: string | null;
-        tags: string[];
-        link: string | null;
-    }>;
+    projects?: Project[];
 }>();
 
 const defaultProjects = [
@@ -55,19 +51,27 @@ const defaultProjects = [
 
             <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
                 <div
-                    v-for="(project, i) in projects || defaultProjects"
-                    :key="i"
+                    v-for="project in projects || defaultProjects"
+                    :key="project.id || project.title"
                     class="group relative overflow-hidden rounded-2xl border border-white/5 bg-zinc-900 transition-all duration-500 hover:border-indigo-500/50"
                 >
+                    <Link
+                        v-if="project.id"
+                        :href="route('projects.show', project.id)"
+                        class="absolute inset-0 z-0"
+                        aria-label="View project: {{ project.title }}"
+                    />
                     <!-- Project Image/Placeholder -->
                     <div
                         class="relative flex aspect-video w-full items-center justify-center bg-gradient-to-br from-zinc-800 to-zinc-950 transition-transform duration-700 group-hover:scale-105"
                     >
                         <img
-                            v-if="'image_url' in project && project.image_url"
+                            v-if="project.image_url"
                             :src="project.image_url"
-                            :alt="project.title"
+                            :alt="`${project.title} project screenshot`"
+                            loading="lazy"
                             class="absolute inset-0 h-full w-full object-cover opacity-60 transition-opacity duration-500 group-hover:opacity-100"
+                            :srcset="`${project.image_url} 1x`"
                         />
                         <Code2
                             v-else
@@ -86,26 +90,36 @@ const defaultProjects = [
                         >
                             {{ project.title }}
                         </h3>
-                        <p class="mb-4 text-sm leading-relaxed text-zinc-400">
+                        <p class="mb-4 line-clamp-2 text-sm leading-relaxed text-zinc-400">
                             {{ project.description }}
                         </p>
                         <div class="mb-6 flex flex-wrap gap-2">
                             <span
-                                v-for="tag in project.tags"
-                                :key="tag"
+                                v-for="(tag, index) in project.tags"
+                                :key="`${project.id || project.title}-tag-${index}-${tag}`"
                                 class="font-mono text-xs text-zinc-500"
                                 >#{{ tag }}</span
                             >
                         </div>
-                        <a
-                            v-if="project.link"
-                            :href="project.link"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            class="inline-flex items-center gap-2 text-sm font-medium text-white transition-colors hover:text-indigo-400"
-                        >
-                            View Project <ExternalLink class="h-3 w-3" />
-                        </a>
+                        <div class="flex items-center gap-4">
+                            <a
+                                v-if="project.link"
+                                :href="project.link"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                class="inline-flex items-center gap-2 text-sm font-medium text-white transition-colors hover:text-indigo-400"
+                                @click.stop
+                            >
+                                View Project <ExternalLink class="h-3 w-3" />
+                            </a>
+                            <Link
+                                v-if="project.id"
+                                :href="route('projects.show', project.id)"
+                                class="inline-flex items-center gap-2 text-sm font-medium text-zinc-400 transition-colors hover:text-indigo-400"
+                            >
+                                Learn More <ArrowRight class="h-3 w-3" />
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>

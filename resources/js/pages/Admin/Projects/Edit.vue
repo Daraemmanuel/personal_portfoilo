@@ -69,7 +69,7 @@ const clearImage = () => {
         <Head title="Edit Project" />
 
         <div class="min-h-[calc(100vh-64px)] bg-zinc-950 p-6 lg:p-10">
-            <div class="mx-auto">
+            <div class="mx-auto max-w-5xl">
                 <!-- Header -->
                 <div class="mb-10">
                     <h2
@@ -169,9 +169,9 @@ const clearImage = () => {
                             >
                             <textarea
                                 v-model="form.description"
-                                rows="4"
+                                rows="10"
                                 placeholder="Describe the problem solved and the technology used..."
-                                class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
+                                class="w-full resize-y rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
                             ></textarea>
                             <InputError :message="form.errors.description" />
                         </div>

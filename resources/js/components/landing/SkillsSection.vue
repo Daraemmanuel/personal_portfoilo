@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import * as icons from 'lucide-vue-next';
 import { computed, type Component } from 'vue';
+import type { Skill } from '@/types/portfolio';
 
 const props = defineProps<{
-    skills?: Array<{
-        name: string;
-        icon: string;
-        items: string[];
-    }>;
+    skills?: Skill[];
 }>();
 
 const defaultSkills = [
@@ -63,7 +60,7 @@ const getIcon = (name: string): Component => {
             <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
                 <div
                     v-for="skill in computedSkills"
-                    :key="skill.name"
+                    :key="skill.id || skill.name"
                     class="rounded-2xl border border-white/5 bg-white/5 p-6 transition-colors hover:border-indigo-500/30"
                 >
                     <component
@@ -75,8 +72,8 @@ const getIcon = (name: string): Component => {
                     </h3>
                     <div class="flex flex-wrap gap-2">
                         <span
-                            v-for="item in skill.items"
-                            :key="item"
+                            v-for="(item, index) in skill.items"
+                            :key="`${skill.id || skill.name}-${index}-${item}`"
                             class="rounded-md border border-white/5 bg-white/5 px-2 py-1 text-xs text-zinc-400"
                         >
                             {{ item }}

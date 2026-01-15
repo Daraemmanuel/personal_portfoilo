@@ -4,6 +4,7 @@ import { ArrowRight } from 'lucide-vue-next';
 
 <template>
     <section
+        id="about"
         class="relative flex min-h-screen items-center justify-center overflow-hidden pt-16"
     >
         <!-- Background Elements -->
