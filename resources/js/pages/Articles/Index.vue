@@ -28,9 +28,24 @@ defineProps<{
                 >
                     Articles & Blog
                 </h1>
-                <p class="text-zinc-400">
+                <p class="mb-6 text-zinc-400">
                     Thoughts, tutorials, and insights on web development
                 </p>
+                <div class="flex items-center justify-center gap-4">
+                    <Link
+                        :href="route('articles.categories')"
+                        class="text-sm font-medium text-indigo-400 transition-colors hover:text-indigo-300"
+                    >
+                        Browse Categories
+                    </Link>
+                    <span class="text-zinc-600">•</span>
+                    <Link
+                        :href="route('articles.tags')"
+                        class="text-sm font-medium text-indigo-400 transition-colors hover:text-indigo-300"
+                    >
+                        Browse Tags
+                    </Link>
+                </div>
             </header>
 
             <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">

@@ -165,6 +165,14 @@ defineProps<{
                                             class="flex items-center justify-end gap-3"
                                         >
                                             <Link
+                                                v-if="article.slug && article.published_at && new Date(article.published_at) <= new Date()"
+                                                :href="route('articles.show', article.slug)"
+                                                target="_blank"
+                                                class="text-sm font-medium text-green-400 transition-colors hover:text-green-300"
+                                            >
+                                                View
+                                            </Link>
+                                            <Link
                                                 :href="
                                                     route(
                                                         'admin.articles.edit',

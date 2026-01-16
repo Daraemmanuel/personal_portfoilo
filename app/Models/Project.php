@@ -2,12 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\ClearsHomepageCache;
+use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Project extends Model
 {
-    use HasFactory;
+    use HasFactory, LogsActivity, ClearsHomepageCache;
 
     protected $fillable = [
         'title',

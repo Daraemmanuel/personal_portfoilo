@@ -24,4 +24,10 @@ export default defineConfig({
             },
         }),
     ],
+    // Force IPv4 to avoid CSP issues with [::1]    May havae to remove it later
+    server: {
+        host: '127.0.0.1', // Force IPv4 to avoid CSP issues with [::1]
+        port: 5173,
+        strictPort: true,
+    },
 });

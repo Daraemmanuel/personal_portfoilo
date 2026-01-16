@@ -15,14 +15,15 @@ import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import {
+    BarChart3,
     Briefcase,
     Clock,
     Code,
+    FileText,
     Layers,
     LayoutGrid,
-    MessageSquare,
-    FileText,
     Mail,
+    MessageSquare,
     Star,
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
@@ -64,8 +65,18 @@ const mainNavItems: NavItem[] = [
         icon: Mail,
     },
     {
+        title: 'Comments',
+        href: route('admin.comments.index'),
+        icon: MessageSquare,
+    },
+    {
+        title: 'Analytics',
+        href: route('admin.analytics.index'),
+        icon: BarChart3,
+    },
+    {
         title: 'CV',
-        href: route('admin.experiences.index'),
+        href: route('admin.cv.index'),
         icon: Briefcase,
     },
 ];
@@ -110,7 +121,7 @@ const footerNavItems: NavItem[] = [
             <NavMain :items="mainNavItems" />
         </SidebarContent>
 
-        <SidebarFooter class="border-t border-white/5 p-4">
+        <SidebarFooter class="border-t border-white/5 p-2">
             <NavFooter :items="footerNavItems" />
             <NavUser class="mt-4 rounded-xl bg-white/5 p-2" />
         </SidebarFooter>

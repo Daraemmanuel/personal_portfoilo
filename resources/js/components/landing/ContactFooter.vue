@@ -6,6 +6,8 @@ import {
     TwitterIcon,
 } from 'lucide-vue-next';
 import ContactForm from './ContactForm.vue';
+import NewsletterForm from './NewsletterForm.vue';
+import GitHubContributions from './GitHubContributions.vue';
 
 const socialLinks = [
     {
@@ -52,6 +54,14 @@ const socialLinks = [
                 best to get back to you!
             </p>
             <ContactForm />
+
+            <div class="mx-auto mt-20 max-w-2xl">
+                <NewsletterForm />
+            </div>
+
+            <div class="mx-auto mt-20 max-w-2xl">
+                <GitHubContributions username="Daraemmanuel" />
+            </div>
 
             <div class="mt-20 flex justify-center gap-8">
                 <div

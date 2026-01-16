@@ -58,6 +58,9 @@ export interface Article {
     category?: string | null;
     tags: string[];
     views: number;
+    reading_time?: number;
+    series?: string | null;
+    series_order?: number | null;
     created_at: string;
     updated_at: string;
 }

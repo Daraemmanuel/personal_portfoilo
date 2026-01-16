@@ -3,7 +3,9 @@ import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
+import { useAutoSave } from '@/composables/useAutoSave';
+import { Save } from 'lucide-vue-next';
 
 const imageInput = ref<HTMLInputElement | null>(null);
 const imagePreview = ref<string | null>(null);
@@ -17,6 +19,15 @@ const form = useForm({
     category: '',
     tags: '',
     published_at: '',
+    series: '',
+    series_order: null as number | null,
+    is_featured: false,
+});
+
+// Auto-save (disabled for new articles, only works on edit)
+const autoSave = useAutoSave(form, route('admin.articles.store'), {
+    debounceMs: 3000,
+    enabled: false, // Disable for create, enable in edit
 });
 
 const submit = () => {
@@ -147,6 +158,43 @@ const clearImage = () => {
                             </div>
 
                             <div class="space-y-2">
+                                <label
+                                    class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                    >Series (Optional)</label
+                                >
+                                <input
+                                    v-model="form.series"
+                                    type="text"
+                                    placeholder="e.g. Laravel Basics"
+                                    class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
+                                />
+                                <InputError :message="form.errors.series" />
+                            </div>
+                        </div>
+
+                        <div v-if="form.series" class="grid grid-cols-1 gap-8 md:grid-cols-2">
+                            <div class="space-y-2">
+                                <label
+                                    class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                    >Series Order</label
+                                >
+                                <input
+                                    v-model.number="form.series_order"
+                                    type="number"
+                                    min="1"
+                                    placeholder="1, 2, 3..."
+                                    class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
+                                />
+                                <p class="text-xs text-zinc-500">
+                                    Order of this article in the series.
+                                </p>
+                                <InputError :message="form.errors.series_order" />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+
+                            <div class="space-y-2">
                                 <div class="flex items-center justify-between">
                                     <label
                                         class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
@@ -246,24 +294,32 @@ const clearImage = () => {
                         </div>
 
                         <div
-                            class="flex items-center justify-end gap-4 border-t border-white/5 pt-4"
+                            class="flex items-center justify-between border-t border-white/5 pt-4"
                         >
-                            <Link :href="route('admin.articles.index')">
+                            <div class="text-xs text-zinc-500">
+                                <span v-if="autoSave.isSaving">Saving...</span>
+                                <span v-else-if="autoSave.lastSaved">
+                                    Last saved: {{ autoSave.lastSaved.toLocaleTimeString() }}
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <Link :href="route('admin.articles.index')">
+                                    <Button
+                                        variant="ghost"
+                                        type="button"
+                                        class="text-zinc-400 hover:bg-white/5 hover:text-white"
+                                    >
+                                        Cancel
+                                    </Button>
+                                </Link>
                                 <Button
-                                    variant="ghost"
-                                    type="button"
-                                    class="text-zinc-400 hover:bg-white/5 hover:text-white"
+                                    type="submit"
+                                    :disabled="form.processing"
+                                    class="rounded-full bg-indigo-600 px-8 py-2 font-bold text-white transition-all hover:bg-indigo-700 disabled:opacity-50"
                                 >
-                                    Cancel
+                                    Publish Article
                                 </Button>
-                            </Link>
-                            <Button
-                                type="submit"
-                                :disabled="form.processing"
-                                class="rounded-full bg-indigo-600 px-8 py-2 font-bold text-white transition-all hover:bg-indigo-700 disabled:opacity-50"
-                            >
-                                Publish Article
-                            </Button>
+                            </div>
                         </div>
                     </form>
                 </div>

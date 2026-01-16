@@ -38,15 +38,21 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
     <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
+    {{-- Note: SRI (Subresource Integrity) requires generating hashes for each resource version --}}
+    {{-- For Bunny Fonts, SRI is not practical as the CSS is dynamically generated --}}
+    {{-- Using crossorigin="anonymous" ensures proper CORS handling --}}
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" crossorigin="anonymous" />
 
     @routes
-    @vite(['resources/js/app.ts', "resources/js/pages/{$page['component']}.vue"])
+    {{-- Single Vite entry; Inertia dynamically loads page components --}}
+    @vite('resources/js/app.ts')
     @inertiaHead
 
     @if (config('services.google_analytics.id'))
         <!-- Google Analytics -->
-        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.google_analytics.id') }}"></script>
+        {{-- Note: SRI is not available for dynamic gtag.js as the hash changes with each version --}}
+        {{-- For production, consider using a CSP nonce or loading GA through a tag manager --}}
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.google_analytics.id') }}" crossorigin="anonymous"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
 

@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { Link } from '@inertiajs/vue3';
+import { useAppearance } from '@/composables/useAppearance';
+import { Moon, Sun, Monitor } from 'lucide-vue-next';
+import SearchBar from './SearchBar.vue';
 
 defineProps<{
     canLogin?: boolean;
 }>();
+
+const { appearance, updateAppearance } = useAppearance();
 </script>
 
 <template>
@@ -13,45 +18,85 @@ defineProps<{
         <div
             class="mx-auto flex h-16 max-w-7xl items-center justify-between px-6"
         >
-            <Link
-                :href="route('home')"
+            <a
+                href="/"
                 class="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-xl font-bold tracking-tighter text-transparent"
             >
                 DE.
-            </Link>
+            </a>
             <div class="hidden gap-8 text-sm font-medium text-zinc-400 md:flex">
-                <Link
-                    :href="route('home') + '#about'"
+                <a
+                    href="/#about"
                     class="transition-colors hover:text-white"
                 >
                     About
-                </Link>
-                <Link
-                    :href="route('home') + '#work'"
+                </a>
+                <a
+                    href="/#work"
                     class="transition-colors hover:text-white"
                 >
                     Work
-                </Link>
-                <Link
-                    :href="route('home') + '#skills'"
+                </a>
+                <a
+                    href="/#skills"
                     class="transition-colors hover:text-white"
                 >
                     Skills
-                </Link>
+                </a>
                 <Link
                     :href="route('articles.index')"
                     class="transition-colors hover:text-white"
                 >
                     Articles
                 </Link>
-                <Link
-                    :href="route('home') + '#contact'"
+                <a
+                    href="/#contact"
                     class="transition-colors hover:text-white"
                 >
                     Contact
-                </Link>
+                </a>
             </div>
             <div class="flex items-center gap-4">
+                <SearchBar />
+                <!-- Dark Mode Toggle -->
+                <div class="flex items-center gap-1 rounded-lg bg-white/5 p-1">
+                    <button
+                        @click="updateAppearance('light')"
+                        :class="[
+                            'rounded-md p-1.5 transition-colors',
+                            appearance === 'light'
+                                ? 'bg-white/10 text-white'
+                                : 'text-zinc-400 hover:text-white',
+                        ]"
+                        title="Light mode"
+                    >
+                        <Sun class="h-4 w-4" />
+                    </button>
+                    <button
+                        @click="updateAppearance('dark')"
+                        :class="[
+                            'rounded-md p-1.5 transition-colors',
+                            appearance === 'dark'
+                                ? 'bg-white/10 text-white'
+                                : 'text-zinc-400 hover:text-white',
+                        ]"
+                        title="Dark mode"
+                    >
+                        <Moon class="h-4 w-4" />
+                    </button>
+                    <button
+                        @click="updateAppearance('system')"
+                        :class="[
+                            'rounded-md p-1.5 transition-colors',
+                            appearance === 'system'
+                                ? 'bg-white/10 text-white'
+                                : 'text-zinc-400 hover:text-white',
+                        ]"
+                        title="System preference"
+                    >
+                        <Monitor class="h-4 w-4" />
+                    </button>
+                </div>
                 <!-- <Link
                     v-if="canLogin"
                     href="/login"

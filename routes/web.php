@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\ContactMessageController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\SearchController;
 use App\Models\Experience;
 use App\Models\Project;
 use App\Models\Skill;
@@ -19,6 +20,8 @@ use App\Models\Testimonial;
 use App\Models\Article;
 
 Route::get('/', function () {
+    $cv = \App\Models\Cv::where('is_active', true)->latest()->first();
+    
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Features::enabled(Features::registration()),
@@ -34,20 +37,43 @@ Route::get('/', function () {
         'testimonials' => Cache::remember('home.testimonials', 3600, fn() => 
             Testimonial::orderBy('sort_order')->limit(6)->get()
         ),
+        'cvUrl' => $cv ? route('cv.download') : null,
     ]);
 })->name('home');
 
 // Project detail page
 Route::get('/projects/{project}', [ProjectController::class, 'show'])->name('projects.show');
 
+// CV Download
+Route::get('/cv/download', [\App\Http\Controllers\CvController::class, 'download'])->name('cv.download');
+
+// Search
+Route::get('/search', [SearchController::class, 'search'])->name('search');
+
 // Articles
 Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
+Route::get('/articles/categories', [ArticleController::class, 'categories'])->name('articles.categories');
+Route::get('/articles/tags', [ArticleController::class, 'tags'])->name('articles.tags');
+Route::get('/articles/category/{category}', [ArticleController::class, 'category'])->name('articles.category');
+Route::get('/articles/tag/{tag}', [ArticleController::class, 'tag'])->name('articles.tag');
 Route::get('/articles/{slug}', [ArticleController::class, 'show'])->name('articles.show');
 
 // Contact form with rate limiting
 Route::post('/contact', [ContactController::class, 'store'])
     ->middleware('throttle:' . (app()->environment('local') ? '20,1' : '5,60'))
     ->name('contact.store');
+
+// Newsletter
+Route::post('/newsletter/subscribe', [\App\Http\Controllers\NewsletterController::class, 'subscribe'])
+    ->middleware('throttle:10,1')
+    ->name('newsletter.subscribe');
+Route::post('/newsletter/unsubscribe/{email}', [\App\Http\Controllers\NewsletterController::class, 'unsubscribe'])
+    ->name('newsletter.unsubscribe');
+
+// Comments
+Route::post('/articles/{article}/comments', [\App\Http\Controllers\CommentController::class, 'store'])
+    ->middleware('throttle:10,1')
+    ->name('comments.store');
 
 // Sitemap
 Route::get('/sitemap.xml', function () {
@@ -142,7 +168,26 @@ Route::middleware(['auth', 'verified', 'throttle:60,1'])->prefix('admin')->name(
     Route::resource('experiences', ExperienceController::class);
     Route::resource('testimonials', TestimonialController::class);
     Route::resource('articles', AdminArticleController::class);
+    Route::post('articles/bulk-delete', [AdminArticleController::class, 'bulkDelete'])->name('articles.bulk-delete');
+    Route::get('articles/export', [AdminArticleController::class, 'export'])->name('articles.export');
+    Route::resource('comments', \App\Http\Controllers\Admin\CommentController::class)->only(['index', 'destroy']);
+    Route::post('comments/{comment}/approve', [\App\Http\Controllers\Admin\CommentController::class, 'approve'])->name('comments.approve');
+    Route::post('comments/{comment}/reject', [\App\Http\Controllers\Admin\CommentController::class, 'reject'])->name('comments.reject');
     Route::resource('contact-messages', ContactMessageController::class)->only(['index', 'show', 'destroy']);
+    Route::get('activity-logs', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-logs.index');
+    Route::get('analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('analytics.index');
+    Route::get('cv', [\App\Http\Controllers\Admin\CvController::class, 'index'])->name('cv.index');
+    Route::post('cv', [\App\Http\Controllers\Admin\CvController::class, 'store'])->name('cv.store');
+    Route::delete('cv/{cv}', [\App\Http\Controllers\Admin\CvController::class, 'destroy'])->name('cv.destroy');
+});
+
+// API Routes
+Route::prefix('api')->name('api.')->group(function () {
+    Route::get('/projects', [\App\Http\Controllers\Api\PortfolioController::class, 'projects'])->name('projects');
+    Route::get('/articles', [\App\Http\Controllers\Api\PortfolioController::class, 'articles'])->name('articles');
+    Route::get('/articles/{slug}', [\App\Http\Controllers\Api\PortfolioController::class, 'article'])->name('article');
+    Route::get('/skills', [\App\Http\Controllers\Api\PortfolioController::class, 'skills'])->name('skills');
+    Route::get('/experiences', [\App\Http\Controllers\Api\PortfolioController::class, 'experiences'])->name('experiences');
 });
 
 require __DIR__.'/settings.php';

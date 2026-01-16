@@ -5,6 +5,7 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import type { Article } from '@/types/portfolio';
+import { useAutoSave } from '@/composables/useAutoSave';
 
 const props = defineProps<{
     article: Article;
@@ -30,7 +31,16 @@ const form = useForm({
               .toISOString()
               .slice(0, 16)
         : '',
+    series: props.article.series || '',
+    series_order: props.article.series_order || null,
+    is_featured: props.article.is_featured || false,
     _method: 'PUT',
+});
+
+// Auto-save functionality
+const autoSave = useAutoSave(form, route('admin.articles.update', props.article.id), {
+    debounceMs: 3000,
+    enabled: true,
 });
 
 const submit = () => {
@@ -156,6 +166,42 @@ const clearImage = () => {
                             </div>
 
                             <div class="space-y-2">
+                                <label
+                                    class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                    >Series (Optional)</label
+                                >
+                                <input
+                                    v-model="form.series"
+                                    type="text"
+                                    placeholder="e.g. Laravel Basics"
+                                    class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
+                                />
+                                <InputError :message="form.errors.series" />
+                            </div>
+                        </div>
+
+                        <div v-if="form.series" class="grid grid-cols-1 gap-8 md:grid-cols-2">
+                            <div class="space-y-2">
+                                <label
+                                    class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                    >Series Order</label
+                                >
+                                <input
+                                    v-model.number="form.series_order"
+                                    type="number"
+                                    min="1"
+                                    placeholder="1, 2, 3..."
+                                    class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
+                                />
+                                <p class="text-xs text-zinc-500">
+                                    Order of this article in the series.
+                                </p>
+                                <InputError :message="form.errors.series_order" />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+                            <div class="space-y-2">
                                 <div class="flex items-center justify-between">
                                     <label
                                         class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
@@ -192,6 +238,21 @@ const clearImage = () => {
                                 class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
                             />
                             <InputError :message="form.errors.tags" />
+                        </div>
+
+                        <div class="flex items-center gap-3">
+                            <input
+                                v-model="form.is_featured"
+                                type="checkbox"
+                                id="is_featured"
+                                class="h-4 w-4 rounded border-white/20 bg-zinc-700 text-indigo-600 shadow-sm focus:ring-indigo-500"
+                            />
+                            <label
+                                for="is_featured"
+                                class="text-sm font-medium text-zinc-300"
+                            >
+                                Feature this article on the homepage
+                            </label>
                         </div>
 
                         <div class="space-y-4">
@@ -250,24 +311,48 @@ const clearImage = () => {
                         </div>
 
                         <div
-                            class="flex items-center justify-end gap-4 border-t border-white/5 pt-4"
+                            class="flex items-center justify-between border-t border-white/5 pt-4"
                         >
-                            <Link :href="route('admin.articles.index')">
-                                <Button
-                                    variant="ghost"
-                                    type="button"
-                                    class="text-zinc-400 hover:bg-white/5 hover:text-white"
+                            <div class="text-xs text-zinc-500">
+                                <span v-if="autoSave.isSaving">Saving...</span>
+                                <span v-else-if="autoSave.lastSaved">
+                                    Last saved: {{ autoSave.lastSaved.toLocaleTimeString() }}
+                                </span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <Link
+                                    :href="route('articles.show', props.article.slug)"
+                                    target="_blank"
                                 >
-                                    Cancel
+                                    <Button
+                                        variant="ghost"
+                                        type="button"
+                                        class="text-zinc-400 hover:bg-white/5 hover:text-white"
+                                    >
+                                        <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                        </svg>
+                                        Preview
+                                    </Button>
+                                </Link>
+                                <Link :href="route('admin.articles.index')">
+                                    <Button
+                                        variant="ghost"
+                                        type="button"
+                                        class="text-zinc-400 hover:bg-white/5 hover:text-white"
+                                    >
+                                        Cancel
+                                    </Button>
+                                </Link>
+                                <Button
+                                    type="submit"
+                                    :disabled="form.processing"
+                                    class="rounded-full bg-indigo-600 px-8 py-2 font-bold text-white transition-all hover:bg-indigo-700 disabled:opacity-50"
+                                >
+                                    Update Article
                                 </Button>
-                            </Link>
-                            <Button
-                                type="submit"
-                                :disabled="form.processing"
-                                class="rounded-full bg-indigo-600 px-8 py-2 font-bold text-white transition-all hover:bg-indigo-700 disabled:opacity-50"
-                            >
-                                Update Article
-                            </Button>
+                            </div>
                         </div>
                     </form>
                 </div>

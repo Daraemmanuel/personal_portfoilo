@@ -7,6 +7,10 @@ import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
 import { initializeTheme } from './composables/useAppearance';
+import { usePerformanceMonitoring } from './composables/usePerformanceMonitoring';
+import { useErrorTracking } from './composables/useErrorTracking';
+import ToastContainer from './components/ui/ToastContainer.vue';
+import GlobalConfirmDialog from './components/ui/GlobalConfirmDialog.vue';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -43,7 +47,19 @@ createInertiaApp({
             import.meta.glob<DefineComponent>('./pages/**/*.vue'),
         ),
     setup({ el, App, props, plugin }) {
-        const app = createApp({ render: () => h(App, props) })
+        // Initialize performance monitoring
+        usePerformanceMonitoring();
+        
+        // Initialize error tracking
+        useErrorTracking();
+
+        const app = createApp({
+            render: () => [
+                h(App, props),
+                h(ToastContainer),
+                h(GlobalConfirmDialog),
+            ],
+        })
             .use(plugin)
             .use(ZiggyVue)
             .mount(el);

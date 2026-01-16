@@ -138,12 +138,14 @@ defineProps<{
                                             class="flex items-center justify-end gap-3"
                                         >
                                             <Link
-                                                :href="
-                                                    route(
-                                                        'admin.projects.edit',
-                                                        project.id,
-                                                    )
-                                                "
+                                                :href="route('projects.show', project.id)"
+                                                target="_blank"
+                                                class="text-sm font-medium text-green-400 transition-colors hover:text-green-300"
+                                            >
+                                                View
+                                            </Link>
+                                            <Link
+                                                :href="route('admin.projects.edit', project.id)"
                                                 class="text-sm font-medium text-indigo-400 transition-colors hover:text-indigo-300"
                                             >
                                                 Edit
@@ -152,12 +154,7 @@ defineProps<{
                                                 class="h-1 w-1 rounded-full bg-zinc-700"
                                             ></div>
                                             <Link
-                                                :href="
-                                                    route(
-                                                        'admin.projects.destroy',
-                                                        project.id,
-                                                    )
-                                                "
+                                                :href="route('admin.projects.destroy', project.id)"
                                                 method="delete"
                                                 as="button"
                                                 class="text-sm font-medium text-zinc-500 transition-colors hover:text-red-400"
@@ -176,11 +173,10 @@ defineProps<{
                                                 class="flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-zinc-600"
                                             >
                                                 <svg
-                                                    xmlns="http://www.w3.org/2000/svg"
                                                     class="h-6 w-6"
                                                     fill="none"
-                                                    viewBox="0 0 24 24"
                                                     stroke="currentColor"
+                                                    viewBox="0 0 24 24"
                                                 >
                                                     <path
                                                         stroke-linecap="round"
@@ -190,11 +186,8 @@ defineProps<{
                                                     />
                                                 </svg>
                                             </div>
-                                            <p
-                                                class="font-medium text-zinc-500"
-                                            >
-                                                No projects found. Ready to add
-                                                your first masterpiece?
+                                            <p class="font-medium text-zinc-500">
+                                                No projects yet. Start showcasing your work!
                                             </p>
                                         </div>
                                     </td>

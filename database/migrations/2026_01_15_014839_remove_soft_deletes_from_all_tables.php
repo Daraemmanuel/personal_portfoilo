@@ -11,25 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('projects', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
-
-        Schema::table('skills', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
-
-        Schema::table('experiences', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
-
-        Schema::table('testimonials', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
-
-        Schema::table('articles', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
+        // Drop deleted_at columns only if they exist
+        $tables = ['projects', 'skills', 'experiences', 'testimonials', 'articles'];
+        
+        foreach ($tables as $tableName) {
+            if (Schema::hasColumn($tableName, 'deleted_at')) {
+                Schema::table($tableName, function (Blueprint $table) {
+                    $table->dropSoftDeletes();
+                });
+            }
+        }
     }
 
     /**

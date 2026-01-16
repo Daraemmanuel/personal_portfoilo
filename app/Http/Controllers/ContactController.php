@@ -37,7 +37,8 @@ class ContactController extends Controller
 
         // Check honeypot
         if (!empty($request->input('honeypot'))) {
-            return response()->json(['message' => 'Message sent successfully'], 200);
+            // Silently ignore spam attempts
+            return back();
         }
 
         $contactMessage = ContactMessage::create([
