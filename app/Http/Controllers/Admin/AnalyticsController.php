@@ -63,6 +63,21 @@ class AnalyticsController extends Controller
             ->whereYear('created_at', now()->year)
             ->count();
 
+        // Scheduled articles
+        $scheduledArticles = Article::whereNotNull('published_at')
+            ->where('published_at', '>', now())
+            ->count();
+
+        // Series statistics
+        $seriesStats = Article::select('series', DB::raw('COUNT(*) as article_count'))
+            ->whereNotNull('series')
+            ->groupBy('series')
+            ->orderByDesc('article_count')
+            ->get();
+
+        $totalSeries = $seriesStats->count();
+        $totalArticlesInSeries = $seriesStats->sum('article_count');
+
         return Inertia::render('Admin/Analytics/Index', [
             'stats' => $stats,
             'articleViews' => $articleViews,
@@ -70,6 +85,10 @@ class AnalyticsController extends Controller
             'recentArticles' => $recentArticles,
             'viewsByCategory' => $viewsByCategory,
             'articlesThisMonth' => $articlesThisMonth,
+            'scheduledArticles' => $scheduledArticles,
+            'seriesStats' => $seriesStats,
+            'totalSeries' => $totalSeries,
+            'totalArticlesInSeries' => $totalArticlesInSeries,
         ]);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Article;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class ArticleController extends Controller
@@ -46,9 +47,17 @@ class ArticleController extends Controller
             ->orderBy('series_order')
             ->get() : collect();
 
-        // Get approved comments with replies
-        $comments = $article->approvedComments()
-            ->with('replies')
+        // Get all comments (approved and pending) with replies and reactions
+        $comments = $article->comments()
+            ->with(['replies' => function ($query) {
+                $query->orderBy('created_at', 'asc')
+                    ->select('article_comments.*')
+                    ->selectRaw('(SELECT COUNT(*) FROM comment_reactions WHERE comment_reactions.comment_id = article_comments.id AND comment_reactions.reaction_type = ?) as likes_count', ['like'])
+                    ->selectRaw('(SELECT COUNT(*) FROM comment_reactions WHERE comment_reactions.comment_id = article_comments.id AND comment_reactions.reaction_type = ?) as helpfuls_count', ['helpful']);
+            }])
+            ->select('article_comments.*')
+            ->selectRaw('(SELECT COUNT(*) FROM comment_reactions WHERE comment_reactions.comment_id = article_comments.id AND comment_reactions.reaction_type = ?) as likes_count', ['like'])
+            ->selectRaw('(SELECT COUNT(*) FROM comment_reactions WHERE comment_reactions.comment_id = article_comments.id AND comment_reactions.reaction_type = ?) as helpfuls_count', ['helpful'])
             ->whereNull('parent_id')
             ->orderBy('created_at', 'desc')
             ->get();

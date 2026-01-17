@@ -39,6 +39,21 @@ class ArticleComment extends Model
         return $this->hasMany(ArticleComment::class, 'parent_id');
     }
 
+    public function reactions()
+    {
+        return $this->hasMany(\App\Models\CommentReaction::class, 'comment_id');
+    }
+
+    public function likes()
+    {
+        return $this->reactions()->where('reaction_type', 'like');
+    }
+
+    public function helpfuls()
+    {
+        return $this->reactions()->where('reaction_type', 'helpful');
+    }
+
     public function scopeApproved($query)
     {
         return $query->where('is_approved', true);

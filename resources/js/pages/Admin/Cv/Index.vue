@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
+import { useToast } from '@/composables/useToast';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, useForm } from '@inertiajs/vue3';
+import { Download, FileText, Trash2, Upload } from 'lucide-vue-next';
 import { ref } from 'vue';
-import { useToast } from '@/composables/useToast';
-import { Upload, Download, Trash2, FileText } from 'lucide-vue-next';
-import InputError from '@/components/InputError.vue';
 
 const props = defineProps<{
     cv?: {
@@ -91,41 +91,54 @@ const triggerFileInput = () => {
     >
         <Head title="CV Management" />
 
-        <div class="min-h-[calc(100vh-64px)] bg-zinc-950 p-6 lg:p-10">
+        <div class="min-h-[calc(100vh-64px)] bg-background p-6 lg:p-10">
             <div class="mx-auto max-w-4xl">
                 <!-- Header -->
                 <div class="mb-10">
                     <h2
-                        class="bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-3xl font-bold tracking-tight text-transparent"
+                        class="bg-gradient-to-r from-foreground to-foreground/50 bg-clip-text text-3xl font-bold tracking-tight text-transparent"
                     >
                         CV Management
                     </h2>
-                    <p class="mt-2 text-zinc-400">
-                        Upload and manage your CV/Resume. Visitors can download it from the landing page.
+                    <p class="mt-2 text-muted-foreground">
+                        Upload and manage your CV/Resume. Visitors can download
+                        it from the landing page.
                     </p>
                 </div>
 
                 <!-- Current CV Card -->
                 <div
                     v-if="cv"
-                    class="mb-8 rounded-2xl border border-white/10 bg-zinc-900/50 p-8 shadow-xl backdrop-blur-sm"
+                    class="mb-8 rounded-2xl border border-border bg-card p-8 shadow-sm backdrop-blur-sm"
                 >
                     <div class="flex items-start justify-between">
                         <div class="flex items-start gap-4">
                             <div
-                                class="flex h-12 w-12 items-center justify-center rounded-lg bg-red-500/10 text-red-400"
+                                class="flex h-12 w-12 items-center justify-center rounded-lg bg-destructive/10 text-destructive"
                             >
                                 <FileText class="h-6 w-6" />
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold text-white">
+                                <h3
+                                    class="text-lg font-semibold text-foreground"
+                                >
                                     {{ cv.file_name }}
                                 </h3>
-                                <p class="mt-1 text-sm text-zinc-400">
-                                    {{ cv.file_size_human || `${(cv.file_size / 1024).toFixed(2)} KB` }}
+                                <p class="mt-1 text-sm text-muted-foreground">
+                                    {{
+                                        cv.file_size_human ||
+                                        `${(cv.file_size / 1024).toFixed(2)} KB`
+                                    }}
                                 </p>
-                                <p class="mt-1 text-xs text-zinc-500">
-                                    Uploaded: {{ new Date(cv.created_at).toLocaleDateString() }}
+                                <p
+                                    class="mt-1 text-xs text-muted-foreground/60"
+                                >
+                                    Uploaded:
+                                    {{
+                                        new Date(
+                                            cv.created_at,
+                                        ).toLocaleDateString()
+                                    }}
                                 </p>
                             </div>
                         </div>
@@ -133,7 +146,7 @@ const triggerFileInput = () => {
                             <a
                                 :href="route('cv.download')"
                                 target="_blank"
-                                class="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-white/10"
+                                class="inline-flex items-center gap-2 rounded-lg border border-border bg-muted/50 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
                             >
                                 <Download class="h-4 w-4" />
                                 Download
@@ -142,7 +155,7 @@ const triggerFileInput = () => {
                                 variant="ghost"
                                 size="sm"
                                 @click="deleteCv"
-                                class="text-red-400 hover:bg-red-500/10 hover:text-red-300"
+                                class="text-destructive hover:bg-destructive/10 hover:text-destructive"
                             >
                                 <Trash2 class="h-4 w-4" />
                             </Button>
@@ -152,21 +165,21 @@ const triggerFileInput = () => {
 
                 <!-- Upload Form -->
                 <div
-                    class="rounded-2xl border border-white/10 bg-zinc-900/50 p-8 shadow-xl backdrop-blur-sm"
+                    class="rounded-2xl border border-border bg-card p-8 shadow-sm backdrop-blur-sm"
                 >
-                    <h3 class="mb-6 text-xl font-semibold text-white">
+                    <h3 class="mb-6 text-xl font-semibold text-foreground">
                         {{ cv ? 'Replace CV' : 'Upload CV' }}
                     </h3>
 
                     <form @submit.prevent="submit" class="space-y-6">
                         <div class="space-y-2">
                             <label
-                                class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                class="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
                             >
                                 CV File (PDF only, max 10MB)
                             </label>
                             <div
-                                class="relative flex min-h-[200px] cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed border-white/10 bg-white/5 transition-all hover:border-indigo-500/50"
+                                class="relative flex min-h-[200px] cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed border-border bg-muted/30 transition-all hover:border-primary/50"
                                 @click="triggerFileInput"
                             >
                                 <input
@@ -178,26 +191,42 @@ const triggerFileInput = () => {
                                 />
                                 <div v-if="!filePreview" class="text-center">
                                     <div
-                                        class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-500/10 text-indigo-400"
+                                        class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary"
                                     >
                                         <Upload class="h-6 w-6" />
                                     </div>
-                                    <p class="mt-3 text-sm text-zinc-400">
+                                    <p
+                                        class="mt-3 text-sm text-muted-foreground"
+                                    >
                                         Click to upload PDF file
                                     </p>
-                                    <p class="mt-1 text-xs text-zinc-500">
+                                    <p
+                                        class="mt-1 text-xs text-muted-foreground/60"
+                                    >
                                         Maximum file size: 10MB
                                     </p>
                                 </div>
                                 <div v-else class="relative w-full p-4">
-                                    <div class="flex items-center gap-3 rounded-lg bg-white/5 p-4">
-                                        <FileText class="h-8 w-8 text-indigo-400" />
+                                    <div
+                                        class="flex items-center gap-3 rounded-lg bg-muted/50 p-4"
+                                    >
+                                        <FileText
+                                            class="h-8 w-8 text-primary"
+                                        />
                                         <div class="flex-1">
-                                            <p class="text-sm font-medium text-white">
+                                            <p
+                                                class="text-sm font-medium text-foreground"
+                                            >
                                                 {{ filePreview }}
                                             </p>
-                                            <p class="text-xs text-zinc-400">
-                                                {{ form.cv_file ? `${(form.cv_file.size / 1024).toFixed(2)} KB` : '' }}
+                                            <p
+                                                class="text-xs text-muted-foreground"
+                                            >
+                                                {{
+                                                    form.cv_file
+                                                        ? `${(form.cv_file.size / 1024).toFixed(2)} KB`
+                                                        : ''
+                                                }}
                                             </p>
                                         </div>
                                         <button
@@ -205,9 +234,10 @@ const triggerFileInput = () => {
                                             @click.stop="
                                                 form.cv_file = null;
                                                 filePreview = null;
-                                                if (fileInput) fileInput.value = '';
+                                                if (fileInput)
+                                                    fileInput.value = '';
                                             "
-                                            class="flex h-8 w-8 items-center justify-center rounded-full bg-red-500/10 text-red-400 transition-colors hover:bg-red-500/20"
+                                            class="flex h-8 w-8 items-center justify-center rounded-full bg-destructive/10 text-destructive transition-colors hover:bg-destructive/20"
                                         >
                                             <Trash2 class="h-4 w-4" />
                                         </button>
@@ -217,11 +247,13 @@ const triggerFileInput = () => {
                             <InputError :message="form.errors.cv_file" />
                         </div>
 
-                        <div class="flex items-center justify-end gap-4 border-t border-white/5 pt-4">
+                        <div
+                            class="flex items-center justify-end gap-4 border-t border-border pt-4"
+                        >
                             <Button
                                 type="submit"
                                 :disabled="form.processing || !form.cv_file"
-                                class="rounded-full bg-indigo-600 px-8 py-2 font-bold text-white transition-all hover:bg-indigo-700 disabled:opacity-50"
+                                class="rounded-xl bg-primary px-8 py-2.5 font-bold shadow-lg shadow-primary/20 transition-all active:scale-95 disabled:opacity-50"
                             >
                                 <Upload class="mr-2 h-4 w-4" />
                                 {{ cv ? 'Replace CV' : 'Upload CV' }}
@@ -233,4 +265,3 @@ const triggerFileInput = () => {
         </div>
     </AppLayout>
 </template>
-

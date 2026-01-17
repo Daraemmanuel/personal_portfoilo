@@ -6,8 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/AuthLayout.vue';
-import { login } from '@/routes';
-import { email } from '@/routes/password';
+
 import { Form, Head } from '@inertiajs/vue3';
 import { ArrowLeft, Mail, Send } from 'lucide-vue-next';
 
@@ -31,7 +30,11 @@ defineProps<{
         </div>
 
         <div class="space-y-6">
-            <Form v-bind="email.form()" v-slot="{ errors, processing }">
+            <Form
+                :action="route('password.email')"
+                method="post"
+                v-slot="{ errors, processing }"
+            >
                 <div class="grid gap-2">
                     <Label
                         for="email"
@@ -69,7 +72,7 @@ defineProps<{
 
             <div class="pt-2 text-center">
                 <TextLink
-                    :href="login()"
+                    :href="route('login')"
                     class="group inline-flex items-center text-sm font-medium text-muted-foreground hover:text-foreground"
                 >
                     <ArrowLeft

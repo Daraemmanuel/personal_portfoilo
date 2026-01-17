@@ -1,16 +1,15 @@
 import '../css/app.css';
 
-import { createInertiaApp } from '@inertiajs/vue3';
-import { router } from '@inertiajs/vue3';
+import { createInertiaApp, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
-import { initializeTheme } from './composables/useAppearance';
-import { usePerformanceMonitoring } from './composables/usePerformanceMonitoring';
-import { useErrorTracking } from './composables/useErrorTracking';
-import ToastContainer from './components/ui/ToastContainer.vue';
 import GlobalConfirmDialog from './components/ui/GlobalConfirmDialog.vue';
+import ToastContainer from './components/ui/ToastContainer.vue';
+import { initializeTheme } from './composables/useAppearance';
+import { useErrorTracking } from './composables/useErrorTracking';
+import { usePerformanceMonitoring } from './composables/usePerformanceMonitoring';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -23,7 +22,8 @@ const handleAnchorScroll = () => {
             if (element) {
                 const offset = 80; // Account for fixed navbar
                 const elementPosition = element.getBoundingClientRect().top;
-                const offsetPosition = elementPosition + window.pageYOffset - offset;
+                const offsetPosition =
+                    elementPosition + window.pageYOffset - offset;
 
                 window.scrollTo({
                     top: offsetPosition,
@@ -49,7 +49,7 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         // Initialize performance monitoring
         usePerformanceMonitoring();
-        
+
         // Initialize error tracking
         useErrorTracking();
 
@@ -61,15 +61,46 @@ createInertiaApp({
             ],
         })
             .use(plugin)
-            .use(ZiggyVue)
-            .mount(el);
+            .use(ZiggyVue);
+
+        // Custom Intersection Observer Directive
+        app.directive('intersect', {
+            mounted(el, binding) {
+                const options = {
+                    root: null,
+                    rootMargin: '0px',
+                    threshold: binding.value?.threshold || 0.1,
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach((entry) => {
+                        if (entry.isIntersecting) {
+                            el.classList.add('active');
+                            if (binding.modifiers.once) {
+                                observer.unobserve(el);
+                            }
+                        } else if (!binding.modifiers.once) {
+                            el.classList.remove('active');
+                        }
+                    });
+                }, options);
+
+                observer.observe(el);
+                (el as any)._observer = observer;
+            },
+            unmounted(el) {
+                if ((el as any)._observer) {
+                    (el as any)._observer.disconnect();
+                }
+            },
+        });
+
+        app.mount(el);
 
         // Handle initial page load with hash
         if (window.location.hash) {
             handleAnchorScroll();
         }
-
-        return app;
     },
     progress: {
         color: '#4B5563',

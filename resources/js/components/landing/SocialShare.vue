@@ -1,6 +1,13 @@
 <script setup lang="ts">
+import {
+    Check,
+    Copy,
+    Facebook,
+    Linkedin,
+    Link as LinkIcon,
+    Twitter,
+} from 'lucide-vue-next';
 import { computed, ref } from 'vue';
-import { Twitter, Linkedin, Facebook, Link as LinkIcon, Copy, Check } from 'lucide-vue-next';
 
 const props = defineProps<{
     url: string;
@@ -10,18 +17,22 @@ const props = defineProps<{
 
 const encodedUrl = computed(() => encodeURIComponent(props.url));
 const encodedTitle = computed(() => encodeURIComponent(props.title));
-const encodedDescription = computed(() => encodeURIComponent(props.description || ''));
-
-const twitterUrl = computed(() => 
-    `https://twitter.com/intent/tweet?url=${encodedUrl.value}&text=${encodedTitle.value}`
+const encodedDescription = computed(() =>
+    encodeURIComponent(props.description || ''),
 );
 
-const linkedinUrl = computed(() => 
-    `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl.value}`
+const twitterUrl = computed(
+    () =>
+        `https://twitter.com/intent/tweet?url=${encodedUrl.value}&text=${encodedTitle.value}`,
 );
 
-const facebookUrl = computed(() => 
-    `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl.value}`
+const linkedinUrl = computed(
+    () =>
+        `https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl.value}`,
+);
+
+const facebookUrl = computed(
+    () => `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl.value}`,
 );
 
 const copied = ref(false);
@@ -64,15 +75,18 @@ const shareNative = async () => {
 </script>
 
 <template>
-    <div class="flex items-center gap-3">
-        <span class="text-sm font-medium text-zinc-400">Share:</span>
+    <div class="flex flex-wrap items-center gap-4">
+        <span
+            class="text-xs font-bold tracking-wider text-muted-foreground uppercase"
+            >Share</span
+        >
         <div class="flex items-center gap-2">
             <a
                 :href="twitterUrl"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-zinc-400 transition-all hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-indigo-400"
-                aria-label="Share on Twitter"
+                class="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-muted/50 text-muted-foreground transition-all hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-indigo-500"
+                aria-label="Share on X (Twitter)"
             >
                 <Twitter class="h-4 w-4" />
             </a>
@@ -80,7 +94,7 @@ const shareNative = async () => {
                 :href="linkedinUrl"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-zinc-400 transition-all hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-blue-400"
+                class="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-muted/50 text-muted-foreground transition-all hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-blue-500"
                 aria-label="Share on LinkedIn"
             >
                 <Linkedin class="h-4 w-4" />
@@ -89,23 +103,23 @@ const shareNative = async () => {
                 :href="facebookUrl"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-zinc-400 transition-all hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-blue-500"
+                class="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-muted/50 text-muted-foreground transition-all hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-indigo-600"
                 aria-label="Share on Facebook"
             >
                 <Facebook class="h-4 w-4" />
             </a>
             <button
                 @click="copyToClipboard"
-                class="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-zinc-400 transition-all hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-indigo-400"
+                class="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-muted/50 text-muted-foreground transition-all hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-indigo-500"
                 aria-label="Copy link"
             >
-                <Check v-if="copied" class="h-4 w-4 text-green-400" />
+                <Check v-if="copied" class="h-4 w-4 text-green-500" />
                 <Copy v-else class="h-4 w-4" />
             </button>
             <button
                 v-if="canShare"
                 @click="shareNative"
-                class="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-zinc-400 transition-all hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-indigo-400"
+                class="flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-muted/50 text-muted-foreground transition-all hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-indigo-500"
                 aria-label="Share"
             >
                 <LinkIcon class="h-4 w-4" />
@@ -113,4 +127,3 @@ const shareNative = async () => {
         </div>
     </div>
 </template>
-

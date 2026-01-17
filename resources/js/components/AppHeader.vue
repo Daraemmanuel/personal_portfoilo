@@ -2,6 +2,7 @@
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
+import ThemeToggle from '@/components/ThemeToggle.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -31,11 +32,44 @@ import {
 import UserMenuContent from '@/components/UserMenuContent.vue';
 import { getInitials } from '@/composables/useInitials';
 import { toUrl, urlIsActive } from '@/lib/utils';
-import { dashboard } from '@/routes';
+
 import type { BreadcrumbItem, NavItem } from '@/types';
 import { InertiaLinkProps, Link, usePage } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid, Menu, Search } from 'lucide-vue-next';
-import { computed } from 'vue';
+import {
+    BarChart3,
+    Briefcase,
+    Clock,
+    Code,
+    FileText,
+    Layers,
+    LayoutGrid,
+    Mail,
+    Menu,
+    MessageSquare,
+    Search,
+    Star,
+} from 'lucide-vue-next';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+
+const isMobileMenuOpen = ref(false);
+
+const closeMobileMenuOnResize = () => {
+    if (window.innerWidth >= 1024) {
+        isMobileMenuOpen.value = false;
+    }
+};
+
+onMounted(() => {
+    if (typeof window !== 'undefined') {
+        window.addEventListener('resize', closeMobileMenuOnResize);
+    }
+});
+
+onUnmounted(() => {
+    if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', closeMobileMenuOnResize);
+    }
+});
 
 interface Props {
     breadcrumbs?: BreadcrumbItem[];
@@ -63,32 +97,79 @@ const activeItemStyles = computed(
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard(),
+        href: route('dashboard'),
         icon: LayoutGrid,
+    },
+    {
+        title: 'Projects',
+        href: route('admin.projects.index'),
+        icon: Layers,
+    },
+    {
+        title: 'Skills',
+        href: route('admin.skills.index'),
+        icon: Code,
+    },
+    {
+        title: 'Experiences',
+        href: route('admin.experiences.index'),
+        icon: Clock,
+    },
+    {
+        title: 'Testimonials',
+        href: route('admin.testimonials.index'),
+        icon: Star,
+    },
+    {
+        title: 'Articles',
+        href: route('admin.articles.index'),
+        icon: FileText,
+    },
+    {
+        title: 'Contact Messages',
+        href: route('admin.contact-messages.index'),
+        icon: Mail,
+    },
+    {
+        title: 'Comments',
+        href: route('admin.comments.index'),
+        icon: MessageSquare,
+    },
+    {
+        title: 'Analytics',
+        href: route('admin.analytics.index'),
+        icon: BarChart3,
+    },
+    {
+        title: 'CV',
+        href: route('admin.cv.index'),
+        icon: Briefcase,
     },
 ];
 
 const rightNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/vue-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#vue',
-        icon: BookOpen,
-    },
+    // {
+    //     title: 'Repository',
+    //     href: 'https://github.com/laravel/vue-starter-kit',
+    //     icon: Folder,
+    // },
+    // {
+    //     title: 'Documentation',
+    //     href: 'https://laravel.com/docs/starter-kits#vue',
+    //     icon: BookOpen,
+    // },
 ];
 </script>
 
 <template>
     <div>
-        <div class="border-b border-sidebar-border/80">
+        <div
+            class="sticky top-0 z-50 border-b border-sidebar-border/80 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+        >
             <div class="mx-auto flex h-16 items-center px-4 md:max-w-7xl">
                 <!-- Mobile Menu -->
                 <div class="lg:hidden">
-                    <Sheet>
+                    <Sheet v-model:open="isMobileMenuOpen">
                         <SheetTrigger :as-child="true">
                             <Button
                                 variant="ghost"
@@ -143,12 +224,26 @@ const rightNavItems: NavItem[] = [
                                         <span>{{ item.title }}</span>
                                     </a>
                                 </div>
+
+                                <div class="mt-auto border-t pt-4">
+                                    <div
+                                        class="flex items-center justify-between"
+                                    >
+                                        <span class="text-sm font-medium"
+                                            >Theme</span
+                                        >
+                                        <ThemeToggle />
+                                    </div>
+                                </div>
                             </div>
                         </SheetContent>
                     </Sheet>
                 </div>
 
-                <Link :href="dashboard()" class="flex items-center gap-x-2">
+                <Link
+                    :href="route('dashboard')"
+                    class="flex items-center gap-x-2"
+                >
                     <AppLogo />
                 </Link>
 
@@ -234,6 +329,7 @@ const rightNavItems: NavItem[] = [
                                     </Tooltip>
                                 </TooltipProvider>
                             </template>
+                            <ThemeToggle />
                         </div>
                     </div>
 

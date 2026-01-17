@@ -74,6 +74,9 @@ Route::post('/newsletter/unsubscribe/{email}', [\App\Http\Controllers\Newsletter
 Route::post('/articles/{article}/comments', [\App\Http\Controllers\CommentController::class, 'store'])
     ->middleware('throttle:10,1')
     ->name('comments.store');
+Route::post('/comments/{comment}/reactions', [\App\Http\Controllers\CommentReactionController::class, 'store'])
+    ->middleware('throttle:20,1')
+    ->name('comments.reactions.store');
 
 // Sitemap
 Route::get('/sitemap.xml', function () {

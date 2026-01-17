@@ -11,7 +11,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
+
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import {
@@ -31,7 +31,7 @@ import AppLogo from './AppLogo.vue';
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard(),
+        href: route('dashboard'),
         icon: LayoutGrid,
     },
     {
@@ -96,21 +96,13 @@ const footerNavItems: NavItem[] = [
 </script>
 
 <template>
-    <Sidebar
-        collapsible="icon"
-        variant="inset"
-        class="border-r border-white/5 bg-zinc-950"
-    >
-        <SidebarHeader class="border-b border-white/5 px-4 pt-6 pb-4">
+    <Sidebar collapsible="icon" variant="inset">
+        <SidebarHeader class="border-b border-sidebar-border px-4 pt-6 pb-4">
             <SidebarMenu>
                 <SidebarMenuItem>
-                    <SidebarMenuButton
-                        size="lg"
-                        as-child
-                        class="transition-colors hover:bg-white/5"
-                    >
-                        <Link :href="dashboard()">
-                            <AppLogo class="h-8 w-auto text-indigo-500" />
+                    <SidebarMenuButton size="lg" as-child>
+                        <Link :href="route('dashboard')">
+                            <AppLogo class="h-8 w-auto text-primary" />
                         </Link>
                     </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -121,9 +113,9 @@ const footerNavItems: NavItem[] = [
             <NavMain :items="mainNavItems" />
         </SidebarContent>
 
-        <SidebarFooter class="border-t border-white/5 p-2">
+        <SidebarFooter class="border-t border-sidebar-border p-2">
             <NavFooter :items="footerNavItems" />
-            <NavUser class="mt-4 rounded-xl bg-white/5 p-2" />
+            <NavUser class="mt-4 rounded-xl" />
         </SidebarFooter>
     </Sidebar>
     <slot />

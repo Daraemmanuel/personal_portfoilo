@@ -22,7 +22,7 @@ defineProps<{
     >
         <Head title="Experiences" />
 
-        <div class="min-h-[calc(100vh-64px)] bg-zinc-950 p-6 lg:p-10">
+        <div class="min-h-[calc(100vh-64px)] bg-background p-6 lg:p-10">
             <div class="mx-auto max-w-6xl">
                 <!-- Header Section -->
                 <div
@@ -30,18 +30,18 @@ defineProps<{
                 >
                     <div>
                         <h2
-                            class="bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-4xl"
+                            class="bg-gradient-to-r from-foreground to-foreground/50 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-4xl"
                         >
                             Career Timeline
                         </h2>
-                        <p class="mt-2 text-zinc-400">
+                        <p class="mt-2 text-muted-foreground">
                             Document your professional journey and key
                             milestones.
                         </p>
                     </div>
                     <Link :href="route('admin.experiences.create')">
                         <Button
-                            class="rounded-full bg-indigo-600 px-6 py-6 font-semibold text-white transition-all hover:bg-indigo-700 hover:shadow-[0_0_20px_rgba(79,70,229,0.4)]"
+                            class="rounded-full bg-primary px-8 py-6 font-bold text-primary-foreground transition-all hover:shadow-xl hover:shadow-primary/20 active:scale-95"
                         >
                             Add Experience
                         </Button>
@@ -50,48 +50,51 @@ defineProps<{
 
                 <!-- Experiences Table/List -->
                 <div
-                    class="relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 backdrop-blur-sm"
+                    class="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
                 >
                     <div class="overflow-x-auto">
                         <table class="w-full border-collapse text-left">
                             <thead>
-                                <tr class="border-b border-white/5 bg-white/5">
+                                <tr class="border-b border-border bg-muted/50">
                                     <th
-                                        class="p-5 text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                        class="p-5 text-xs font-bold tracking-wider text-muted-foreground uppercase"
                                     >
                                         Role & Company
                                     </th>
                                     <th
-                                        class="p-5 text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                        class="p-5 text-xs font-bold tracking-wider text-muted-foreground uppercase"
                                     >
                                         Period
                                     </th>
                                     <th
-                                        class="p-5 text-right text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                        class="p-5 text-right text-xs font-bold tracking-wider text-muted-foreground uppercase"
                                     >
                                         Actions
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-white/5">
+                            <tbody class="divide-y divide-border" v-intersect>
                                 <tr
-                                    v-for="experience in experiences"
+                                    v-for="(experience, index) in experiences"
                                     :key="experience.id"
-                                    class="group transition-colors hover:bg-white/[0.02]"
+                                    :class="[
+                                        'group reveal transition-colors hover:bg-muted/30',
+                                        'delay-' + index * 100,
+                                    ]"
                                 >
                                     <td class="p-5">
                                         <div class="flex items-start gap-4">
                                             <div
-                                                class="mt-1 h-2 w-2 rounded-full bg-indigo-500 shadow-[0_0_10px_rgba(99,102,241,0.5)]"
+                                                class="mt-1.5 h-2 w-2 rounded-full bg-primary shadow-[0_0_10px_rgba(var(--primary),0.5)]"
                                             ></div>
                                             <div class="flex flex-col">
                                                 <span
-                                                    class="text-lg font-bold text-white transition-colors group-hover:text-indigo-400"
+                                                    class="text-base font-bold text-foreground transition-colors group-hover:text-primary"
                                                 >
                                                     {{ experience.role }}
                                                 </span>
                                                 <span
-                                                    class="text-sm text-zinc-500"
+                                                    class="text-sm font-medium text-muted-foreground"
                                                 >
                                                     {{ experience.company }}
                                                 </span>
@@ -100,14 +103,14 @@ defineProps<{
                                     </td>
                                     <td class="p-5">
                                         <span
-                                            class="inline-flex items-center rounded-full border border-white/5 bg-white/5 px-3 py-1 text-xs font-medium text-zinc-400"
+                                            class="inline-flex items-center rounded-full border border-border bg-muted px-3 py-1 text-[10px] font-bold tracking-wider text-muted-foreground uppercase"
                                         >
                                             {{ experience.period }}
                                         </span>
                                     </td>
                                     <td class="p-5 text-right">
                                         <div
-                                            class="flex items-center justify-end gap-3"
+                                            class="flex items-center justify-end gap-5"
                                         >
                                             <Link
                                                 :href="
@@ -116,13 +119,10 @@ defineProps<{
                                                         experience.id,
                                                     )
                                                 "
-                                                class="text-sm font-medium text-indigo-400 transition-colors hover:text-indigo-300"
+                                                class="text-xs font-bold text-primary transition-colors hover:underline"
                                             >
                                                 Edit
                                             </Link>
-                                            <div
-                                                class="h-1 w-1 rounded-full bg-zinc-700"
-                                            ></div>
                                             <Link
                                                 :href="
                                                     route(
@@ -132,7 +132,7 @@ defineProps<{
                                                 "
                                                 method="delete"
                                                 as="button"
-                                                class="text-sm font-medium text-zinc-500 transition-colors hover:text-red-400"
+                                                class="text-xs font-bold text-muted-foreground transition-colors hover:text-destructive hover:underline"
                                             >
                                                 Delete
                                             </Link>
@@ -140,16 +140,16 @@ defineProps<{
                                     </td>
                                 </tr>
                                 <tr v-if="experiences.length === 0">
-                                    <td colspan="3" class="p-12 text-center">
+                                    <td colspan="3" class="p-16 text-center">
                                         <div
-                                            class="flex flex-col items-center justify-center gap-3"
+                                            class="flex flex-col items-center justify-center gap-4"
                                         >
                                             <div
-                                                class="flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-zinc-600"
+                                                class="flex h-16 w-16 items-center justify-center rounded-full bg-muted text-muted-foreground"
                                             >
                                                 <svg
                                                     xmlns="http://www.w3.org/2000/svg"
-                                                    class="h-6 w-6"
+                                                    class="h-8 w-8"
                                                     fill="none"
                                                     viewBox="0 0 24 24"
                                                     stroke="currentColor"
@@ -163,7 +163,7 @@ defineProps<{
                                                 </svg>
                                             </div>
                                             <p
-                                                class="font-medium text-zinc-500"
+                                                class="text-lg font-bold text-muted-foreground"
                                             >
                                                 No experience entries found.
                                                 Time to record your journey!

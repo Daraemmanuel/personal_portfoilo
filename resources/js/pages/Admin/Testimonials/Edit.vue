@@ -2,9 +2,9 @@
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
+import type { Testimonial } from '@/types/portfolio';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import type { Testimonial } from '@/types/portfolio';
 
 const props = defineProps<{
     testimonial: Testimonial;
@@ -55,48 +55,48 @@ const clearImage = () => {
     >
         <Head title="Edit Testimonial" />
 
-        <div class="min-h-[calc(100vh-64px)] bg-zinc-950 p-6 lg:p-10">
-            <div class="mx-auto max-w-4xl">
+        <div class="min-h-[calc(100vh-64px)] bg-background p-6 lg:p-10">
+            <div class="mx-auto max-w-5xl">
                 <!-- Header -->
                 <div class="mb-10">
                     <h2
-                        class="bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-3xl font-bold tracking-tight text-transparent"
+                        class="bg-gradient-to-r from-foreground to-foreground/50 bg-clip-text text-3xl font-bold tracking-tight text-transparent"
                     >
                         Edit Testimonial
                     </h2>
-                    <p class="mt-2 text-zinc-400">
+                    <p class="mt-2 text-muted-foreground">
                         Update testimonial information.
                     </p>
                 </div>
 
                 <!-- Form Card -->
                 <div
-                    class="rounded-2xl border border-white/10 bg-zinc-900/50 p-8 shadow-xl backdrop-blur-sm"
+                    class="rounded-2xl border border-border bg-card p-8 shadow-sm transition-colors"
                 >
                     <form @submit.prevent="submit" class="space-y-8">
                         <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
                             <div class="space-y-2">
                                 <label
-                                    class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                    class="text-xs font-bold tracking-widest text-muted-foreground uppercase"
                                     >Name</label
                                 >
                                 <input
                                     v-model="form.name"
                                     type="text"
-                                    class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
+                                    class="w-full rounded-xl border-border bg-muted/50 px-4 py-3 text-foreground placeholder-muted-foreground/50 shadow-sm transition-all focus:border-primary focus:bg-background focus:ring-2 focus:ring-primary/20 sm:text-sm"
                                 />
                                 <InputError :message="form.errors.name" />
                             </div>
 
                             <div class="space-y-2">
                                 <label
-                                    class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                    class="text-xs font-bold tracking-widest text-muted-foreground uppercase"
                                     >Role</label
                                 >
                                 <input
                                     v-model="form.role"
                                     type="text"
-                                    class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
+                                    class="w-full rounded-xl border-border bg-muted/50 px-4 py-3 text-foreground placeholder-muted-foreground/50 shadow-sm transition-all focus:border-primary focus:bg-background focus:ring-2 focus:ring-primary/20 sm:text-sm"
                                 />
                                 <InputError :message="form.errors.role" />
                             </div>
@@ -104,26 +104,26 @@ const clearImage = () => {
 
                         <div class="space-y-2">
                             <label
-                                class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                class="text-xs font-bold tracking-widest text-muted-foreground uppercase"
                                 >Company</label
                             >
                             <input
                                 v-model="form.company"
                                 type="text"
-                                class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
+                                class="w-full rounded-xl border-border bg-muted/50 px-4 py-3 text-foreground placeholder-muted-foreground/50 shadow-sm transition-all focus:border-primary focus:bg-background focus:ring-2 focus:ring-primary/20 sm:text-sm"
                             />
                             <InputError :message="form.errors.company" />
                         </div>
 
                         <div class="space-y-2">
                             <label
-                                class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                class="text-xs font-bold tracking-widest text-muted-foreground uppercase"
                                 >Testimonial Content</label
                             >
                             <textarea
                                 v-model="form.content"
                                 rows="6"
-                                class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
+                                class="w-full rounded-xl border-border bg-muted/50 px-4 py-3 text-foreground placeholder-muted-foreground/50 shadow-sm transition-all focus:border-primary focus:bg-background focus:ring-2 focus:ring-primary/20 sm:text-sm"
                             ></textarea>
                             <InputError :message="form.errors.content" />
                         </div>
@@ -131,7 +131,7 @@ const clearImage = () => {
                         <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
                             <div class="space-y-2">
                                 <label
-                                    class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                    class="text-xs font-bold tracking-widest text-muted-foreground uppercase"
                                     >Rating (1-5)</label
                                 >
                                 <input
@@ -139,20 +139,20 @@ const clearImage = () => {
                                     type="number"
                                     min="1"
                                     max="5"
-                                    class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
+                                    class="w-full rounded-xl border-border bg-muted/50 px-4 py-3 text-foreground placeholder-muted-foreground/50 shadow-sm transition-all focus:border-primary focus:bg-background focus:ring-2 focus:ring-primary/20 sm:text-sm"
                                 />
                                 <InputError :message="form.errors.rating" />
                             </div>
 
                             <div class="space-y-2">
                                 <label
-                                    class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                    class="text-xs font-bold tracking-widest text-muted-foreground uppercase"
                                     >Display Order</label
                                 >
                                 <input
                                     v-model.number="form.sort_order"
                                     type="number"
-                                    class="w-full rounded-xl border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-600 shadow-sm transition-all focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 sm:text-sm"
+                                    class="w-full rounded-xl border-border bg-muted/50 px-4 py-3 text-foreground placeholder-muted-foreground/50 shadow-sm transition-all focus:border-primary focus:bg-background focus:ring-2 focus:ring-primary/20 sm:text-sm"
                                 />
                                 <InputError :message="form.errors.sort_order" />
                             </div>
@@ -160,11 +160,11 @@ const clearImage = () => {
 
                         <div class="space-y-4">
                             <label
-                                class="text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                class="text-xs font-bold tracking-widest text-muted-foreground uppercase"
                                 >Avatar (Optional)</label
                             >
                             <div
-                                class="relative flex min-h-[150px] cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed border-white/10 bg-white/5 transition-all hover:border-indigo-500/50"
+                                class="relative flex min-h-[150px] cursor-pointer items-center justify-center rounded-2xl border-2 border-dashed border-border bg-muted/30 transition-all hover:border-primary/50"
                                 @click="triggerFileInput"
                             >
                                 <input
@@ -176,7 +176,7 @@ const clearImage = () => {
                                 />
                                 <div v-if="!imagePreview" class="text-center">
                                     <div
-                                        class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-indigo-500/10 text-indigo-400"
+                                        class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary"
                                     >
                                         <svg
                                             class="h-6 w-6"
@@ -192,21 +192,23 @@ const clearImage = () => {
                                             />
                                         </svg>
                                     </div>
-                                    <p class="mt-3 text-sm text-zinc-400">
+                                    <p
+                                        class="mt-3 text-sm font-medium text-foreground"
+                                    >
                                         Click to upload avatar
                                     </p>
                                 </div>
                                 <div v-else class="relative w-full p-4">
                                     <img
                                         :src="imagePreview"
-                                        class="mx-auto h-32 w-32 rounded-full object-cover"
+                                        class="mx-auto h-32 w-32 rounded-full border-2 border-primary/20 object-cover shadow-lg"
                                     />
                                     <button
                                         type="button"
                                         @click.stop="clearImage"
-                                        class="absolute top-6 right-6 flex h-8 w-8 items-center justify-center rounded-full bg-red-500 text-white shadow-lg transition-transform hover:scale-110"
+                                        class="absolute top-6 right-6 flex h-10 w-10 items-center justify-center rounded-full bg-destructive text-destructive-foreground shadow-lg transition-transform hover:scale-110"
                                     >
-                                        &times;
+                                        <span class="text-xl">&times;</span>
                                     </button>
                                 </div>
                             </div>
@@ -214,13 +216,13 @@ const clearImage = () => {
                         </div>
 
                         <div
-                            class="flex items-center justify-end gap-4 border-t border-white/5 pt-4"
+                            class="flex items-center justify-end gap-6 border-t border-border pt-8"
                         >
                             <Link :href="route('admin.testimonials.index')">
                                 <Button
                                     variant="ghost"
                                     type="button"
-                                    class="text-zinc-400 hover:bg-white/5 hover:text-white"
+                                    class="font-bold text-muted-foreground hover:text-foreground"
                                 >
                                     Cancel
                                 </Button>
@@ -228,7 +230,7 @@ const clearImage = () => {
                             <Button
                                 type="submit"
                                 :disabled="form.processing"
-                                class="rounded-full bg-indigo-600 px-8 py-2 font-bold text-white transition-all hover:bg-indigo-700 disabled:opacity-50"
+                                class="rounded-full bg-primary px-10 py-6 font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 disabled:opacity-50"
                             >
                                 Update Testimonial
                             </Button>
@@ -239,4 +241,3 @@ const clearImage = () => {
         </div>
     </AppLayout>
 </template>
-

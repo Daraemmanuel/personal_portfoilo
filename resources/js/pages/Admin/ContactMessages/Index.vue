@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
 import type { ContactMessage } from '@/types/portfolio';
+import { Head, Link } from '@inertiajs/vue3';
 import { Mail, MailOpen } from 'lucide-vue-next';
 
 defineProps<{
@@ -25,84 +24,87 @@ defineProps<{
     >
         <Head title="Contact Messages" />
 
-        <div class="min-h-[calc(100vh-64px)] bg-zinc-950 p-6 lg:p-10">
-            <div class="mx-auto max-w-6xl">
+        <div class="min-h-[calc(100vh-64px)] bg-background p-6 lg:p-10">
+            <div class="mx-auto max-w-7xl">
                 <!-- Header Section -->
                 <div class="mb-12">
                     <h2
-                        class="bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-4xl"
+                        class="bg-gradient-to-r from-foreground to-foreground/50 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-4xl"
                     >
                         Contact Messages
                     </h2>
-                    <p class="mt-2 text-zinc-400">
+                    <p class="mt-2 text-muted-foreground">
                         View and manage messages from your contact form.
                     </p>
                 </div>
 
                 <!-- Messages Table/List -->
                 <div
-                    class="relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 backdrop-blur-sm"
+                    class="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-colors"
                 >
                     <div class="overflow-x-auto">
                         <table class="w-full border-collapse text-left">
                             <thead>
-                                <tr class="border-b border-white/5 bg-white/5">
+                                <tr class="border-b border-border bg-muted/50">
                                     <th
-                                        class="p-5 text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                        class="p-5 text-xs font-bold tracking-widest text-muted-foreground uppercase"
                                     >
                                         From
                                     </th>
                                     <th
-                                        class="p-5 text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                        class="p-5 text-xs font-bold tracking-widest text-muted-foreground uppercase"
                                     >
                                         Subject
                                     </th>
                                     <th
-                                        class="p-5 text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                        class="p-5 text-xs font-bold tracking-widest text-muted-foreground uppercase"
                                     >
                                         Date
                                     </th>
                                     <th
-                                        class="p-5 text-right text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                        class="p-5 text-right text-xs font-bold tracking-widest text-muted-foreground uppercase"
                                     >
                                         Actions
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-white/5">
+                            <tbody class="divide-y divide-border" v-intersect>
                                 <tr
-                                    v-for="message in messages.data"
+                                    v-for="(message, index) in messages.data"
                                     :key="message.id"
-                                    class="group transition-colors hover:bg-white/[0.02]"
-                                    :class="
-                                        !message.read_at
-                                            ? 'bg-indigo-500/5'
-                                            : ''
-                                    "
+                                    class="group reveal transition-colors hover:bg-muted/30"
+                                    :class="[
+                                        !message.read_at ? 'bg-primary/5' : '',
+                                        'delay-' + index * 100,
+                                    ]"
                                 >
                                     <td class="p-5">
-                                        <div class="flex items-center gap-3">
-                                            <component
-                                                :is="
-                                                    message.read_at
-                                                        ? MailOpen
-                                                        : Mail
-                                                "
-                                                class="h-4 w-4"
+                                        <div class="flex items-center gap-4">
+                                            <div
+                                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full transition-colors"
                                                 :class="
                                                     message.read_at
-                                                        ? 'text-zinc-600'
-                                                        : 'text-indigo-400'
+                                                        ? 'bg-muted text-muted-foreground'
+                                                        : 'bg-primary/10 text-primary'
                                                 "
-                                            />
-                                            <div class="flex flex-col">
+                                            >
+                                                <component
+                                                    :is="
+                                                        message.read_at
+                                                            ? MailOpen
+                                                            : Mail
+                                                    "
+                                                    class="h-5 w-5"
+                                                />
+                                            </div>
+                                            <div class="flex min-w-0 flex-col">
                                                 <span
-                                                    class="font-semibold text-white"
+                                                    class="truncate font-bold text-foreground"
                                                 >
                                                     {{ message.name }}
                                                 </span>
                                                 <span
-                                                    class="text-sm text-zinc-500"
+                                                    class="truncate text-xs font-medium text-muted-foreground"
                                                 >
                                                     {{ message.email }}
                                                 </span>
@@ -111,11 +113,11 @@ defineProps<{
                                     </td>
                                     <td class="p-5">
                                         <span
-                                            class="font-medium text-white"
+                                            class="line-clamp-1 text-sm text-foreground"
                                             :class="
                                                 !message.read_at
                                                     ? 'font-bold'
-                                                    : ''
+                                                    : 'font-medium'
                                             "
                                         >
                                             {{ message.subject }}
@@ -123,18 +125,25 @@ defineProps<{
                                     </td>
                                     <td class="p-5">
                                         <span
-                                            class="text-sm text-zinc-500"
+                                            class="text-sm font-medium text-muted-foreground"
                                         >
                                             {{
                                                 new Date(
                                                     message.created_at,
-                                                ).toLocaleDateString()
+                                                ).toLocaleDateString(
+                                                    undefined,
+                                                    {
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                        year: 'numeric',
+                                                    },
+                                                )
                                             }}
                                         </span>
                                     </td>
                                     <td class="p-5 text-right">
                                         <div
-                                            class="flex items-center justify-end gap-3"
+                                            class="flex items-center justify-end gap-4"
                                         >
                                             <Link
                                                 :href="
@@ -143,13 +152,10 @@ defineProps<{
                                                         message.id,
                                                     )
                                                 "
-                                                class="text-sm font-medium text-indigo-400 transition-colors hover:text-indigo-300"
+                                                class="text-sm font-bold text-primary transition-colors hover:text-primary/80"
                                             >
                                                 View
                                             </Link>
-                                            <div
-                                                class="h-1 w-1 rounded-full bg-zinc-700"
-                                            ></div>
                                             <Link
                                                 :href="
                                                     route(
@@ -159,7 +165,7 @@ defineProps<{
                                                 "
                                                 method="delete"
                                                 as="button"
-                                                class="text-sm font-medium text-zinc-500 transition-colors hover:text-red-400"
+                                                class="text-sm font-bold text-muted-foreground transition-colors hover:text-destructive"
                                             >
                                                 Delete
                                             </Link>
@@ -167,17 +173,17 @@ defineProps<{
                                     </td>
                                 </tr>
                                 <tr v-if="messages.data.length === 0">
-                                    <td colspan="4" class="p-12 text-center">
+                                    <td colspan="4" class="p-20 text-center">
                                         <div
-                                            class="flex flex-col items-center justify-center gap-3"
+                                            class="flex flex-col items-center justify-center gap-4"
                                         >
                                             <div
-                                                class="flex h-12 w-12 items-center justify-center rounded-full bg-white/5 text-zinc-600"
+                                                class="flex h-16 w-16 items-center justify-center rounded-full bg-muted text-muted-foreground"
                                             >
-                                                <Mail class="h-6 w-6" />
+                                                <Mail class="h-8 w-8" />
                                             </div>
                                             <p
-                                                class="font-medium text-zinc-500"
+                                                class="text-lg font-medium text-muted-foreground"
                                             >
                                                 No messages yet.
                                             </p>
@@ -192,17 +198,17 @@ defineProps<{
                 <!-- Pagination -->
                 <div
                     v-if="messages.links && messages.links.length > 3"
-                    class="mt-6 flex justify-center gap-2"
+                    class="mt-10 flex justify-center gap-3"
                 >
                     <Link
                         v-for="link in messages.links"
                         :key="link.label"
                         :href="link.url || '#'"
                         :class="[
-                            'rounded-lg px-4 py-2 text-sm transition-colors',
+                            'rounded-xl px-5 py-2.5 text-sm font-bold shadow-sm transition-all',
                             link.active
-                                ? 'bg-indigo-500 text-white'
-                                : 'bg-white/5 text-zinc-400 hover:bg-white/10',
+                                ? 'scale-105 bg-primary text-primary-foreground shadow-primary/20'
+                                : 'border border-border bg-card text-muted-foreground hover:bg-muted hover:text-foreground',
                             !link.url && 'pointer-events-none opacity-50',
                         ]"
                         v-html="link.label"
@@ -212,4 +218,3 @@ defineProps<{
         </div>
     </AppLayout>
 </template>
-

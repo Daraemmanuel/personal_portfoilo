@@ -33,7 +33,7 @@ class SecurityHeaders
                 "style-src 'self' 'unsafe-inline' https://fonts.bunny.net",
                 "font-src 'self' https://fonts.bunny.net data:",
                 "img-src 'self' data: https:",
-                "connect-src 'self' https://www.google-analytics.com https://api.github.com",
+                "connect-src 'self' https://www.google-analytics.com",
             ]);
         } else {
             // Local / non-production: allow Vite dev server + Bunny fonts
@@ -46,7 +46,7 @@ class SecurityHeaders
                 "style-src 'self' 'unsafe-inline' https://fonts.bunny.net",
                 "font-src 'self' data: https://fonts.bunny.net",
                 "img-src 'self' data: https:",
-                "connect-src 'self' {$viteHosts} https://api.github.com",
+                "connect-src 'self' {$viteHosts}",
             ]);
         }
 

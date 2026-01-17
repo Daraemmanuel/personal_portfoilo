@@ -17,8 +17,15 @@ class ArticleController extends Controller
 
     public function index()
     {
+        $articles = Article::orderBy('published_at', 'desc')->latest()->get();
+        $scheduledArticles = Article::whereNotNull('published_at')
+            ->where('published_at', '>', now())
+            ->orderBy('published_at', 'asc')
+            ->get();
+
         return Inertia::render('Admin/Articles/Index', [
-            'articles' => Article::orderBy('published_at', 'desc')->latest()->get(),
+            'articles' => $articles,
+            'scheduledArticles' => $scheduledArticles,
         ]);
     }
 
@@ -74,6 +81,8 @@ class ArticleController extends Controller
             'tags.*' => 'string',
             'published_at' => 'nullable|date',
             'is_featured' => 'boolean',
+            'series' => 'nullable|string|max:255',
+            'series_order' => 'nullable|integer|min:1',
         ]);
 
         if ($request->hasFile('featured_image')) {

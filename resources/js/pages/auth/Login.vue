@@ -7,9 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthBase from '@/layouts/AuthLayout.vue';
-import { register } from '@/routes';
-import { store } from '@/routes/login';
-import { request } from '@/routes/password';
+
 import { Form, Head } from '@inertiajs/vue3';
 import { ArrowRight, Lock, Mail } from 'lucide-vue-next';
 
@@ -35,7 +33,8 @@ defineProps<{
         </div>
 
         <Form
-            v-bind="store.form()"
+            :action="route('login.store')"
+            method="post"
             :reset-on-success="['password']"
             v-slot="{ errors, processing }"
             class="flex flex-col gap-6"
@@ -75,7 +74,7 @@ defineProps<{
                         >
                         <TextLink
                             v-if="canResetPassword"
-                            :href="request()"
+                            :href="route('password.request')"
                             class="text-xs font-medium text-indigo-400 decoration-indigo-400/30 hover:text-indigo-300"
                             :tabindex="5"
                         >
@@ -141,7 +140,7 @@ defineProps<{
             >
                 Don't have an account?
                 <TextLink
-                    :href="register()"
+                    :href="route('register')"
                     :tabindex="5"
                     class="ml-1 font-semibold text-indigo-400 hover:text-indigo-300"
                     >Create one now</TextLink

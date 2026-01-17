@@ -39,6 +39,12 @@ class HandleInertiaRequests extends Middleware
         [$message, $author] = str(Inspiring::quotes()->random())->explode('-');
 
         $cv = \App\Models\Cv::where('is_active', true)->latest()->first();
+        
+        // Get pending comments count for admin notification
+        $pendingCommentsCount = 0;
+        if ($request->user()) {
+            $pendingCommentsCount = \App\Models\ArticleComment::where('is_approved', false)->count();
+        }
 
         return [
             ...parent::share($request),
@@ -49,6 +55,7 @@ class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'cvUrl' => $cv ? route('cv.download') : null,
+            'pendingCommentsCount' => $pendingCommentsCount,
             'ziggy' => fn () => [
                 ...(new \Tighten\Ziggy\Ziggy)->toArray(),
                 'location' => $request->url(),

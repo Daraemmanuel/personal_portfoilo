@@ -61,6 +61,7 @@ export interface Article {
     reading_time?: number;
     series?: string | null;
     series_order?: number | null;
+    is_featured: boolean;
     created_at: string;
     updated_at: string;
 }
@@ -75,4 +76,3 @@ export interface ContactMessage {
     created_at: string;
     updated_at: string;
 }
-

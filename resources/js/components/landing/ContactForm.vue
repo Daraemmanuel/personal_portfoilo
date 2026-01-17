@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import InputError from '@/components/InputError.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
-import InputError from '@/components/InputError.vue';
 
 const form = useForm({
     name: '',
@@ -28,8 +28,11 @@ const submit = () => {
 </script>
 
 <template>
-    <form @submit.prevent="submit" class="mx-auto max-w-2xl">
-        <div v-if="showSuccess" class="mb-6 rounded-lg bg-green-500/10 border border-green-500/20 p-4 text-green-400">
+    <form @submit.prevent="submit" class="mx-auto max-w-2xl px-4 sm:px-0">
+        <div
+            v-if="showSuccess"
+            class="mb-6 rounded-lg border border-green-500/20 bg-green-500/10 p-3 text-sm font-medium text-green-500 sm:p-4 sm:text-base"
+        >
             Thank you for your message! I'll get back to you soon.
         </div>
 
@@ -44,9 +47,12 @@ const submit = () => {
             aria-hidden="true"
         />
 
-        <div class="grid gap-6 md:grid-cols-2">
+        <div class="grid gap-4 sm:gap-6 sm:grid-cols-2">
             <div>
-                <label for="name" class="mb-2 block text-sm font-medium text-zinc-300">
+                <label
+                    for="name"
+                    class="mb-2 block text-sm font-semibold tracking-wider text-muted-foreground uppercase"
+                >
                     Name
                 </label>
                 <input
@@ -54,7 +60,7 @@ const submit = () => {
                     v-model="form.name"
                     type="text"
                     required
-                    class="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    class="w-full rounded-lg border border-border bg-muted/50 px-4 py-3 text-foreground placeholder-muted-foreground/50 transition-all focus:border-indigo-500 focus:bg-background focus:ring-4 focus:ring-indigo-500/10 focus:outline-none"
                     placeholder="Your name"
                     aria-label="Your name"
                 />
@@ -62,7 +68,10 @@ const submit = () => {
             </div>
 
             <div>
-                <label for="email" class="mb-2 block text-sm font-medium text-zinc-300">
+                <label
+                    for="email"
+                    class="mb-2 block text-sm font-semibold tracking-wider text-muted-foreground uppercase"
+                >
                     Email
                 </label>
                 <input
@@ -70,7 +79,7 @@ const submit = () => {
                     v-model="form.email"
                     type="email"
                     required
-                    class="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                    class="w-full rounded-lg border border-border bg-muted/50 px-4 py-3 text-foreground placeholder-muted-foreground/50 transition-all focus:border-indigo-500 focus:bg-background focus:ring-4 focus:ring-indigo-500/10 focus:outline-none"
                     placeholder="your@email.com"
                     aria-label="Your email address"
                 />
@@ -79,7 +88,10 @@ const submit = () => {
         </div>
 
         <div class="mt-6">
-            <label for="subject" class="mb-2 block text-sm font-medium text-zinc-300">
+            <label
+                for="subject"
+                class="mb-2 block text-sm font-semibold tracking-wider text-muted-foreground uppercase"
+            >
                 Subject
             </label>
             <input
@@ -87,7 +99,7 @@ const submit = () => {
                 v-model="form.subject"
                 type="text"
                 required
-                class="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                class="w-full rounded-lg border border-border bg-muted/50 px-4 py-3 text-foreground placeholder-muted-foreground/50 transition-all focus:border-indigo-500 focus:bg-background focus:ring-4 focus:ring-indigo-500/10 focus:outline-none"
                 placeholder="What's this about?"
                 aria-label="Message subject"
             />
@@ -95,7 +107,10 @@ const submit = () => {
         </div>
 
         <div class="mt-6">
-            <label for="message" class="mb-2 block text-sm font-medium text-zinc-300">
+            <label
+                for="message"
+                class="mb-2 block text-sm font-semibold tracking-wider text-muted-foreground uppercase"
+            >
                 Message
             </label>
             <textarea
@@ -103,7 +118,7 @@ const submit = () => {
                 v-model="form.message"
                 required
                 rows="6"
-                class="w-full rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-white placeholder-zinc-500 focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                class="w-full rounded-lg border border-border bg-muted/50 px-4 py-3 text-foreground placeholder-muted-foreground/50 transition-all focus:border-indigo-500 focus:bg-background focus:ring-4 focus:ring-indigo-500/10 focus:outline-none"
                 placeholder="Tell me about your project..."
                 aria-label="Your message"
             ></textarea>
@@ -113,7 +128,7 @@ const submit = () => {
         <button
             type="submit"
             :disabled="form.processing"
-            class="mt-6 w-full rounded-xl bg-white px-8 py-4 font-bold text-black transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
+            class="mt-6 w-full rounded-xl bg-primary px-6 py-3 text-sm font-bold text-primary-foreground transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50 sm:mt-8 sm:px-8 sm:py-4 sm:text-base"
             aria-label="Send message"
         >
             <span v-if="form.processing">Sending...</span>
@@ -121,4 +136,3 @@ const submit = () => {
         </button>
     </form>
 </template>
-

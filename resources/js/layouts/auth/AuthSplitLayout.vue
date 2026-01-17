@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
-import { home } from '@/routes';
+
 import { Link, usePage } from '@inertiajs/vue3';
 
 const page = usePage();
@@ -72,7 +72,7 @@ defineProps<{
             >
                 <div class="flex flex-col space-y-3 text-center lg:text-left">
                     <Link
-                        :href="home()"
+                        :href="route('home')"
                         class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-600 font-bold text-white shadow-lg shadow-indigo-500/20 lg:hidden"
                     >
                         DE

@@ -12,7 +12,9 @@ export function usePerformanceMonitoring() {
             const lcpObserver = new PerformanceObserver((list) => {
                 const entries = list.getEntries();
                 const lastEntry = entries[entries.length - 1] as any;
+                if (import.meta.env.DEV) {
                 console.log('LCP:', lastEntry.renderTime || lastEntry.loadTime);
+            }
             });
             lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
 
@@ -20,7 +22,9 @@ export function usePerformanceMonitoring() {
             const fidObserver = new PerformanceObserver((list) => {
                 const entries = list.getEntries();
                 entries.forEach((entry: any) => {
-                    console.log('FID:', entry.processingStart - entry.startTime);
+                    if (import.meta.env.DEV) {
+                        console.log('FID:', entry.processingStart - entry.startTime);
+                    }
                 });
             });
             fidObserver.observe({ entryTypes: ['first-input'] });
@@ -34,7 +38,9 @@ export function usePerformanceMonitoring() {
                         clsValue += entry.value;
                     }
                 });
-                console.log('CLS:', clsValue);
+                if (import.meta.env.DEV) {
+                    console.log('CLS:', clsValue);
+                }
             });
             clsObserver.observe({ entryTypes: ['layout-shift'] });
 
@@ -43,7 +49,9 @@ export function usePerformanceMonitoring() {
                 const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
                 if (navigation) {
                     const ttfb = navigation.responseStart - navigation.requestStart;
-                    console.log('TTFB:', ttfb);
+                    if (import.meta.env.DEV) {
+                        console.log('TTFB:', ttfb);
+                    }
                 }
             });
         } catch (error) {

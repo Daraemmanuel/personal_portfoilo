@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { Head, Link } from '@inertiajs/vue3';
-import { Calendar, ArrowRight } from 'lucide-vue-next';
-import type { Article } from '@/types/portfolio';
 import LandingNav from '@/components/landing/LandingNav.vue';
+import type { Article } from '@/types/portfolio';
+import { Head, Link } from '@inertiajs/vue3';
+import { ArrowLeft, ArrowRight, Calendar } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 const props = defineProps<{
     category: string;
@@ -23,34 +23,39 @@ const totalArticles = computed(() => {
     <Head :title="`${category} - Articles`" />
 
     <div
-        class="min-h-screen bg-black font-sans text-white antialiased selection:bg-indigo-500 selection:text-white"
+        class="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-indigo-500 selection:text-white"
     >
         <LandingNav />
 
         <div class="mx-auto max-w-6xl px-6 py-24">
-            <header class="mb-12">
+            <header class="fade-in-up mb-12 animate-in">
                 <Link
-                    :href="route('articles.index')"
-                    class="mb-4 inline-flex items-center gap-2 text-zinc-400 transition-colors hover:text-white"
+                    :href="route('articles.categories')"
+                    class="mb-4 inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
                 >
-                    <ArrowRight class="h-4 w-4 rotate-180" />
-                    Back to Articles
+                    <ArrowLeft class="h-4 w-4" />
+                    Back to Categories
                 </Link>
                 <h1
-                    class="mb-4 bg-gradient-to-b from-white to-zinc-500 bg-clip-text text-4xl font-bold text-transparent md:text-5xl"
+                    class="bg-gradient-to-b from-foreground to-foreground/50 bg-clip-text text-4xl font-bold text-transparent md:text-5xl"
                 >
-                    {{ category }}
+                    Category: {{ category }}
                 </h1>
-                <p class="text-zinc-400">
-                    {{ totalArticles }} article{{ totalArticles !== 1 ? 's' : '' }} in this category
+                <p class="mt-4 text-muted-foreground">
+                    {{ totalArticles }} article{{
+                        totalArticles !== 1 ? 's' : ''
+                    }}
+                    found
                 </p>
             </header>
 
             <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                 <article
-                    v-for="article in articles.data"
+                    v-for="(article, index) in articles.data"
                     :key="article.id"
-                    class="group overflow-hidden rounded-2xl border border-white/5 bg-zinc-900 transition-all hover:border-indigo-500/50"
+                    v-intersect.once
+                    class="reveal group overflow-hidden rounded-2xl border border-border bg-card transition-all hover:-translate-y-2 hover:border-indigo-500/50 hover:shadow-2xl hover:shadow-indigo-500/10"
+                    :style="{ transitionDelay: `${index * 100}ms` }"
                 >
                     <Link :href="route('articles.show', article.slug)">
                         <div
@@ -60,28 +65,30 @@ const totalArticles = computed(() => {
                             <img
                                 :src="article.featured_image_url"
                                 :alt="article.title"
-                                class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                                 loading="lazy"
                             />
                         </div>
                         <div class="p-6">
                             <h2
-                                class="mb-3 text-xl font-semibold transition-colors group-hover:text-indigo-400"
+                                class="mb-3 text-xl font-semibold transition-colors group-hover:text-indigo-500 dark:group-hover:text-indigo-400"
                             >
                                 {{ article.title }}
                             </h2>
-                            <p class="mb-4 text-sm text-zinc-400">
+                            <p
+                                class="mb-4 line-clamp-3 text-sm text-muted-foreground"
+                            >
                                 {{ article.excerpt }}
                             </p>
-                            <div class="flex items-center justify-between text-xs text-zinc-500">
+                            <div
+                                class="flex items-center justify-between text-xs text-muted-foreground/60"
+                            >
                                 <div class="flex items-center gap-2">
                                     <Calendar class="h-3 w-3" />
-                                    <span
-                                        v-if="article.published_at"
-                                    >
+                                    <span v-if="article.published_at">
                                         {{
                                             new Date(
-                                                article.published_at
+                                                article.published_at,
                                             ).toLocaleDateString()
                                         }}
                                     </span>
@@ -108,7 +115,7 @@ const totalArticles = computed(() => {
                         'rounded-lg px-4 py-2 text-sm transition-colors',
                         link.active
                             ? 'bg-indigo-500 text-white'
-                            : 'bg-white/5 text-zinc-400 hover:bg-white/10',
+                            : 'bg-muted text-muted-foreground hover:bg-muted/80',
                         !link.url && 'pointer-events-none opacity-50',
                     ]"
                     v-html="link.label"
@@ -117,4 +124,3 @@ const totalArticles = computed(() => {
         </div>
     </div>
 </template>
-

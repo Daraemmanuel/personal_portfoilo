@@ -6,8 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthBase from '@/layouts/AuthLayout.vue';
-import { login } from '@/routes';
-import { store } from '@/routes/register';
+
 import { Form, Head } from '@inertiajs/vue3';
 import { Lock, Mail, User, UserPlus } from 'lucide-vue-next';
 </script>
@@ -20,7 +19,8 @@ import { Lock, Mail, User, UserPlus } from 'lucide-vue-next';
         <Head title="Register" />
 
         <Form
-            v-bind="store.form()"
+            :action="route('register.store')"
+            method="post"
             :reset-on-success="['password', 'password_confirmation']"
             v-slot="{ errors, processing }"
             class="flex flex-col gap-6"
@@ -142,7 +142,7 @@ import { Lock, Mail, User, UserPlus } from 'lucide-vue-next';
             <div class="text-center text-sm text-muted-foreground">
                 Already have an account?
                 <TextLink
-                    :href="login()"
+                    :href="route('login')"
                     class="ml-1 font-semibold text-indigo-400 hover:text-indigo-300"
                     :tabindex="6"
                     >Sign In</TextLink

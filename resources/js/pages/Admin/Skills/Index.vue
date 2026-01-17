@@ -24,7 +24,7 @@ const getIcon = (name: string): any => {
     >
         <Head title="Skills" />
 
-        <div class="min-h-[calc(100vh-64px)] bg-zinc-950 p-6 lg:p-10">
+        <div class="min-h-[calc(100vh-64px)] bg-background p-6 lg:p-10">
             <div class="mx-auto max-w-6xl">
                 <!-- Header Section -->
                 <div
@@ -32,18 +32,18 @@ const getIcon = (name: string): any => {
                 >
                     <div>
                         <h2
-                            class="bg-gradient-to-r from-white to-zinc-500 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-4xl"
+                            class="bg-gradient-to-r from-foreground to-foreground/50 bg-clip-text text-3xl font-bold tracking-tight text-transparent sm:text-4xl"
                         >
                             Skill Inventory
                         </h2>
-                        <p class="mt-2 text-zinc-400">
+                        <p class="mt-2 text-muted-foreground">
                             Organize and display your technical expertise
                             categories.
                         </p>
                     </div>
                     <Link :href="route('admin.skills.create')">
                         <Button
-                            class="rounded-full bg-indigo-600 px-6 py-6 font-semibold text-white transition-all hover:bg-indigo-700 hover:shadow-[0_0_20px_rgba(79,70,229,0.4)]"
+                            class="rounded-full bg-primary px-8 py-6 font-bold text-primary-foreground transition-all hover:shadow-xl hover:shadow-primary/20 active:scale-95"
                         >
                             Add Skill Category
                         </Button>
@@ -52,43 +52,46 @@ const getIcon = (name: string): any => {
 
                 <!-- Skills Table/List -->
                 <div
-                    class="relative overflow-hidden rounded-2xl border border-white/10 bg-zinc-900/50 backdrop-blur-sm"
+                    class="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
                 >
                     <div class="overflow-x-auto">
                         <table class="w-full border-collapse text-left">
                             <thead>
-                                <tr class="border-b border-white/5 bg-white/5">
+                                <tr class="border-b border-border bg-muted/50">
                                     <th
-                                        class="w-16 p-5 text-center text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                        class="w-16 p-5 text-center text-xs font-bold tracking-wider text-muted-foreground uppercase"
                                     >
                                         Icon
                                     </th>
                                     <th
-                                        class="p-5 text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                        class="p-5 text-xs font-bold tracking-wider text-muted-foreground uppercase"
                                     >
                                         Category
                                     </th>
                                     <th
-                                        class="p-5 text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                        class="p-5 text-xs font-bold tracking-wider text-muted-foreground uppercase"
                                     >
                                         Skill Items
                                     </th>
                                     <th
-                                        class="p-5 text-right text-sm font-semibold tracking-wider text-zinc-300 uppercase"
+                                        class="p-5 text-right text-xs font-bold tracking-wider text-muted-foreground uppercase"
                                     >
                                         Actions
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-white/5">
+                            <tbody class="divide-y divide-border" v-intersect>
                                 <tr
-                                    v-for="skill in skills"
+                                    v-for="(skill, index) in skills"
                                     :key="skill.id"
-                                    class="group transition-colors hover:bg-white/[0.02]"
+                                    :class="[
+                                        'group reveal transition-colors hover:bg-muted/30',
+                                        'delay-' + index * 100,
+                                    ]"
                                 >
                                     <td class="p-5 text-center">
                                         <div
-                                            class="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-500/10 text-indigo-400 transition-transform group-hover:scale-110"
+                                            class="mx-auto flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-110"
                                         >
                                             <component
                                                 :is="getIcon(skill.icon)"
@@ -98,7 +101,7 @@ const getIcon = (name: string): any => {
                                     </td>
                                     <td class="p-5">
                                         <span
-                                            class="text-lg font-bold text-white transition-colors group-hover:text-indigo-400"
+                                            class="text-base font-bold text-foreground transition-colors group-hover:text-primary"
                                         >
                                             {{ skill.name }}
                                         </span>
@@ -106,9 +109,11 @@ const getIcon = (name: string): any => {
                                     <td class="p-5">
                                         <div class="flex flex-wrap gap-1.5">
                                             <span
-                                                v-for="(item, index) in skill.items"
+                                                v-for="(
+                                                    item, index
+                                                ) in skill.items"
                                                 :key="`${skill.id}-item-${index}-${item}`"
-                                                class="rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-xs font-medium text-zinc-400"
+                                                class="rounded-full border border-border bg-muted px-2.5 py-0.5 text-[10px] font-bold tracking-tight text-muted-foreground uppercase"
                                             >
                                                 {{ item }}
                                             </span>
@@ -116,7 +121,7 @@ const getIcon = (name: string): any => {
                                     </td>
                                     <td class="p-5 text-right">
                                         <div
-                                            class="flex items-center justify-end gap-3"
+                                            class="flex items-center justify-end gap-5"
                                         >
                                             <Link
                                                 :href="
@@ -125,13 +130,10 @@ const getIcon = (name: string): any => {
                                                         skill.id,
                                                     )
                                                 "
-                                                class="text-sm font-medium text-indigo-400 transition-colors hover:text-indigo-300"
+                                                class="text-xs font-bold text-primary transition-colors hover:underline"
                                             >
                                                 Edit
                                             </Link>
-                                            <div
-                                                class="h-1 w-1 rounded-full bg-zinc-700"
-                                            ></div>
                                             <Link
                                                 :href="
                                                     route(
@@ -141,7 +143,7 @@ const getIcon = (name: string): any => {
                                                 "
                                                 method="delete"
                                                 as="button"
-                                                class="text-sm font-medium text-zinc-500 transition-colors hover:text-red-400"
+                                                class="text-xs font-bold text-muted-foreground transition-colors hover:text-destructive hover:underline"
                                             >
                                                 Delete
                                             </Link>
@@ -149,17 +151,15 @@ const getIcon = (name: string): any => {
                                     </td>
                                 </tr>
                                 <tr v-if="skills.length === 0">
-                                    <td colspan="4" class="p-12 text-center">
+                                    <td colspan="4" class="p-16 text-center">
                                         <div
-                                            class="flex flex-col items-center justify-center gap-3 text-zinc-600"
+                                            class="flex flex-col items-center justify-center gap-4 text-muted-foreground"
                                         >
                                             <component
                                                 :is="icons.Zap"
-                                                class="h-10 w-10 animate-pulse text-zinc-800"
+                                                class="h-12 w-12 animate-pulse text-muted-foreground/20"
                                             />
-                                            <p
-                                                class="font-medium tracking-wide text-zinc-500"
-                                            >
+                                            <p class="text-lg font-bold">
                                                 No skill categories defined yet.
                                             </p>
                                         </div>

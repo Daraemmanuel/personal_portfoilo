@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import LandingNav from '@/components/landing/LandingNav.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { Folder } from 'lucide-vue-next';
-import LandingNav from '@/components/landing/LandingNav.vue';
 
 defineProps<{
     categories: Array<{
@@ -15,40 +15,44 @@ defineProps<{
     <Head title="Categories - Articles" />
 
     <div
-        class="min-h-screen bg-black font-sans text-white antialiased selection:bg-indigo-500 selection:text-white"
+        class="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-indigo-500 selection:text-white"
     >
         <LandingNav />
 
         <div class="mx-auto max-w-6xl px-6 py-24">
-            <header class="mb-12 text-center">
+            <header class="fade-in-up mb-12 animate-in text-center">
                 <h1
-                    class="mb-4 bg-gradient-to-b from-white to-zinc-500 bg-clip-text text-4xl font-bold text-transparent md:text-5xl"
+                    class="mb-4 bg-gradient-to-b from-foreground to-foreground/50 bg-clip-text text-4xl font-bold text-transparent md:text-5xl"
                 >
                     Categories
                 </h1>
-                <p class="text-zinc-400">
-                    Browse articles by category
-                </p>
+                <p class="text-muted-foreground">Browse articles by category</p>
             </header>
 
             <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 <Link
-                    v-for="category in categories"
+                    v-for="(category, index) in categories"
                     :key="category.name"
+                    v-intersect.once
                     :href="route('articles.category', category.name)"
-                    class="group overflow-hidden rounded-2xl border border-white/5 bg-zinc-900 p-6 transition-all hover:border-indigo-500/50 hover:bg-zinc-800"
+                    class="reveal group overflow-hidden rounded-2xl border border-border bg-card p-6 transition-all hover:-translate-y-1 hover:border-indigo-500/50 hover:bg-muted/50"
+                    :style="{ transitionDelay: `${index * 50}ms` }"
                 >
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <Folder class="h-6 w-6 text-indigo-400" />
+                            <Folder
+                                class="h-6 w-6 text-indigo-500 dark:text-indigo-400"
+                            />
                             <div>
                                 <h3
-                                    class="text-lg font-semibold transition-colors group-hover:text-indigo-400"
+                                    class="text-lg font-semibold transition-colors group-hover:text-indigo-500 dark:group-hover:text-indigo-400"
                                 >
                                     {{ category.name }}
                                 </h3>
-                                <p class="text-sm text-zinc-500">
-                                    {{ category.count }} article{{ category.count !== 1 ? 's' : '' }}
+                                <p class="text-sm text-muted-foreground">
+                                    {{ category.count }} article{{
+                                        category.count !== 1 ? 's' : ''
+                                    }}
                                 </p>
                             </div>
                         </div>
@@ -56,11 +60,13 @@ defineProps<{
                 </Link>
             </div>
 
-            <div v-if="categories.length === 0" class="text-center text-zinc-500">
+            <div
+                v-if="categories.length === 0"
+                class="text-center text-muted-foreground"
+            >
                 <Folder class="mx-auto mb-4 h-12 w-12 opacity-50" />
                 <p>No categories yet</p>
             </div>
         </div>
     </div>
 </template>
-

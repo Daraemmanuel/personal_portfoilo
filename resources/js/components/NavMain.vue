@@ -9,18 +9,20 @@ import {
 import { urlIsActive } from '@/lib/utils';
 import { type NavItem } from '@/types';
 import { Link, usePage } from '@inertiajs/vue3';
+import { computed } from 'vue';
 
 defineProps<{
     items: NavItem[];
 }>();
 
 const page = usePage();
+const pendingCommentsCount = computed(() => (page.props as any).pendingCommentsCount || 0);
 </script>
 
 <template>
     <SidebarGroup class="px-2 py-0">
         <SidebarGroupLabel
-            class="text-[10px] font-semibold tracking-widest text-zinc-500 uppercase"
+            class="text-[10px] font-semibold tracking-widest text-muted-foreground uppercase"
             >Management</SidebarGroupLabel
         >
         <SidebarMenu class="mt-2 space-y-1">
@@ -32,26 +34,37 @@ const page = usePage();
                     class="group relative flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200"
                     :class="[
                         urlIsActive(item.href, page.url)
-                            ? 'bg-indigo-500/10 text-indigo-400 shadow-[inset_0_0_0_1px_rgba(99,102,241,0.2)]'
-                            : 'text-zinc-400 hover:bg-white/5 hover:text-white',
+                            ? 'bg-primary/10 text-primary'
+                            : 'text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
                     ]"
                 >
-                    <Link :href="item.href">
+                    <Link
+                        :href="item.href"
+                        class="flex w-full items-center gap-3"
+                    >
                         <component
                             :is="item.icon"
                             class="h-4 w-4 transition-colors"
                             :class="
                                 urlIsActive(item.href, page.url)
-                                    ? 'text-indigo-400'
-                                    : 'text-zinc-500 group-hover:text-white'
+                                    ? 'text-primary'
+                                    : 'text-muted-foreground group-hover:text-sidebar-accent-foreground'
                             "
                         />
                         <span>{{ item.title }}</span>
 
+                        <!-- Pending Comments Badge -->
+                        <span
+                            v-if="item.title === 'Comments' && pendingCommentsCount > 0"
+                            class="ml-auto rounded-full bg-yellow-500 px-2 py-0.5 text-xs font-bold text-white"
+                        >
+                            {{ pendingCommentsCount }}
+                        </span>
+
                         <!-- Active Indicator Dot -->
                         <div
                             v-if="urlIsActive(item.href, page.url)"
-                            class="absolute right-3 h-1.5 w-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(99,102,241,0.8)]"
+                            class="absolute right-3 h-1.5 w-1.5 rounded-full bg-primary shadow-sm"
                         ></div>
                     </Link>
                 </SidebarMenuButton>

@@ -3,6 +3,7 @@ import ContactFooter from '@/components/landing/ContactFooter.vue';
 import ExperienceSection from '@/components/landing/ExperienceSection.vue';
 import HeroSection from '@/components/landing/HeroSection.vue';
 import LandingNav from '@/components/landing/LandingNav.vue';
+import ScrollToTop from '@/components/landing/ScrollToTop.vue';
 import SkillsSection from '@/components/landing/SkillsSection.vue';
 import TestimonialsSection from '@/components/landing/TestimonialsSection.vue';
 import WorkSection from '@/components/landing/WorkSection.vue';
@@ -59,7 +60,7 @@ onUnmounted(() => {
     <Head title="DaraEmmanuel Akinyode | Software Engineer">
         <meta
             name="description"
-            content="Portfolio of DaraEmmanuel Akinyode, a Software Engineer specializing in building exceptional digital experiences with modern technologies like Laravel, Node.js, Vue.js, React, Blade, Bootstrap, Tailwind CSS, and TypeScript."
+            content="Portfolio of DaraEmmanuel Akinyode, a Software Engineer specializing in building exceptional digital experiences with modern technologies like Laravel, Node.js, Vue.js, React, Blade, Bootstrap, Tailwind CSS, TypeScript, React-Native, and more."
         />
         <meta
             name="keywords"
@@ -75,7 +76,7 @@ onUnmounted(() => {
         />
         <meta
             property="og:description"
-            content="Portfolio showcasing projects, skills, and experience in modern web development. Specializing in Laravel, Vue.js, and TypeScript."
+            content="Portfolio showcasing projects, skills, and experience in modern web development. Specializing in Laravel, Vue.js, TypeScript, React, React-Native, and more."
         />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://yourdomain.com" />
@@ -108,7 +109,7 @@ onUnmounted(() => {
     </Head>
 
     <div
-        class="min-h-screen bg-black font-sans text-white antialiased selection:bg-indigo-500 selection:text-white"
+        class="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-indigo-500 selection:text-white"
     >
         <LandingNav :can-login="canLogin" />
         <HeroSection />
@@ -117,6 +118,7 @@ onUnmounted(() => {
         <ExperienceSection :experiences="experiences" />
         <TestimonialsSection :testimonials="testimonials" />
         <ContactFooter />
+        <ScrollToTop />
     </div>
 </template>
 

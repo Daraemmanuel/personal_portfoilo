@@ -30,13 +30,13 @@ class CommentController extends Controller
 
         $validated = $request->validate([
             'author_name' => 'required|string|max:255',
-            'author_email' => 'required|email|max:255',
             'content' => 'required|string|max:2000',
             'parent_id' => 'nullable|exists:article_comments,id',
         ]);
 
         $comment = $article->comments()->create([
             ...$validated,
+            'author_email' => null, // Email no longer required
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),
             'is_approved' => false, // Require moderation

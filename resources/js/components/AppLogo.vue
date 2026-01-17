@@ -9,11 +9,12 @@ import AppLogoIcon from '@/components/AppLogoIcon.vue';
         <AppLogoIcon class="size-5 fill-current" />
     </div>
     <div class="ml-3 grid flex-1 text-left text-sm">
-        <span class="truncate leading-tight font-bold tracking-tight text-white"
+        <span
+            class="truncate leading-tight font-black tracking-tight text-foreground"
             >KODEMMY</span
         >
         <span
-            class="truncate text-[10px] font-bold tracking-widest text-zinc-500 uppercase"
+            class="truncate text-[10px] font-bold tracking-widest text-muted-foreground uppercase"
             >PORTFOLIO</span
         >
     </div>
