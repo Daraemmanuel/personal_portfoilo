@@ -17,7 +17,11 @@ return new class extends Migration
             $table->string('company'); // e.g., TechCorp Inc.
             $table->string('period'); // e.g., 2023 — Present
             $table->text('description'); // e.g., Leading the migration...
+            $table->integer('sort_order')->default(0);
             $table->timestamps();
+            
+            $table->index('sort_order');
+            $table->index('created_at');
         });
     }
 

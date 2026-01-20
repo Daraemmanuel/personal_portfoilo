@@ -2,7 +2,7 @@
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { ContactMessage } from '@/types/portfolio';
 import { Head, Link } from '@inertiajs/vue3';
-import { Mail, MailOpen } from 'lucide-vue-next';
+import { Eye, Mail, MailOpen, Trash2 } from 'lucide-vue-next';
 
 defineProps<{
     messages: {
@@ -143,32 +143,44 @@ defineProps<{
                                     </td>
                                     <td class="p-5 text-right">
                                         <div
-                                            class="flex items-center justify-end gap-4"
+                                            class="flex items-center justify-end gap-2"
                                         >
-                                            <Link
-                                                :href="
-                                                    route(
-                                                        'admin.contact-messages.show',
-                                                        message.id,
-                                                    )
-                                                "
-                                                class="text-sm font-bold text-primary transition-colors hover:text-primary/80"
+                                            <Button
+                                                as-child
+                                                variant="ghost"
+                                                size="sm"
+                                                class="text-primary hover:bg-primary/10"
                                             >
-                                                View
-                                            </Link>
-                                            <Link
-                                                :href="
-                                                    route(
-                                                        'admin.contact-messages.destroy',
-                                                        message.id,
-                                                    )
-                                                "
-                                                method="delete"
-                                                as="button"
-                                                class="text-sm font-bold text-muted-foreground transition-colors hover:text-destructive"
+                                                <Link
+                                                    :href="
+                                                        route(
+                                                            'admin.contact-messages.show',
+                                                            message.id,
+                                                        )
+                                                    "
+                                                >
+                                                    <Eye class="h-4 w-4" />
+                                                </Link>
+                                            </Button>
+                                            <Button
+                                                as-child
+                                                variant="ghost"
+                                                size="sm"
+                                                class="text-destructive hover:bg-destructive/10"
                                             >
-                                                Delete
-                                            </Link>
+                                                <Link
+                                                    :href="
+                                                        route(
+                                                            'admin.contact-messages.destroy',
+                                                            message.id,
+                                                        )
+                                                    "
+                                                    method="delete"
+                                                    as="button"
+                                                >
+                                                    <Trash2 class="h-4 w-4" />
+                                                </Link>
+                                            </Button>
                                         </div>
                                     </td>
                                 </tr>

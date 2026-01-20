@@ -4,6 +4,7 @@ import type { Article } from '@/types/portfolio';
 import { Head, Link } from '@inertiajs/vue3';
 import { ArrowLeft, ArrowRight, Calendar } from 'lucide-vue-next';
 import { computed } from 'vue';
+import { stripHtml } from '@/utils/stripHtml';
 
 const props = defineProps<{
     category: string;
@@ -78,7 +79,7 @@ const totalArticles = computed(() => {
                             <p
                                 class="mb-4 line-clamp-3 text-sm text-muted-foreground"
                             >
-                                {{ article.excerpt }}
+                                {{ stripHtml(article.excerpt) }}
                             </p>
                             <div
                                 class="flex items-center justify-between text-xs text-muted-foreground/60"

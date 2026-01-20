@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import InputError from '@/components/InputError.vue';
+import RichTextEditor from '@/components/admin/RichTextEditor.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
@@ -106,12 +107,11 @@ const submit = () => {
                                 class="text-xs font-bold tracking-widest text-muted-foreground uppercase"
                                 >Description</label
                             >
-                            <textarea
+                            <RichTextEditor
                                 v-model="form.description"
-                                rows="6"
                                 placeholder="Describe your impact and key achievements..."
-                                class="w-full rounded-xl border-border bg-muted/50 px-4 py-3 text-foreground placeholder-muted-foreground/50 shadow-sm transition-all focus:border-primary focus:bg-background focus:ring-2 focus:ring-primary/20 sm:text-sm"
-                            ></textarea>
+                                :rows="6"
+                            />
                             <InputError :message="form.errors.description" />
                         </div>
 

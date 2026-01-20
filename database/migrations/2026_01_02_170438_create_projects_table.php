@@ -15,9 +15,15 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
+            $table->string('image')->nullable();
             $table->string('link')->nullable();
             $table->json('tags')->nullable();
+            $table->integer('sort_order')->default(0);
+            $table->boolean('is_archived')->default(false);
             $table->timestamps();
+            
+            $table->index('sort_order');
+            $table->index('created_at');
         });
     }
 

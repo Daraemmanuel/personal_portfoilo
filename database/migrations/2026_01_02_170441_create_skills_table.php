@@ -16,7 +16,10 @@ return new class extends Migration
             $table->string('name');
             $table->string('icon'); // lucide icon name
             $table->json('items'); // array of skill items
+            $table->integer('sort_order')->default(0);
             $table->timestamps();
+            
+            $table->index('sort_order');
         });
     }
 

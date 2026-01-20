@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import InputError from '@/components/InputError.vue';
+import RichTextEditor from '@/components/admin/RichTextEditor.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
@@ -15,6 +16,7 @@ const form = useForm({
     link: '',
     tags: '',
     sort_order: 0,
+    is_archived: false,
 });
 
 const submit = () => {
@@ -154,12 +156,11 @@ const clearImage = () => {
                                 class="text-xs font-bold tracking-widest text-muted-foreground uppercase"
                                 >Project Description</label
                             >
-                            <textarea
+                            <RichTextEditor
                                 v-model="form.description"
-                                rows="8"
                                 placeholder="Describe the problem solved and the technology used..."
-                                class="w-full resize-y rounded-xl border-border bg-muted/50 px-4 py-3 text-foreground placeholder-muted-foreground/50 shadow-sm transition-all focus:border-primary focus:bg-background focus:ring-2 focus:ring-primary/20 sm:text-sm"
-                            ></textarea>
+                                :rows="8"
+                            />
                             <InputError :message="form.errors.description" />
                         </div>
 
@@ -195,6 +196,29 @@ const clearImage = () => {
                                 >
                                 <InputError :message="form.errors.sort_order" />
                             </div>
+                        </div>
+
+                        <div class="flex items-center gap-4 py-4">
+                            <label
+                                class="relative inline-flex cursor-pointer items-center"
+                            >
+                                <input
+                                    v-model="form.is_archived"
+                                    type="checkbox"
+                                    class="peer sr-only"
+                                />
+                                <div
+                                    class="peer h-6 w-11 rounded-full bg-input peer-checked:bg-primary peer-focus:ring-2 peer-focus:ring-primary/20 peer-focus:ring-offset-2 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full"
+                                ></div>
+                                <span
+                                    class="ml-3 text-sm font-medium text-foreground"
+                                    >Archive Project</span
+                                >
+                            </label>
+                            <p class="text-xs text-muted-foreground">
+                                Archived projects are hidden from the main
+                                portfolio but visible in the archives.
+                            </p>
                         </div>
 
                         <div class="space-y-2">

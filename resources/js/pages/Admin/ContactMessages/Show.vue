@@ -4,10 +4,33 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import type { ContactMessage } from '@/types/portfolio';
 import { Head, Link } from '@inertiajs/vue3';
 import { Calendar, Mail, User } from 'lucide-vue-next';
+import { computed } from 'vue';
 
-defineProps<{
+const props = defineProps<{
     message: ContactMessage;
 }>();
+
+// Create properly encoded mailto link
+const mailtoLink = computed(() => {
+    const email = props.message.email || '';
+    if (!email) return '#';
+    
+    const subject = `Re: ${props.message.subject || 'Contact Message'}`;
+    const body = `\n\n--- Original Message ---\nFrom: ${props.message.name}\nDate: ${new Date(props.message.created_at).toLocaleString()}\nSubject: ${props.message.subject}\n\n${props.message.message}`;
+    
+    return `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+});
+
+const handleReplyClick = (e: Event) => {
+    if (!props.message.email) {
+        e.preventDefault();
+        alert('No email address available for this message.');
+        return;
+    }
+    
+    // The mailto link will open the default email client
+    // If it doesn't work, the user may need to configure their email client
+};
 </script>
 
 <template>
@@ -107,9 +130,14 @@ defineProps<{
                             class="flex items-center justify-end gap-4 border-t border-border pt-6"
                         >
                             <a
-                                :href="`mailto:${message.email}?subject=Re: ${message.subject}`"
-                                class="rounded-xl bg-primary px-6 py-2.5 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95"
+                                :href="mailtoLink"
+                                @click="handleReplyClick"
+                                :class="[
+                                    'inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-bold text-primary-foreground shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95',
+                                    !message.email ? 'pointer-events-none opacity-50' : 'cursor-pointer'
+                                ]"
                             >
+                                <Mail class="h-4 w-4" />
                                 Reply via Email
                             </a>
                             <Link

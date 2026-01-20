@@ -24,6 +24,7 @@ import {
     LayoutGrid,
     Mail,
     MessageSquare,
+    Newspaper,
     Star,
 } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
@@ -69,15 +70,23 @@ const mainNavItems: NavItem[] = [
         href: route('admin.comments.index'),
         icon: MessageSquare,
     },
-    {
-        title: 'Analytics',
-        href: route('admin.analytics.index'),
-        icon: BarChart3,
-    },
+
     {
         title: 'CV',
         href: route('admin.cv.index'),
         icon: Briefcase,
+    },
+
+    {
+        title: 'Newsletter',
+        href: route('admin.newsletter.index'),
+        icon: Newspaper,
+    },
+
+    {
+        title: 'Analytics',
+        href: route('admin.analytics.index'),
+        icon: BarChart3,
     },
 ];
 

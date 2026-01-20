@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import InputError from '@/components/InputError.vue';
+import RichTextEditor from '@/components/admin/RichTextEditor.vue';
 import { Button } from '@/components/ui/button';
 import { useAutoSave } from '@/composables/useAutoSave';
 import AppLayout from '@/layouts/AppLayout.vue';
@@ -130,11 +131,11 @@ const clearImage = () => {
                                 class="text-xs font-bold tracking-widest text-muted-foreground uppercase"
                                 >Excerpt</label
                             >
-                            <textarea
+                            <RichTextEditor
                                 v-model="form.excerpt"
-                                rows="3"
-                                class="w-full rounded-xl border-border bg-muted/50 px-4 py-3 text-foreground placeholder-muted-foreground/50 shadow-sm transition-all focus:border-primary focus:bg-background focus:ring-2 focus:ring-primary/20 sm:text-sm"
-                            ></textarea>
+                                placeholder="Brief summary of the article..."
+                                :rows="3"
+                            />
                             <InputError :message="form.errors.excerpt" />
                         </div>
 
@@ -143,11 +144,11 @@ const clearImage = () => {
                                 class="text-xs font-bold tracking-widest text-muted-foreground uppercase"
                                 >Content</label
                             >
-                            <textarea
+                            <RichTextEditor
                                 v-model="form.content"
-                                rows="12"
-                                class="w-full rounded-xl border-border bg-muted/50 px-4 py-3 font-mono text-foreground placeholder-muted-foreground/50 shadow-sm transition-all focus:border-primary focus:bg-background focus:ring-2 focus:ring-primary/20 sm:text-sm"
-                            ></textarea>
+                                placeholder="Write your article content here..."
+                                :rows="12"
+                            />
                             <InputError :message="form.errors.content" />
                         </div>
 

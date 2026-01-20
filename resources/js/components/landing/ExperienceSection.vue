@@ -80,11 +80,10 @@ const defaultExperiences = [
                     <div class="mb-3 text-sm font-medium text-muted-foreground sm:mb-4 sm:text-base">
                         {{ experience.company }}
                     </div>
-                    <p
-                        class="text-sm leading-relaxed whitespace-pre-line text-muted-foreground/80 sm:text-base"
-                    >
-                        {{ experience.description }}
-                    </p>
+                    <div
+                        class="prose prose-sm dark:prose-invert max-w-none text-sm leading-relaxed text-muted-foreground/80 sm:text-base"
+                        v-html="experience.description"
+                    ></div>
                 </div>
             </div>
         </div>

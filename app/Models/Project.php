@@ -18,6 +18,7 @@ class Project extends Model
         'link',
         'tags',
         'sort_order',
+        'is_archived',
     ];
 
     protected $casts = [

@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('article_id')->constrained()->onDelete('cascade');
             $table->string('author_name');
-            $table->string('author_email');
+            $table->string('author_email')->nullable();
             $table->text('content');
             $table->boolean('is_approved')->default(false);
             $table->foreignId('parent_id')->nullable()->constrained('article_comments')->onDelete('cascade');

@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import { Edit, Trash2 } from 'lucide-vue-next';
 
 defineProps<{
     experiences: Array<{
@@ -110,32 +111,44 @@ defineProps<{
                                     </td>
                                     <td class="p-5 text-right">
                                         <div
-                                            class="flex items-center justify-end gap-5"
+                                            class="flex items-center justify-end gap-2"
                                         >
-                                            <Link
-                                                :href="
-                                                    route(
-                                                        'admin.experiences.edit',
-                                                        experience.id,
-                                                    )
-                                                "
-                                                class="text-xs font-bold text-primary transition-colors hover:underline"
+                                            <Button
+                                                as-child
+                                                variant="ghost"
+                                                size="sm"
+                                                class="text-primary hover:bg-primary/10"
                                             >
-                                                Edit
-                                            </Link>
-                                            <Link
-                                                :href="
-                                                    route(
-                                                        'admin.experiences.destroy',
-                                                        experience.id,
-                                                    )
-                                                "
-                                                method="delete"
-                                                as="button"
-                                                class="text-xs font-bold text-muted-foreground transition-colors hover:text-destructive hover:underline"
+                                                <Link
+                                                    :href="
+                                                        route(
+                                                            'admin.experiences.edit',
+                                                            experience.id,
+                                                        )
+                                                    "
+                                                >
+                                                    <Edit class="h-4 w-4" />
+                                                </Link>
+                                            </Button>
+                                            <Button
+                                                as-child
+                                                variant="ghost"
+                                                size="sm"
+                                                class="text-destructive hover:bg-destructive/10"
                                             >
-                                                Delete
-                                            </Link>
+                                                <Link
+                                                    :href="
+                                                        route(
+                                                            'admin.experiences.destroy',
+                                                            experience.id,
+                                                        )
+                                                    "
+                                                    method="delete"
+                                                    as="button"
+                                                >
+                                                    <Trash2 class="h-4 w-4" />
+                                                </Link>
+                                            </Button>
                                         </div>
                                     </td>
                                 </tr>

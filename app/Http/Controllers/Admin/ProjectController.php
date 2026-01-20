@@ -15,7 +15,7 @@ class ProjectController extends Controller
     public function index()
     {
         return Inertia::render('Admin/Projects/Index', [
-            'projects' => Project::orderBy('sort_order')->latest()->get(),
+            'projects' => Project::orderBy('sort_order', 'asc')->latest()->get(),
         ]);
     }
 
@@ -41,6 +41,7 @@ class ProjectController extends Controller
             'tags' => 'nullable|array',
             'tags.*' => 'string',
             'sort_order' => 'nullable|integer',
+            'is_archived' => 'boolean',
         ]);
 
         if ($request->hasFile('image')) {
@@ -71,6 +72,7 @@ class ProjectController extends Controller
             'tags' => 'nullable|array',
             'tags.*' => 'string',
             'sort_order' => 'nullable|integer',
+            'is_archived' => 'boolean',
         ]);
 
         if ($request->hasFile('image')) {

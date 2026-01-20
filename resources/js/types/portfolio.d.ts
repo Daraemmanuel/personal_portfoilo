@@ -7,6 +7,7 @@ export interface Project {
     link: string | null;
     tags: string[];
     sort_order: number;
+    is_archived?: boolean;
     created_at: string;
     updated_at: string;
 }

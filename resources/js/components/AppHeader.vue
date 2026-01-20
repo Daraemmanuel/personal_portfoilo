@@ -46,6 +46,7 @@ import {
     Mail,
     Menu,
     MessageSquare,
+    Newspaper,
     Search,
     Star,
 } from 'lucide-vue-next';
@@ -139,6 +140,11 @@ const mainNavItems: NavItem[] = [
         title: 'Analytics',
         href: route('admin.analytics.index'),
         icon: BarChart3,
+    },
+    {
+        title: 'Newsletter',
+        href: route('admin.newsletter.index'),
+        icon: Newspaper,
     },
     {
         title: 'CV',

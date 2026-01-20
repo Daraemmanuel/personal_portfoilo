@@ -6,6 +6,7 @@ import type { Article } from '@/types/portfolio';
 import { Head, Link } from '@inertiajs/vue3';
 import { ArrowLeft, Calendar, Clock, Eye, Tag } from 'lucide-vue-next';
 import { computed, onMounted, onUnmounted } from 'vue';
+import { stripHtml } from '@/utils/stripHtml';
 
 const props = defineProps<{
     article: Article;
@@ -31,6 +32,8 @@ const props = defineProps<{
 
 const articleUrl = computed(() => window.location.href);
 
+const plainExcerpt = computed(() => stripHtml(props.article.excerpt));
+
 let schemaScript: HTMLScriptElement | null = null;
 
 onMounted(() => {
@@ -38,7 +41,7 @@ onMounted(() => {
         '@context': 'https://schema.org',
         '@type': 'BlogPosting',
         headline: props.article.title,
-        description: props.metaDescription || props.article.excerpt,
+        description: props.metaDescription || plainExcerpt.value,
         datePublished: props.article.published_at || null,
         dateModified: props.article.updated_at,
         author: {
@@ -72,7 +75,7 @@ onUnmounted(() => {
     <Head :title="`${article.title} - Articles`">
         <meta
             name="description"
-            :content="metaDescription || article.excerpt"
+            :content="metaDescription || plainExcerpt"
         />
         <link rel="canonical" :href="canonicalUrl || articleUrl" />
 
@@ -80,7 +83,7 @@ onUnmounted(() => {
         <meta property="og:title" :content="article.title" />
         <meta
             property="og:description"
-            :content="metaDescription || article.excerpt"
+            :content="metaDescription || plainExcerpt"
         />
         <meta property="og:type" content="article" />
         <meta property="og:url" :content="canonicalUrl || articleUrl" />
@@ -95,7 +98,7 @@ onUnmounted(() => {
         <meta name="twitter:title" :content="article.title" />
         <meta
             name="twitter:description"
-            :content="metaDescription || article.excerpt"
+            :content="metaDescription || plainExcerpt"
         />
         <meta
             v-if="article.featured_image_url"
@@ -173,7 +176,7 @@ onUnmounted(() => {
                     <SocialShare
                         :url="articleUrl"
                         :title="article.title"
-                        :description="article.excerpt"
+                        :description="plainExcerpt"
                     />
                 </div>
 
@@ -338,7 +341,7 @@ onUnmounted(() => {
                                 <p
                                     class="line-clamp-2 text-sm text-muted-foreground"
                                 >
-                                    {{ related.excerpt }}
+                                    {{ stripHtml(related.excerpt) }}
                                 </p>
                             </div>
                         </Link>
@@ -389,7 +392,7 @@ onUnmounted(() => {
                                 <p
                                     class="line-clamp-2 text-sm text-muted-foreground"
                                 >
-                                    {{ popular.excerpt }}
+                                    {{ stripHtml(popular.excerpt) }}
                                 </p>
                             </div>
                         </Link>

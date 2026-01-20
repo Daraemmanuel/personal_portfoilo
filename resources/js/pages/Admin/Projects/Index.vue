@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import { Edit, Eye, Trash2 } from 'lucide-vue-next';
 
 defineProps<{
     projects: Array<{
@@ -11,6 +12,7 @@ defineProps<{
         image_url: string | null;
         link: string | null;
         tags: string[];
+        is_archived?: boolean;
     }>;
 }>();
 </script>
@@ -27,7 +29,7 @@ defineProps<{
             <div class="mx-auto max-w-6xl">
                 <!-- Header Section -->
                 <div
-                    class="mb-12 flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+                    class="fade-in-up mb-12 flex animate-in flex-col gap-4 md:flex-row md:items-center md:justify-between"
                 >
                     <div>
                         <h2
@@ -41,7 +43,7 @@ defineProps<{
                     </div>
                     <Link :href="route('admin.projects.create')">
                         <Button
-                            class="rounded-full bg-primary px-8 py-6 font-bold text-primary-foreground transition-all hover:shadow-xl hover:shadow-primary/20 active:scale-95"
+                            class="rounded-full bg-primary px-8 py-6 font-bold text-primary-foreground transition-all hover:scale-105 hover:shadow-xl hover:shadow-primary/20 active:scale-95"
                         >
                             Add New Project
                         </Button>
@@ -50,7 +52,8 @@ defineProps<{
 
                 <!-- Projects Table/List -->
                 <div
-                    class="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
+                    v-intersect.once
+                    class="reveal relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm delay-200"
                 >
                     <div class="overflow-x-auto">
                         <table class="w-full border-collapse text-left">
@@ -65,6 +68,11 @@ defineProps<{
                                         class="p-5 text-xs font-bold tracking-wider text-muted-foreground uppercase"
                                     >
                                         Technologies
+                                    </th>
+                                    <th
+                                        class="p-5 text-xs font-bold tracking-wider text-muted-foreground uppercase"
+                                    >
+                                        Status
                                     </th>
                                     <th
                                         class="p-5 text-right text-xs font-bold tracking-wider text-muted-foreground uppercase"
@@ -125,6 +133,7 @@ defineProps<{
                                             </div>
                                         </div>
                                     </td>
+
                                     <td class="p-5">
                                         <div class="flex flex-wrap gap-1.5">
                                             <span
@@ -138,51 +147,83 @@ defineProps<{
                                             </span>
                                         </div>
                                     </td>
+                                    <td class="p-5">
+                                        <span
+                                            v-if="project.is_archived"
+                                            class="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"
+                                        >
+                                            Archived
+                                        </span>
+                                        <span
+                                            v-else
+                                            class="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-400"
+                                        >
+                                            Active
+                                        </span>
+                                    </td>
                                     <td class="p-5 text-right">
                                         <div
-                                            class="flex items-center justify-end gap-4"
+                                            class="flex items-center justify-end gap-2"
                                         >
-                                            <Link
-                                                :href="
-                                                    route(
-                                                        'projects.show',
-                                                        project.id,
-                                                    )
-                                                "
-                                                target="_blank"
-                                                class="text-xs font-bold text-emerald-600 transition-colors hover:underline dark:text-emerald-400"
+                                            <Button
+                                                as-child
+                                                variant="ghost"
+                                                size="sm"
+                                                class="text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-900/30"
                                             >
-                                                View
-                                            </Link>
-                                            <Link
-                                                :href="
-                                                    route(
-                                                        'admin.projects.edit',
-                                                        project.id,
-                                                    )
-                                                "
-                                                class="text-xs font-bold text-primary transition-colors hover:underline"
+                                                <Link
+                                                    :href="
+                                                        route(
+                                                            'projects.show',
+                                                            project.id,
+                                                        )
+                                                    "
+                                                    target="_blank"
+                                                >
+                                                    <Eye class="h-4 w-4" />
+                                                </Link>
+                                            </Button>
+                                            <Button
+                                                as-child
+                                                variant="ghost"
+                                                size="sm"
+                                                class="text-primary hover:bg-primary/10"
                                             >
-                                                Edit
-                                            </Link>
-                                            <Link
-                                                :href="
-                                                    route(
-                                                        'admin.projects.destroy',
-                                                        project.id,
-                                                    )
-                                                "
-                                                method="delete"
-                                                as="button"
-                                                class="text-xs font-bold text-muted-foreground transition-colors hover:text-destructive hover:underline"
+                                                <Link
+                                                    :href="
+                                                        route(
+                                                            'admin.projects.edit',
+                                                            project.id,
+                                                        )
+                                                    "
+                                                >
+                                                    <Edit class="h-4 w-4" />
+                                                </Link>
+                                            </Button>
+                                            <Button
+                                                as-child
+                                                variant="ghost"
+                                                size="sm"
+                                                class="text-destructive hover:bg-destructive/10"
                                             >
-                                                Delete
-                                            </Link>
+                                                <Link
+                                                    :href="
+                                                        route(
+                                                            'admin.projects.destroy',
+                                                            project.id,
+                                                        )
+                                                    "
+                                                    method="delete"
+                                                    as="button"
+                                                >
+                                                    <Trash2 class="h-4 w-4" />
+                                                </Link>
+                                            </Button>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr v-if="projects.length === 0">
-                                    <td colspan="3" class="p-16 text-center">
+                                    <td colspan="4" class="p-16 text-center">
                                         <div
                                             class="flex flex-col items-center justify-center gap-4"
                                         >

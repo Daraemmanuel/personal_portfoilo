@@ -3,14 +3,19 @@ import LandingNav from '@/components/landing/LandingNav.vue';
 import type { Article } from '@/types/portfolio';
 import { Head, Link } from '@inertiajs/vue3';
 import { ArrowRight, Calendar } from 'lucide-vue-next';
+import { stripHtml } from '@/utils/stripHtml';
 
-defineProps<{
+const props = defineProps<{
     articles: {
         data: Article[];
         links: any;
         meta: any;
     };
 }>();
+
+const getPlainExcerpt = (excerpt: string) => {
+    return stripHtml(excerpt);
+};
 </script>
 
 <template>
@@ -83,7 +88,7 @@ defineProps<{
                             <p
                                 class="mb-4 line-clamp-3 text-sm text-muted-foreground"
                             >
-                                {{ article.excerpt }}
+                                {{ getPlainExcerpt(article.excerpt) }}
                             </p>
                             <div
                                 class="flex items-center justify-between text-xs text-muted-foreground/60"

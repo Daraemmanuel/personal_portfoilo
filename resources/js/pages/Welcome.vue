@@ -112,12 +112,24 @@ onUnmounted(() => {
         class="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-indigo-500 selection:text-white"
     >
         <LandingNav :can-login="canLogin" />
-        <HeroSection />
-        <SkillsSection :skills="skills" />
-        <WorkSection :projects="projects" />
-        <ExperienceSection :experiences="experiences" />
-        <TestimonialsSection :testimonials="testimonials" />
-        <ContactFooter />
+        <div class="fade-in-up animate-in">
+            <HeroSection />
+        </div>
+        <div class="fade-in-up animate-in delay-200">
+            <SkillsSection :skills="skills" />
+        </div>
+        <div class="fade-in-up animate-in delay-300">
+            <WorkSection :projects="projects" />
+        </div>
+        <div class="fade-in-up animate-in delay-400">
+            <ExperienceSection :experiences="experiences" />
+        </div>
+        <div class="fade-in-up animate-in delay-500">
+            <TestimonialsSection :testimonials="testimonials" />
+        </div>
+        <div class="fade-in-up animate-in delay-700">
+            <ContactFooter />
+        </div>
         <ScrollToTop />
     </div>
 </template>

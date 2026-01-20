@@ -19,14 +19,18 @@ return new class extends Migration
             $table->longText('content');
             $table->string('featured_image')->nullable();
             $table->string('category')->nullable();
+            $table->string('series')->nullable();
+            $table->integer('series_order')->nullable();
             $table->json('tags')->nullable();
             $table->timestamp('published_at')->nullable();
             $table->unsignedInteger('views')->default(0);
+            $table->boolean('is_featured')->default(false);
             $table->timestamps();
             
             $table->index('slug');
             $table->index('published_at');
             $table->index('category');
+            $table->index('is_featured');
         });
     }
 

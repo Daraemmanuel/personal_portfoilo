@@ -176,8 +176,10 @@ const toggleReaction = async (
                     'X-CSRF-TOKEN': csrfToken,
                     'X-Requested-With': 'XMLHttpRequest',
                 },
-                credentials: 'same-origin',
-                body: JSON.stringify({ reaction_type: reactionType }),
+                credentials: 'include',
+                body: JSON.stringify({ 
+                    reaction_type: reactionType,
+                }),
             },
         );
 
@@ -341,12 +343,6 @@ const toggleReaction = async (
                                 <h4 class="font-semibold text-foreground">
                                     {{ comment.author_name }}
                                 </h4>
-                                <span
-                                    v-if="comment.is_approved === false"
-                                    class="rounded-full border border-yellow-500/20 bg-yellow-500/10 px-2 py-0.5 text-xs font-medium text-yellow-600 dark:text-yellow-400"
-                                >
-                                    Pending Approval
-                                </span>
                             </div>
                             <p class="text-sm text-muted-foreground">
                                 {{
@@ -531,12 +527,6 @@ const toggleReaction = async (
                                 <h5 class="font-semibold text-foreground">
                                     {{ reply.author_name }}
                                 </h5>
-                                <span
-                                    v-if="reply.is_approved === false"
-                                    class="rounded-full border border-yellow-500/20 bg-yellow-500/10 px-2 py-0.5 text-xs font-medium text-yellow-600 dark:text-yellow-400"
-                                >
-                                    Pending
-                                </span>
                             </div>
                             <p class="text-xs text-muted-foreground">
                                 {{

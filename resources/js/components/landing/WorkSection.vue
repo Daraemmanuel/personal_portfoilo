@@ -40,19 +40,24 @@ const defaultProjects: any[] = [
 <template>
     <section id="work" class="relative overflow-hidden py-16 sm:py-24">
         <div class="mx-auto max-w-7xl px-4 sm:px-6">
-            <div class="mb-12 flex flex-col items-start justify-between gap-4 sm:mb-16 sm:flex-row sm:items-end">
+            <div
+                class="mb-12 flex flex-col items-start justify-between gap-4 sm:mb-16 sm:flex-row sm:items-end"
+            >
                 <div>
-                    <h2 class="mb-2 text-2xl font-bold sm:mb-4 sm:text-3xl">Selected Work</h2>
+                    <h2 class="mb-2 text-2xl font-bold sm:mb-4 sm:text-3xl">
+                        Selected Work
+                    </h2>
                     <p class="text-sm text-muted-foreground sm:text-base">
                         A showcase of technical complexity and design.
                     </p>
                 </div>
-                <a
-                    href="#"
+                <Link
+                    :href="route('archive')"
                     class="flex items-center gap-2 text-xs text-indigo-500 hover:text-indigo-400 sm:text-sm"
                 >
-                    View all archives <ArrowRight class="h-3 w-3 sm:h-4 sm:w-4" />
-                </a>
+                    View all archives
+                    <ArrowRight class="h-3 w-3 sm:h-4 sm:w-4" />
+                </Link>
             </div>
 
             <div class="grid grid-cols-1 gap-8 md:grid-cols-3">

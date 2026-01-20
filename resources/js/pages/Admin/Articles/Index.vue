@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { Article } from '@/types/portfolio';
 import { Head, Link } from '@inertiajs/vue3';
-import { Calendar, Eye, FileText } from 'lucide-vue-next';
+import { Calendar, Edit, Eye, FileText, Trash2 } from 'lucide-vue-next';
+import { stripHtml } from '@/utils/stripHtml';
 
 defineProps<{
     articles: Article[];
@@ -23,7 +24,7 @@ defineProps<{
             <div class="mx-auto max-w-7xl">
                 <!-- Header Section -->
                 <div
-                    class="mb-8 flex flex-col gap-4 sm:mb-12 md:flex-row md:items-center md:justify-between"
+                    class="fade-in-up mb-8 flex animate-in flex-col gap-4 sm:mb-12 md:flex-row md:items-center md:justify-between"
                 >
                     <div>
                         <h2
@@ -48,7 +49,8 @@ defineProps<{
 
                 <!-- Articles Table/List -->
                 <div
-                    class="relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-colors"
+                    v-intersect.once
+                    class="reveal relative overflow-hidden rounded-2xl border border-border bg-card shadow-sm transition-all delay-200"
                 >
                     <div class="-mx-4 overflow-x-auto sm:mx-0">
                         <table
@@ -124,7 +126,7 @@ defineProps<{
                                                 <span
                                                     class="mt-0.5 line-clamp-1 max-w-md text-xs text-muted-foreground sm:mt-1 sm:text-sm"
                                                 >
-                                                    {{ article.excerpt }}
+                                                    {{ stripHtml(article.excerpt) }}
                                                 </span>
                                                 <div
                                                     class="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-muted-foreground/60 sm:mt-2 sm:gap-3"
@@ -196,9 +198,9 @@ defineProps<{
                                     </td>
                                     <td class="p-5 text-right">
                                         <div
-                                            class="flex items-center justify-end gap-4"
+                                            class="flex items-center justify-end gap-2"
                                         >
-                                            <Link
+                                            <Button
                                                 v-if="
                                                     article.slug &&
                                                     article.published_at &&
@@ -206,41 +208,59 @@ defineProps<{
                                                         article.published_at,
                                                     ) <= new Date()
                                                 "
-                                                :href="
-                                                    route(
-                                                        'articles.show',
-                                                        article.slug,
-                                                    )
-                                                "
-                                                target="_blank"
-                                                class="text-sm font-bold text-emerald-600 transition-colors hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
+                                                as-child
+                                                variant="ghost"
+                                                size="sm"
+                                                class="text-emerald-600 hover:bg-emerald-100 hover:text-emerald-700 dark:text-emerald-400 dark:hover:bg-emerald-900/30"
                                             >
-                                                View
-                                            </Link>
-                                            <Link
-                                                :href="
-                                                    route(
-                                                        'admin.articles.edit',
-                                                        article.id,
-                                                    )
-                                                "
-                                                class="text-sm font-bold text-primary transition-colors hover:text-primary/80"
+                                                <Link
+                                                    :href="
+                                                        route(
+                                                            'articles.show',
+                                                            article.slug,
+                                                        )
+                                                    "
+                                                    target="_blank"
+                                                >
+                                                    <Eye class="h-4 w-4" />
+                                                </Link>
+                                            </Button>
+                                            <Button
+                                                as-child
+                                                variant="ghost"
+                                                size="sm"
+                                                class="text-primary hover:bg-primary/10"
                                             >
-                                                Edit
-                                            </Link>
-                                            <Link
-                                                :href="
-                                                    route(
-                                                        'admin.articles.destroy',
-                                                        article.id,
-                                                    )
-                                                "
-                                                method="delete"
-                                                as="button"
-                                                class="text-sm font-bold text-muted-foreground transition-colors hover:text-destructive"
+                                                <Link
+                                                    :href="
+                                                        route(
+                                                            'admin.articles.edit',
+                                                            article.id,
+                                                        )
+                                                    "
+                                                >
+                                                    <Edit class="h-4 w-4" />
+                                                </Link>
+                                            </Button>
+                                            <Button
+                                                as-child
+                                                variant="ghost"
+                                                size="sm"
+                                                class="text-destructive hover:bg-destructive/10"
                                             >
-                                                Delete
-                                            </Link>
+                                                <Link
+                                                    :href="
+                                                        route(
+                                                            'admin.articles.destroy',
+                                                            article.id,
+                                                        )
+                                                    "
+                                                    method="delete"
+                                                    as="button"
+                                                >
+                                                    <Trash2 class="h-4 w-4" />
+                                                </Link>
+                                            </Button>
                                         </div>
                                     </td>
                                 </tr>

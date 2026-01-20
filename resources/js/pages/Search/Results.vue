@@ -4,6 +4,7 @@ import SearchBar from '@/components/landing/SearchBar.vue';
 import type { Article, Project } from '@/types/portfolio';
 import { Head, Link } from '@inertiajs/vue3';
 import { ArrowRight, Calendar, Code2, FileText, Search } from 'lucide-vue-next';
+import { stripHtml } from '@/utils/stripHtml';
 
 defineProps<{
     query: string;
@@ -101,7 +102,7 @@ defineProps<{
                                     <p
                                         class="mb-4 line-clamp-2 text-sm text-muted-foreground"
                                     >
-                                        {{ article.excerpt }}
+                                        {{ stripHtml(article.excerpt) }}
                                     </p>
                                     <div
                                         class="flex items-center gap-2 text-xs text-muted-foreground/60"

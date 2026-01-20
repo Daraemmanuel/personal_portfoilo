@@ -53,18 +53,21 @@ if (typeof window !== 'undefined') {
                 >
                     About
                 </a>
-                <a
-                    href="/#work"
-                    class="transition-colors hover:text-foreground"
-                >
-                    Work
-                </a>
+
                 <a
                     href="/#skills"
                     class="transition-colors hover:text-foreground"
                 >
                     Skills
                 </a>
+
+                <a
+                    href="/#work"
+                    class="transition-colors hover:text-foreground"
+                >
+                    Work
+                </a>
+
                 <Link
                     :href="route('articles.index')"
                     class="transition-colors hover:text-foreground"
