@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favicon Generator Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+        .upload-area {
+            border: 3px dashed #667eea;
+            border-radius: 0.5rem;
+            padding: 3rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            background: #f7f7f7;
+            border-color: #764ba2;
+        }
+        .upload-area.dragover {
+            background: #e8e8ff;
+            border-color: #764ba2;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .preview {
+            margin: 2rem 0;
+            text-align: center;
+        }
+        .preview img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .instructions {
+            background: #f7f7f7;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            margin-top: 2rem;
+        }
+        .instructions h3 {
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        .instructions ol {
+            margin-left: 1.5rem;
+            line-height: 1.8;
+        }
+        .instructions li {
+            margin-bottom: 0.5rem;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .file-info {
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #e8e8ff;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Favicon Generator</h1>
+        <p style="text-align: center; color: #666; margin-bottom: 2rem;">
+            Upload your logo/image to get instructions for generating favicons
+        </p>
+        
+        <div class="upload-area" id="uploadArea">
+            <p style="font-size: 1.2rem; margin-bottom: 1rem;">📁 Click or drag & drop</p>
+            <p style="color: #666;">Upload a square image (512x512px recommended)</p>
+            <input type="file" id="fileInput" accept="image/*">
+        </div>
+
+        <div class="preview" id="preview" style="display: none;">
+            <h3>Preview</h3>
+            <img id="previewImage" alt="Preview">
+            <div class="file-info" id="fileInfo"></div>
+        </div>
+
+        <div class="instructions">
+            <h3>📋 How to Generate Favicons:</h3>
+            <ol>
+                <li><strong>Use RealFaviconGenerator</strong> (Recommended):
+                    <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                        <li>Go to <a href="https://realfavicongenerator.net/" target="_blank">realfavicongenerator.net</a></li>
+                        <li>Upload your image</li>
+                        <li>Configure settings (iOS, Android, Windows)</li>
+                        <li>Download the generated package</li>
+                        <li>Extract and copy files to <code>public/</code> directory</li>
+                    </ul>
+                </li>
+                <li><strong>Or use Favicon.io</strong>:
+                    <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                        <li>Go to <a href="https://favicon.io/" target="_blank">favicon.io</a></li>
+                        <li>Choose "Image to Favicon"</li>
+                        <li>Upload your image</li>
+                        <li>Download and extract to <code>public/</code> directory</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+
+        <button class="btn" id="generateBtn" disabled onclick="openGenerator()">
+            Open RealFaviconGenerator
+        </button>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const preview = document.getElementById('preview');
+        const previewImage = document.getElementById('previewImage');
+        const fileInfo = document.getElementById('fileInfo');
+        const generateBtn = document.getElementById('generateBtn');
+
+        let selectedFile = null;
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        });
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Please upload an image file');
+                return;
+            }
+
+            selectedFile = file;
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                previewImage.src = e.target.result;
+                preview.style.display = 'block';
+                
+                const img = new Image();
+                img.onload = () => {
+                    fileInfo.innerHTML = `
+                        <strong>File:</strong> ${file.name}<br>
+                        <strong>Size:</strong> ${(file.size / 1024).toFixed(2)} KB<br>
+                        <strong>Dimensions:</strong> ${img.width} × ${img.height}px<br>
+                        ${img.width !== img.height ? '<span style="color: orange;">⚠️ Image is not square. Square images work best for favicons.</span>' : '<span style="color: green;">✓ Square image - perfect!</span>'}
+                    `;
+                };
+                img.src = e.target.result;
+            };
+            
+            reader.readAsDataURL(file);
+            generateBtn.disabled = false;
+        }
+
+        function openGenerator() {
+            if (selectedFile) {
+                // Create a temporary form to upload to RealFaviconGenerator
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = 'https://realfavicongenerator.net/api/favicon_generator';
+                form.target = '_blank';
+                form.enctype = 'multipart/form-data';
+                
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.name = 'favicon_generator';
+                input.files = [selectedFile];
+                
+                // Instead, just open the site
+                window.open('https://realfavicongenerator.net/', '_blank');
+            } else {
+                window.open('https://realfavicongenerator.net/', '_blank');
+            }
+        }
+    </script>
+</body>
+</html>
+

@@ -34,15 +34,18 @@
     <title inertia>{{ config('app.name', 'Dara Emmanuel') }}</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    {{-- Favicons --}}
+    <link rel="icon" href="/favicon.ico.png" sizes="any">
+    <link rel="icon" href="/favicon.svg.png" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/site.webmanifest">
 
     <link rel="preconnect" href="https://fonts.bunny.net">
     {{-- Note: SRI (Subresource Integrity) requires generating hashes for each resource version --}}
     {{-- For Bunny Fonts, SRI is not practical as the CSS is dynamically generated --}}
     {{-- Using crossorigin="anonymous" ensures proper CORS handling --}}
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" crossorigin="anonymous" />
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet"
+        crossorigin="anonymous" />
 
     @routes
     {{-- Single Vite entry; Inertia dynamically loads page components --}}
@@ -53,7 +56,8 @@
         <!-- Google Analytics -->
         {{-- Note: SRI is not available for dynamic gtag.js as the hash changes with each version --}}
         {{-- For production, consider using a CSP nonce or loading GA through a tag manager --}}
-        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.google_analytics.id') }}" crossorigin="anonymous"></script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('services.google_analytics.id') }}"
+            crossorigin="anonymous"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
 
