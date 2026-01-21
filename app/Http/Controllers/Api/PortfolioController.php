@@ -3,42 +3,49 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ArticleResource;
+use App\Http\Resources\ExperienceResource;
+use App\Http\Resources\ProjectResource;
+use App\Http\Resources\SkillResource;
 use App\Models\Article;
+use App\Models\Experience;
 use App\Models\Project;
 use App\Models\Skill;
-use App\Models\Experience;
 use Illuminate\Http\Request;
 
 class PortfolioController extends Controller
 {
     public function projects()
     {
-        return response()->json([
-            'data' => Project::orderBy('sort_order')->latest()->get(),
-        ]);
+        $projects = Project::where('is_archived', false)
+            ->orderBy('sort_order')
+            ->latest()
+            ->get();
+
+        return ProjectResource::collection($projects);
     }
 
-    public function articles()
+    public function articles(Request $request)
     {
-        return response()->json([
-            'data' => Article::published()
-                ->orderBy('published_at', 'desc')
-                ->paginate(20),
-        ]);
+        $articles = Article::published()
+            ->orderBy('published_at', 'desc')
+            ->paginate($request->get('per_page', 20));
+
+        return ArticleResource::collection($articles);
     }
 
     public function skills()
     {
-        return response()->json([
-            'data' => Skill::orderBy('sort_order')->get(),
-        ]);
+        $skills = Skill::orderBy('sort_order')->get();
+
+        return SkillResource::collection($skills);
     }
 
     public function experiences()
     {
-        return response()->json([
-            'data' => Experience::orderBy('sort_order')->latest()->get(),
-        ]);
+        $experiences = Experience::orderBy('sort_order')->latest()->get();
+
+        return ExperienceResource::collection($experiences);
     }
 
     public function article(string $slug)
@@ -47,8 +54,6 @@ class PortfolioController extends Controller
             ->published()
             ->firstOrFail();
 
-        return response()->json([
-            'data' => $article,
-        ]);
+        return new ArticleResource($article);
     }
 }

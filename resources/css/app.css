@@ -183,6 +183,29 @@
     html {
         scroll-behavior: smooth;
     }
+    
+    /* Enhanced focus indicators for better accessibility */
+    *:focus-visible {
+        outline: 2px solid hsl(var(--ring));
+        outline-offset: 2px;
+        border-radius: 0.25rem;
+    }
+    
+    /* Remove default focus outline for mouse users, keep for keyboard */
+    *:focus:not(:focus-visible) {
+        outline: none;
+    }
+    
+    /* Enhanced focus for interactive elements */
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible,
+    select:focus-visible {
+        outline: 2px solid hsl(var(--ring));
+        outline-offset: 2px;
+        box-shadow: 0 0 0 4px hsl(var(--ring) / 0.2);
+    }
 }
 @layer utilities {
     .animate-in {

@@ -21,19 +21,30 @@ use App\Models\Cv;
 Route::get('/', function () {
     $cv = Cv::where('is_active', true)->latest()->first();
     
+    // Use cache tags for better invalidation
+    $cache = Cache::getStore();
+    $useTags = $cache instanceof \Illuminate\Cache\TaggedCache || method_exists($cache, 'tags');
+    
+    $getCached = function (string $key, array $tags, callable $callback) use ($useTags) {
+        if ($useTags) {
+            return Cache::tags($tags)->remember($key, 3600, $callback);
+        }
+        return Cache::remember($key, 3600, $callback);
+    };
+
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Features::enabled(Features::registration()),
-        'projects' => Cache::remember('home.projects', 3600, fn() => 
+        'projects' => $getCached('home.projects', ['homepage', 'projects'], fn() => 
             Project::where('is_archived', false)->orderBy('sort_order')->latest()->get()
         ),
-        'skills' => Cache::remember('home.skills', 3600, fn() => 
+        'skills' => $getCached('home.skills', ['homepage', 'skills'], fn() => 
             Skill::orderBy('sort_order')->get()
         ),
-        'experiences' => Cache::remember('home.experiences', 3600, fn() => 
+        'experiences' => $getCached('home.experiences', ['homepage', 'experiences'], fn() => 
             Experience::orderBy('sort_order')->latest()->get()
         ),
-        'testimonials' => Cache::remember('home.testimonials', 3600, fn() => 
+        'testimonials' => $getCached('home.testimonials', ['homepage', 'testimonials'], fn() => 
             Testimonial::orderBy('sort_order')->limit(6)->get()
         ),
         'cvUrl' => $cv ? route('cv.download') : null,

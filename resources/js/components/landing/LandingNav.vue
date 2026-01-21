@@ -145,13 +145,18 @@ if (typeof window !== 'undefined') {
                 <!-- Mobile Menu Button - Only visible on mobile/tablet -->
                 <Sheet v-if="isMobile" v-model:open="isMobileMenuOpen">
                     <SheetTrigger as-child>
-                        <Button variant="ghost" size="icon" class="h-9 w-9">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            class="h-9 w-9"
+                            aria-label="Open mobile menu"
+                        >
                             <Menu class="h-5 w-5" />
                         </Button>
                     </SheetTrigger>
                     <SheetContent side="right" class="w-[300px] p-6">
                         <div class="flex flex-col gap-6">
-                            <div class="flex items-center justify-between">
+                            <div class="flex items-center">
                                 <a
                                     href="/"
                                     class="bg-gradient-to-r from-indigo-500 to-cyan-500 bg-clip-text text-xl font-bold tracking-tighter text-transparent"
@@ -159,13 +164,6 @@ if (typeof window !== 'undefined') {
                                 >
                                     DE.
                                 </a>
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    @click="isMobileMenuOpen = false"
-                                >
-                                    <X class="h-5 w-5" />
-                                </Button>
                             </div>
 
                             <!-- Mobile Search -->

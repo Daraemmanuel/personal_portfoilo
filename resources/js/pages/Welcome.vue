@@ -14,7 +14,7 @@ import type {
     Testimonial,
 } from '@/types/portfolio';
 import { Head } from '@inertiajs/vue3';
-import { onMounted, onUnmounted } from 'vue';
+import { computed, onMounted, onUnmounted } from 'vue';
 
 defineProps<{
     canLogin?: boolean;
@@ -25,6 +25,16 @@ defineProps<{
     testimonials?: Testimonial[];
 }>();
 
+// Dynamic URLs for SEO
+const siteUrl = computed(() => {
+    if (typeof window !== 'undefined') {
+        return window.location.origin;
+    }
+    return '';
+});
+
+const ogImage = computed(() => `${siteUrl.value}/og-image.jpg`);
+
 // Inject structured data script
 let structuredDataScript: HTMLScriptElement | null = null;
 
@@ -34,7 +44,7 @@ onMounted(() => {
         '@type': 'Person',
         name: 'DaraEmmanuel Akinyode',
         jobTitle: 'Software Engineer',
-        url: 'https://yourdomain.com',
+        url: siteUrl.value,
         sameAs: [
             'https://github.com/Daraemmanuel',
             'https://www.linkedin.com/in/daraemmanuel/',
@@ -79,11 +89,8 @@ onUnmounted(() => {
             content="Portfolio showcasing projects, skills, and experience in modern web development. Specializing in Laravel, Vue.js, TypeScript, React, React-Native, and more."
         />
         <meta property="og:type" content="website" />
-        <meta property="og:url" content="https://yourdomain.com" />
-        <meta
-            property="og:image"
-            content="https://yourdomain.com/og-image.jpg"
-        />
+        <meta property="og:url" :content="siteUrl" />
+        <meta property="og:image" :content="ogImage" />
         <meta
             property="og:site_name"
             content="DaraEmmanuel Akinyode Portfolio"
@@ -99,20 +106,18 @@ onUnmounted(() => {
             name="twitter:description"
             content="Portfolio showcasing projects, skills, and experience in modern web development."
         />
-        <meta
-            name="twitter:image"
-            content="https://yourdomain.com/og-image.jpg"
-        />
+        <meta name="twitter:image" :content="ogImage" />
 
         <!-- Canonical URL -->
-        <link rel="canonical" href="https://yourdomain.com" />
+        <link rel="canonical" :href="siteUrl" />
     </Head>
 
     <div
         class="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-indigo-500 selection:text-white"
     >
         <LandingNav :can-login="canLogin" />
-        <div class="fade-in-up animate-in">
+        <main id="main-content" tabindex="-1" class="focus:outline-none">
+            <div class="fade-in-up animate-in">
             <HeroSection />
         </div>
         <div class="fade-in-up animate-in delay-200">
@@ -127,9 +132,10 @@ onUnmounted(() => {
         <div class="fade-in-up animate-in delay-500">
             <TestimonialsSection :testimonials="testimonials" />
         </div>
-        <div class="fade-in-up animate-in delay-700">
-            <ContactFooter />
-        </div>
+            <div class="fade-in-up animate-in delay-700">
+                <ContactFooter />
+            </div>
+        </main>
         <ScrollToTop />
     </div>
 </template>

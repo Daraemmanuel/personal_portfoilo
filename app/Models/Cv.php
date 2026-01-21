@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Cv extends Model
 {
@@ -37,5 +38,14 @@ class Cv extends Model
         }
         
         return round($bytes, 2) . ' ' . $units[$i];
+    }
+
+    protected static function booted()
+    {
+        static::deleting(function (Cv $cv) {
+            if ($cv->file_path) {
+                Storage::disk('public')->delete($cv->file_path);
+            }
+        });
     }
 }

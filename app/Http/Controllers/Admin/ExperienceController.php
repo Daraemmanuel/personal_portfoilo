@@ -33,7 +33,13 @@ class ExperienceController extends Controller
             'sort_order' => 'nullable|integer',
         ]);
 
-        Experience::create($validated);
+        Experience::create([
+            'role' => $validated['role'],
+            'company' => $validated['company'],
+            'period' => $validated['period'],
+            'description' => $validated['description'],
+            'sort_order' => $validated['sort_order'] ?? 0,
+        ]);
 
         $this->clearCache('experiences');
 
@@ -57,9 +63,20 @@ class ExperienceController extends Controller
             'sort_order' => 'nullable|integer',
         ]);
 
-        $experience->update($validated);
+        $experience->update([
+            'role' => $validated['role'],
+            'company' => $validated['company'],
+            'period' => $validated['period'],
+            'description' => $validated['description'],
+            'sort_order' => $validated['sort_order'] ?? 0,
+        ]);
 
         $this->clearCache('experiences');
+
+        // If this is an auto-save (Inertia partial request with only parameter), stay on edit page
+        if ($request->header('X-Inertia') && $request->header('X-Inertia-Partial-Data')) {
+            return back();
+        }
 
         return redirect()->route('admin.experiences.index');
     }

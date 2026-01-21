@@ -36,29 +36,44 @@ class CvController extends Controller
         Cv::where('is_active', true)->update(['is_active' => false]);
 
         // Store the new CV
-        $file = $request->file('cv_file');
-        $path = $file->store('cvs', 'public');
+        try {
+            $file = $request->file('cv_file');
+            $path = $file->store('cvs', 'public');
 
-        $cv = Cv::create([
-            'file_path' => $path,
-            'file_name' => $file->getClientOriginalName(),
-            'mime_type' => $file->getMimeType(),
-            'file_size' => $file->getSize(),
-            'is_active' => true,
-        ]);
+            $cv = Cv::create([
+                'file_path' => $path,
+                'file_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getMimeType(),
+                'file_size' => $file->getSize(),
+                'is_active' => true,
+            ]);
 
-        return redirect()->route('admin.cv.index')
-            ->with('success', 'CV uploaded successfully.');
+            return redirect()->route('admin.cv.index')
+                ->with('success', 'CV uploaded successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to upload CV', [
+                'error' => $e->getMessage(),
+            ]);
+            return back()->withErrors(['cv_file' => 'Failed to upload CV. Please try again.']);
+        }
     }
 
     public function destroy(Cv $cv)
     {
-        if ($cv->file_path) {
-            Storage::disk('public')->delete($cv->file_path);
-        }
-        $cv->delete();
+        try {
+            if ($cv->file_path) {
+                Storage::disk('public')->delete($cv->file_path);
+            }
+            $cv->delete();
 
-        return redirect()->route('admin.cv.index')
-            ->with('success', 'CV deleted successfully.');
+            return redirect()->route('admin.cv.index')
+                ->with('success', 'CV deleted successfully.');
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete CV', [
+                'error' => $e->getMessage(),
+                'cv_id' => $cv->id,
+            ]);
+            return back()->withErrors(['error' => 'Failed to delete CV. Please try again.']);
+        }
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreContactRequest;
 use App\Models\ContactMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
@@ -10,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 
 class ContactController extends Controller
 {
-    public function store(Request $request)
+    public function store(StoreContactRequest $request)
     {
         // Rate limiting: More lenient in development, stricter in production
         $maxAttempts = app()->environment('local') ? 20 : 5;
@@ -27,13 +28,7 @@ class ContactController extends Controller
 
         RateLimiter::hit($key, $decaySeconds);
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'subject' => 'required|string|max:255',
-            'message' => 'required|string|max:5000',
-            'honeypot' => 'nullable|string|max:0', // Honeypot field
-        ]);
+        $validated = $request->validated();
 
         // Check honeypot
         if (!empty($request->input('honeypot'))) {
@@ -48,20 +43,8 @@ class ContactController extends Controller
             'message' => $validated['message'],
         ]);
 
-        // Send email notification
-        try {
-            Mail::raw(
-                "Name: {$contactMessage->name}\nEmail: {$contactMessage->email}\nSubject: {$contactMessage->subject}\n\nMessage:\n{$contactMessage->message}",
-                function ($message) use ($contactMessage) {
-                    $message->to(config('mail.from.address'))
-                        ->subject('New Contact Form Message: ' . $contactMessage->subject)
-                        ->replyTo($contactMessage->email, $contactMessage->name);
-                }
-            );
-        } catch (\Exception $e) {
-            // Log error but don't fail the request
-            \Log::error('Failed to send contact email: ' . $e->getMessage());
-        }
+        // Send email notification via queue
+        \App\Jobs\SendContactEmailNotification::dispatch($contactMessage);
 
         return back()->with('success', 'Thank you for your message! I\'ll get back to you soon.');
     }

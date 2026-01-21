@@ -7,6 +7,7 @@ use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 
 class Article extends Model
 {
@@ -130,9 +131,15 @@ class Article extends Model
     {
         parent::boot();
 
-        static::creating(function ($article) {
+        static::creating(function (Article $article) {
             if (empty($article->slug)) {
                 $article->slug = Str::slug($article->title);
+            }
+        });
+
+        static::deleting(function (Article $article) {
+            if ($article->featured_image) {
+                Storage::disk('public')->delete($article->featured_image);
             }
         });
     }

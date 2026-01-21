@@ -33,7 +33,12 @@ class SkillController extends Controller
             'sort_order' => 'nullable|integer',
         ]);
 
-        Skill::create($validated);
+        Skill::create([
+            'name' => $validated['name'],
+            'icon' => $validated['icon'],
+            'items' => $validated['items'],
+            'sort_order' => $validated['sort_order'] ?? 0,
+        ]);
 
         $this->clearCache('skills');
 
@@ -57,9 +62,19 @@ class SkillController extends Controller
             'sort_order' => 'nullable|integer',
         ]);
 
-        $skill->update($validated);
+        $skill->update([
+            'name' => $validated['name'],
+            'icon' => $validated['icon'],
+            'items' => $validated['items'],
+            'sort_order' => $validated['sort_order'] ?? 0,
+        ]);
 
         $this->clearCache('skills');
+
+        // If this is an auto-save (Inertia partial request with only parameter), stay on edit page
+        if ($request->header('X-Inertia') && $request->header('X-Inertia-Partial-Data')) {
+            return back();
+        }
 
         return redirect()->route('admin.skills.index');
     }

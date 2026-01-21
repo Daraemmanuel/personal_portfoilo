@@ -60,6 +60,17 @@ class HandleInertiaRequests extends Middleware
                 ...(new \Tighten\Ziggy\Ziggy)->toArray(),
                 'location' => $request->url(),
             ],
+            'errors' => fn () => $request->session()->get('errors') ? $request->session()->get('errors')->getBag('default')->getMessages() : (object) [],
         ];
+    }
+
+    /**
+     * Handle Inertia errors.
+     *
+     * @see https://inertiajs.com/error-handling
+     */
+    public function rootView(Request $request): string
+    {
+        return parent::rootView($request);
     }
 }

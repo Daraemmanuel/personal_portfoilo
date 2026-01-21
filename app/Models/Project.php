@@ -6,6 +6,7 @@ use App\Traits\ClearsHomepageCache;
 use App\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Project extends Model
 {
@@ -30,5 +31,14 @@ class Project extends Model
     public function getImageUrlAttribute()
     {
         return $this->image ? asset('storage/' . $this->image) : null;
+    }
+
+    protected static function booted()
+    {
+        static::deleting(function (Project $project) {
+            if ($project->image) {
+                Storage::disk('public')->delete($project->image);
+            }
+        });
     }
 }

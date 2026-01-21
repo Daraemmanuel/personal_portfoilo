@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import LandingNav from '@/components/landing/LandingNav.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import { Folder } from 'lucide-vue-next';
+import { ArrowLeft, Folder } from 'lucide-vue-next';
 
 defineProps<{
     categories: Array<{
@@ -20,6 +20,16 @@ defineProps<{
         <LandingNav />
 
         <div class="mx-auto max-w-6xl px-6 py-24">
+            <div class="mb-6">
+                <Link
+                    :href="route('articles.index')"
+                    class="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                    <ArrowLeft class="h-4 w-4" />
+                    <span>Back to Articles</span>
+                </Link>
+            </div>
+
             <header class="fade-in-up mb-12 animate-in text-center">
                 <h1
                     class="mb-4 bg-gradient-to-b from-foreground to-foreground/50 bg-clip-text text-4xl font-bold text-transparent md:text-5xl"

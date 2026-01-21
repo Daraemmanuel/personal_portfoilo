@@ -11,19 +11,20 @@ use App\Http\Controllers\Admin\CommentController;
 use App\Http\Controllers\Admin\NewsletterController;
 use App\Http\Controllers\Admin\AnalyticsController;
 use App\Http\Controllers\Admin\CvController;
+use App\Http\Controllers\Admin\MediaController;
 
 // Dashboard
 Route::get('dashboard', [AnalyticsController::class, 'dashboard'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', 'admin'])
     ->name('dashboard');
 
 // Analytics route for detailed analytics
 Route::get('admin/analytics', [AnalyticsController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', 'admin'])
     ->name('admin.analytics.index');
 
 // Admin routes
-Route::middleware(['auth', 'verified', 'throttle:60,1'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'verified', 'admin', 'throttle:60,1'])->prefix('admin')->name('admin.')->group(function () {
     // Resources
     Route::resource('projects', ProjectController::class);
     Route::resource('skills', SkillController::class);
@@ -50,5 +51,8 @@ Route::middleware(['auth', 'verified', 'throttle:60,1'])->prefix('admin')->name(
     Route::get('cv', [CvController::class, 'index'])->name('cv.index');
     Route::post('cv', [CvController::class, 'store'])->name('cv.store');
     Route::delete('cv/{cv}', [CvController::class, 'destroy'])->name('cv.destroy');
+    
+    // Media upload for rich text editors
+    Route::post('media/upload-image', [MediaController::class, 'uploadImage'])->name('media.upload-image');
 });
 

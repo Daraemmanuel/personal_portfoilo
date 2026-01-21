@@ -5,7 +5,10 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import type { DefineComponent } from 'vue';
 import { createApp, h } from 'vue';
 import { ZiggyVue } from 'ziggy-js';
+import AriaLiveRegion from './components/AriaLiveRegion.vue';
+import ErrorBoundary from './components/ErrorBoundary.vue';
 import GlobalConfirmDialog from './components/ui/GlobalConfirmDialog.vue';
+import SkipLink from './components/SkipLink.vue';
 import ToastContainer from './components/ui/ToastContainer.vue';
 import { initializeTheme } from './composables/useAppearance';
 import { useErrorTracking } from './composables/useErrorTracking';
@@ -54,11 +57,13 @@ createInertiaApp({
         useErrorTracking();
 
         const app = createApp({
-            render: () => [
+            render: () => h(ErrorBoundary, () => [
+                h(SkipLink),
+                h(AriaLiveRegion, { message: '' }),
                 h(App, props),
                 h(ToastContainer),
                 h(GlobalConfirmDialog),
-            ],
+            ]),
         })
             .use(plugin)
             .use(ZiggyVue);
@@ -86,11 +91,12 @@ createInertiaApp({
                 }, options);
 
                 observer.observe(el);
-                (el as any)._observer = observer;
+                (el as HTMLElement & { _observer?: IntersectionObserver })._observer = observer;
             },
             unmounted(el) {
-                if ((el as any)._observer) {
-                    (el as any)._observer.disconnect();
+                const element = el as HTMLElement & { _observer?: IntersectionObserver };
+                if (element._observer) {
+                    element._observer.disconnect();
                 }
             },
         });

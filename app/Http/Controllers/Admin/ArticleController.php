@@ -3,21 +3,27 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreArticleRequest;
+use App\Http\Requests\Admin\UpdateArticleRequest;
+use App\Services\ArticleService;
 use App\Models\Article;
-use App\Traits\ClearsHomepageCache;
 use App\Traits\LogsActivity;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 
 class ArticleController extends Controller
 {
-    use ClearsHomepageCache, LogsActivity;
+    use LogsActivity;
 
     public function index()
     {
-        $articles = Article::orderBy('published_at', 'desc')->latest()->get();
+        $articles = Article::withCount([
+            'comments' => fn($q) => $q->where('is_approved', false),
+        ])
+            ->orderBy('published_at', 'desc')
+            ->latest()
+            ->get();
         $scheduledArticles = Article::whereNotNull('published_at')
             ->where('published_at', '>', now())
             ->orderBy('published_at', 'asc')
@@ -34,29 +40,33 @@ class ArticleController extends Controller
         return Inertia::render('Admin/Articles/Create');
     }
 
-    public function store(Request $request)
+    public function store(StoreArticleRequest $request, ArticleService $service)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:articles,slug',
-            'excerpt' => 'required|string|max:500',
-            'content' => 'required|string',
-            'featured_image' => 'nullable|image|max:2048',
-            'category' => 'nullable|string|max:255',
-            'tags' => 'nullable|array',
-            'tags.*' => 'string',
-            'published_at' => 'nullable|date',
-            'is_featured' => 'boolean',
-            'series' => 'nullable|string|max:255',
-            'series_order' => 'nullable|integer|min:1',
-        ]);
+        $validated = $request->validated();
 
-        if ($request->hasFile('featured_image')) {
-            $validated['featured_image'] = $request->file('featured_image')->store('articles', 'public');
+        $data = [
+            'title' => $validated['title'],
+            'slug' => $validated['slug'] ?? null,
+            'excerpt' => $validated['excerpt'],
+            'content' => $validated['content'],
+            'category' => $validated['category'] ?? null,
+            'tags' => $validated['tags'] ?? null,
+            'published_at' => $validated['published_at'] ?? null,
+            'is_featured' => $validated['is_featured'] ?? false,
+            'series' => $validated['series'] ?? null,
+            'series_order' => $validated['series_order'] ?? null,
+        ];
+
+        try {
+            $image = $request->hasFile('featured_image') ? $request->file('featured_image') : null;
+            $service->create($data, $image);
+        } catch (\Exception $e) {
+            \Log::error('Failed to create article', [
+                'error' => $e->getMessage(),
+                'article_title' => $validated['title'],
+            ]);
+            return back()->withErrors(['featured_image' => 'Failed to create article. Please try again.']);
         }
-
-        Article::create($validated);
-        $this->clearCache('articles');
 
         return redirect()->route('admin.articles.index');
     }
@@ -68,50 +78,59 @@ class ArticleController extends Controller
         ]);
     }
 
-    public function update(Request $request, Article $article)
+    public function update(UpdateArticleRequest $request, Article $article, ArticleService $service)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'slug' => 'nullable|string|max:255|unique:articles,slug,' . $article->id,
-            'excerpt' => 'required|string|max:500',
-            'content' => 'required|string',
-            'featured_image' => 'nullable|image|max:2048',
-            'category' => 'nullable|string|max:255',
-            'tags' => 'nullable|array',
-            'tags.*' => 'string',
-            'published_at' => 'nullable|date',
-            'is_featured' => 'boolean',
-            'series' => 'nullable|string|max:255',
-            'series_order' => 'nullable|integer|min:1',
-        ]);
+        $validated = $request->validated();
 
-        if ($request->hasFile('featured_image')) {
-            if ($article->featured_image) {
-                Storage::disk('public')->delete($article->featured_image);
-            }
-            $validated['featured_image'] = $request->file('featured_image')->store('articles', 'public');
-        } else {
-            unset($validated['featured_image']);
+        $data = [
+            'title' => $validated['title'],
+            'slug' => $validated['slug'] ?? null,
+            'excerpt' => $validated['excerpt'],
+            'content' => $validated['content'],
+            'category' => $validated['category'] ?? null,
+            'tags' => $validated['tags'] ?? null,
+            'published_at' => $validated['published_at'] ?? null,
+            'is_featured' => $validated['is_featured'] ?? false,
+            'series' => $validated['series'] ?? null,
+            'series_order' => $validated['series_order'] ?? null,
+        ];
+
+        try {
+            $image = $request->hasFile('featured_image') ? $request->file('featured_image') : null;
+            $service->update($article, $data, $image);
+        } catch (\Exception $e) {
+            \Log::error('Failed to update article', [
+                'error' => $e->getMessage(),
+                'article_id' => $article->id,
+            ]);
+            return back()->withErrors(['featured_image' => 'Failed to update article. Please try again.']);
         }
 
-        $article->update($validated);
-        $this->clearCache('articles');
+        // If this is an auto-save (Inertia partial request with only parameter), stay on edit page
+        if ($request->header('X-Inertia') && $request->header('X-Inertia-Partial-Data')) {
+            return back();
+        }
 
         return redirect()->route('admin.articles.index');
     }
 
-    public function destroy(Article $article)
+    public function destroy(Article $article, ArticleService $service)
     {
-        if ($article->featured_image) {
-            Storage::disk('public')->delete($article->featured_image);
+        try {
+            $service->delete($article);
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete article', [
+                'error' => $e->getMessage(),
+                'article_id' => $article->id,
+            ]);
+            return back()->withErrors(['error' => 'Failed to delete article. Please try again.']);
         }
-        $article->delete();
-        $this->clearCache('articles');
 
-        return redirect()->route('admin.articles.index');
+        return redirect()->route('admin.articles.index')
+            ->with('success', 'Article deleted successfully.');
     }
 
-    public function bulkDelete(Request $request)
+    public function bulkDelete(Request $request, ArticleService $service)
     {
         $request->validate([
             'ids' => 'required|array',
@@ -120,14 +139,17 @@ class ArticleController extends Controller
 
         $articles = Article::whereIn('id', $request->ids)->get();
 
-        foreach ($articles as $article) {
-            if ($article->featured_image) {
-                Storage::disk('public')->delete($article->featured_image);
+        try {
+            foreach ($articles as $article) {
+                $service->delete($article);
             }
+        } catch (\Exception $e) {
+            \Log::error('Failed to bulk delete articles', [
+                'error' => $e->getMessage(),
+                'article_ids' => $request->ids,
+            ]);
+            return back()->withErrors(['error' => 'Failed to delete articles. Please try again.']);
         }
-
-        Article::whereIn('id', $request->ids)->delete();
-        $this->clearCache('articles');
 
         return redirect()->route('admin.articles.index')
             ->with('success', count($request->ids) . ' article(s) deleted successfully.');

@@ -15,6 +15,14 @@ class CommentReactionController extends Controller
         // Find comment by ID if route model binding doesn't work
         $comment = ArticleComment::findOrFail($comment);
         
+        // Only allow reactions on approved comments
+        if (!$comment->is_approved) {
+            return response()->json([
+                'message' => 'Cannot react to unapproved comments.',
+                'error' => 'comment_not_approved',
+            ], 403);
+        }
+        
         $validated = $request->validate([
             'reaction_type' => 'required|in:like,helpful',
         ]);

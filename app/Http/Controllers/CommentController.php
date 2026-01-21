@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCommentRequest;
 use App\Models\Article;
 use App\Models\ArticleComment;
 use Illuminate\Http\Request;
@@ -10,7 +11,7 @@ use Illuminate\Validation\ValidationException;
 
 class CommentController extends Controller
 {
-    public function store(Request $request, Article $article)
+    public function store(StoreCommentRequest $request, Article $article)
     {
         $key = 'comment:' . $request->ip();
         
@@ -28,14 +29,12 @@ class CommentController extends Controller
             return response()->noContent();
         }
 
-        $validated = $request->validate([
-            'author_name' => 'required|string|max:255',
-            'content' => 'required|string|max:2000',
-            'parent_id' => 'nullable|exists:article_comments,id',
-        ]);
+        $validated = $request->validated();
 
         $comment = $article->comments()->create([
-            ...$validated,
+            'author_name' => $validated['author_name'],
+            'content' => $validated['content'],
+            'parent_id' => $validated['parent_id'] ?? null,
             'author_email' => null, // Email no longer required
             'ip_address' => $request->ip(),
             'user_agent' => $request->userAgent(),

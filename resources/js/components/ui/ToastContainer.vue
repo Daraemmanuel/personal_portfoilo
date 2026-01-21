@@ -9,6 +9,9 @@ const { toasts } = useToast();
     <div
         class="fixed top-20 right-4 z-50 flex flex-col gap-2"
         style="max-width: 400px;"
+        role="region"
+        aria-live="polite"
+        aria-label="Notifications"
     >
         <TransitionGroup
             name="toast"

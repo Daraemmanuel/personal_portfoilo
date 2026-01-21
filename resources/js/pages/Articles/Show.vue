@@ -111,6 +111,7 @@ onUnmounted(() => {
         class="min-h-screen bg-background font-sans text-foreground antialiased selection:bg-indigo-500 selection:text-white"
     >
         <LandingNav />
+        <main id="main-content" tabindex="-1" class="focus:outline-none">
 
         <div class="mx-auto max-w-4xl px-4 py-16 sm:px-6 sm:py-24">
             <div v-if="!article" class="text-center text-muted-foreground">
@@ -400,5 +401,6 @@ onUnmounted(() => {
                 </div>
             </section>
         </div>
+        </main>
     </div>
 </template>

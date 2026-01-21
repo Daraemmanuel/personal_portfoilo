@@ -3,19 +3,20 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreProjectRequest;
+use App\Http\Requests\Admin\UpdateProjectRequest;
+use App\Services\ProjectService;
 use App\Models\Project;
-use App\Traits\ClearsHomepageCache;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class ProjectController extends Controller
 {
-    use ClearsHomepageCache;
     public function index()
     {
         return Inertia::render('Admin/Projects/Index', [
-            'projects' => Project::orderBy('sort_order', 'asc')->latest()->get(),
+            'projects' => Project::orderBy('sort_order', 'asc')
+                ->latest()
+                ->get(),
         ]);
     }
 
@@ -31,26 +32,29 @@ class ProjectController extends Controller
         return Inertia::render('Admin/Projects/Create');
     }
 
-    public function store(Request $request)
+    public function store(StoreProjectRequest $request, ProjectService $service)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'image' => 'nullable|image|max:2048',
-            'link' => 'nullable|url',
-            'tags' => 'nullable|array',
-            'tags.*' => 'string',
-            'sort_order' => 'nullable|integer',
-            'is_archived' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
-        if ($request->hasFile('image')) {
-            $validated['image'] = $request->file('image')->store('projects', 'public');
+        $data = [
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'link' => $validated['link'] ?? null,
+            'tags' => $validated['tags'] ?? null,
+            'sort_order' => $validated['sort_order'] ?? 0,
+            'is_archived' => $validated['is_archived'] ?? false,
+        ];
+
+        try {
+            $image = $request->hasFile('image') ? $request->file('image') : null;
+            $service->create($data, $image);
+        } catch (\Exception $e) {
+            \Log::error('Failed to create project', [
+                'error' => $e->getMessage(),
+                'project_title' => $validated['title'],
+            ]);
+            return back()->withErrors(['image' => 'Failed to create project. Please try again.']);
         }
-
-        Project::create($validated);
-
-        $this->clearCache('projects');
 
         return redirect()->route('admin.projects.index');
     }
@@ -62,44 +66,51 @@ class ProjectController extends Controller
         ]);
     }
 
-    public function update(Request $request, Project $project)
+    public function update(UpdateProjectRequest $request, Project $project, ProjectService $service)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'image' => 'nullable|image|max:2048',
-            'link' => 'nullable|url',
-            'tags' => 'nullable|array',
-            'tags.*' => 'string',
-            'sort_order' => 'nullable|integer',
-            'is_archived' => 'boolean',
-        ]);
+        $validated = $request->validated();
 
-        if ($request->hasFile('image')) {
-            if ($project->image) {
-                Storage::disk('public')->delete($project->image);
-            }
-            $validated['image'] = $request->file('image')->store('projects', 'public');
-        } else {
-            unset($validated['image']);
+        $data = [
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'link' => $validated['link'] ?? null,
+            'tags' => $validated['tags'] ?? null,
+            'sort_order' => $validated['sort_order'] ?? 0,
+            'is_archived' => $validated['is_archived'] ?? false,
+        ];
+
+        try {
+            $image = $request->hasFile('image') ? $request->file('image') : null;
+            $service->update($project, $data, $image);
+        } catch (\Exception $e) {
+            \Log::error('Failed to update project', [
+                'error' => $e->getMessage(),
+                'project_id' => $project->id,
+            ]);
+            return back()->withErrors(['image' => 'Failed to update project. Please try again.']);
         }
 
-        $project->update($validated);
-
-        $this->clearCache('projects');
+        // If this is an auto-save (Inertia partial request with only parameter), stay on edit page
+        if ($request->header('X-Inertia') && $request->header('X-Inertia-Partial-Data')) {
+            return back();
+        }
 
         return redirect()->route('admin.projects.index');
     }
 
-    public function destroy(Project $project)
+    public function destroy(Project $project, ProjectService $service)
     {
-        if ($project->image) {
-            Storage::disk('public')->delete($project->image);
+        try {
+            $service->delete($project);
+        } catch (\Exception $e) {
+            \Log::error('Failed to delete project', [
+                'error' => $e->getMessage(),
+                'project_id' => $project->id,
+            ]);
+            return back()->withErrors(['error' => 'Failed to delete project. Please try again.']);
         }
-        $project->delete();
 
-        $this->clearCache('projects');
-
-        return redirect()->route('admin.projects.index');
+        return redirect()->route('admin.projects.index')
+            ->with('success', 'Project deleted successfully.');
     }
 }

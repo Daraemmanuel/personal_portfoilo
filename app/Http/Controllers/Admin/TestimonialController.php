@@ -36,11 +36,28 @@ class TestimonialController extends Controller
             'sort_order' => 'nullable|integer',
         ]);
 
+        $data = [
+            'name' => $validated['name'],
+            'role' => $validated['role'],
+            'company' => $validated['company'],
+            'content' => $validated['content'],
+            'rating' => $validated['rating'] ?? null,
+            'sort_order' => $validated['sort_order'] ?? 0,
+        ];
+
         if ($request->hasFile('avatar')) {
-            $validated['avatar'] = $request->file('avatar')->store('testimonials', 'public');
+            try {
+                $data['avatar'] = $request->file('avatar')->store('testimonials', 'public');
+            } catch (\Exception $e) {
+                \Log::error('Failed to upload testimonial avatar', [
+                    'error' => $e->getMessage(),
+                    'testimonial_name' => $validated['name'],
+                ]);
+                return back()->withErrors(['avatar' => 'Failed to upload image. Please try again.']);
+            }
         }
 
-        Testimonial::create($validated);
+        Testimonial::create($data);
 
         $this->clearCache('testimonials');
 
@@ -66,18 +83,38 @@ class TestimonialController extends Controller
             'sort_order' => 'nullable|integer',
         ]);
 
+        $data = [
+            'name' => $validated['name'],
+            'role' => $validated['role'],
+            'company' => $validated['company'],
+            'content' => $validated['content'],
+            'rating' => $validated['rating'] ?? null,
+            'sort_order' => $validated['sort_order'] ?? 0,
+        ];
+
         if ($request->hasFile('avatar')) {
-            if ($testimonial->avatar) {
-                Storage::disk('public')->delete($testimonial->avatar);
+            try {
+                if ($testimonial->avatar) {
+                    Storage::disk('public')->delete($testimonial->avatar);
+                }
+                $data['avatar'] = $request->file('avatar')->store('testimonials', 'public');
+            } catch (\Exception $e) {
+                \Log::error('Failed to upload testimonial avatar', [
+                    'error' => $e->getMessage(),
+                    'testimonial_id' => $testimonial->id,
+                ]);
+                return back()->withErrors(['avatar' => 'Failed to upload image. Please try again.']);
             }
-            $validated['avatar'] = $request->file('avatar')->store('testimonials', 'public');
-        } else {
-            unset($validated['avatar']);
         }
 
-        $testimonial->update($validated);
+        $testimonial->update($data);
 
         $this->clearCache('testimonials');
+
+        // If this is an auto-save (Inertia partial request with only parameter), stay on edit page
+        if ($request->header('X-Inertia') && $request->header('X-Inertia-Partial-Data')) {
+            return back();
+        }
 
         return redirect()->route('admin.testimonials.index');
     }

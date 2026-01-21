@@ -49,4 +49,17 @@ class User extends Authenticatable
             'two_factor_confirmed_at' => 'datetime',
         ];
     }
+
+    /**
+     * Determine if the user should be treated as an administrator.
+     *
+     * For this portfolio, we treat a single configured email address as the admin.
+     * This avoids schema changes while still enforcing authorization.
+     */
+    public function isAdmin(): bool
+    {
+        $adminEmail = config('portfolio.admin_email');
+
+        return $adminEmail !== null && strcasecmp($this->email, $adminEmail) === 0;
+    }
 }

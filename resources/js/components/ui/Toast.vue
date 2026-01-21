@@ -42,14 +42,17 @@ const bgColor = computed(() => {
             'flex items-center gap-3 rounded-lg border px-4 py-3 shadow-lg backdrop-blur-sm',
             bgColor,
         ]"
+        role="alert"
+        :aria-live="toast.type === 'error' ? 'assertive' : 'polite'"
     >
-        <component :is="icon" class="h-5 w-5 flex-shrink-0" />
+        <component :is="icon" class="h-5 w-5 flex-shrink-0" aria-hidden="true" />
         <p class="flex-1 text-sm font-medium">{{ toast.message }}</p>
         <button
             @click="remove(toast.id)"
-            class="flex-shrink-0 text-current opacity-70 transition-opacity hover:opacity-100"
+            class="flex-shrink-0 text-current opacity-70 transition-opacity hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-current focus:ring-offset-2 rounded"
+            aria-label="Close notification"
         >
-            <X class="h-4 w-4" />
+            <X class="h-4 w-4" aria-hidden="true" />
         </button>
     </div>
 </template>
