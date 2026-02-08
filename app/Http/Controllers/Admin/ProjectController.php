@@ -8,9 +8,22 @@ use App\Http\Requests\Admin\UpdateProjectRequest;
 use App\Services\ProjectService;
 use App\Models\Project;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
 
-class ProjectController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class ProjectController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view projects', only: ['index', 'show']),
+            new Middleware('permission:create projects', only: ['create', 'store']),
+            new Middleware('permission:edit projects', only: ['edit', 'update']),
+            new Middleware('permission:delete projects', only: ['destroy']),
+        ];
+    }
     public function index()
     {
         return Inertia::render('Admin/Projects/Index', [
@@ -49,7 +62,7 @@ class ProjectController extends Controller
             $image = $request->hasFile('image') ? $request->file('image') : null;
             $service->create($data, $image);
         } catch (\Exception $e) {
-            \Log::error('Failed to create project', [
+            Log::error('Failed to create project', [
                 'error' => $e->getMessage(),
                 'project_title' => $validated['title'],
             ]);
@@ -83,7 +96,7 @@ class ProjectController extends Controller
             $image = $request->hasFile('image') ? $request->file('image') : null;
             $service->update($project, $data, $image);
         } catch (\Exception $e) {
-            \Log::error('Failed to update project', [
+            Log::error('Failed to update project', [
                 'error' => $e->getMessage(),
                 'project_id' => $project->id,
             ]);
@@ -103,7 +116,7 @@ class ProjectController extends Controller
         try {
             $service->delete($project);
         } catch (\Exception $e) {
-            \Log::error('Failed to delete project', [
+            Log::error('Failed to delete project', [
                 'error' => $e->getMessage(),
                 'project_id' => $project->id,
             ]);

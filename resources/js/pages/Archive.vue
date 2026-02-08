@@ -71,11 +71,10 @@ defineProps<{
                             <h3 class="text-xl font-bold">
                                 {{ project.title }}
                             </h3>
-                            <p
+                            <div
                                 class="mt-2 line-clamp-2 text-sm text-muted-foreground"
-                            >
-                                {{ project.description }}
-                            </p>
+                                v-html="project.description"
+                            ></div>
 
                             <div class="mt-4 flex flex-wrap gap-2">
                                 <span

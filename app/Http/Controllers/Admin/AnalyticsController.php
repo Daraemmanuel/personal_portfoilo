@@ -10,37 +10,46 @@ use App\Models\NewsletterSubscriber;
 use App\Models\Skill;
 use App\Models\Experience;
 use App\Models\Testimonial;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
-class AnalyticsController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class AnalyticsController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('role:admin'),
+        ];
+    }
     public function dashboard()
     {
-        // Article views over time
-        $articleViews = Article::select(
-            DB::raw('DATE(created_at) as date'),
-            DB::raw('SUM(views) as total_views')
-        )
-            ->where('created_at', '>=', now()->subDays(30))
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
+        $articleAnalytics = $this->getArticleAnalytics();
+        
+        return Inertia::render('Dashboard', [
+            'stats' => $this->getDashboardStats(),
+            'articleViews' => $articleAnalytics['articleViews'],
+            'popularArticles' => $articleAnalytics['popularArticles'],
+            'recentArticles' => $articleAnalytics['recentArticles'],
+            'viewsByCategory' => $articleAnalytics['viewsByCategory'],
+            'articlesThisMonth' => $articleAnalytics['articlesThisMonth'],
+            'scheduledArticles' => $articleAnalytics['scheduledArticles'],
+            'seriesStats' => $articleAnalytics['seriesStats'],
+            'totalSeries' => $articleAnalytics['totalSeries'],
+            'totalArticlesInSeries' => $articleAnalytics['totalArticlesInSeries'],
+            'recentActivity' => $this->getRecentActivity(),
+        ]);
+    }
 
-        // Popular articles
-        $popularArticles = Article::orderBy('views', 'desc')
-            ->limit(10)
-            ->get(['id', 'title', 'views', 'published_at']);
-
-        // Recent activity
-        $recentArticles = Article::latest()
-            ->limit(5)
-            ->get(['id', 'title', 'views', 'created_at']);
-
-        // Stats - Combined from Dashboard and Analytics
-        $stats = [
-            // Dashboard stats
+    /**
+     * Get basic statistics for the dashboard.
+     */
+    private function getDashboardStats(): array
+    {
+        return [
+            // Dashboard counts
             'projects' => Project::count(),
             'skills' => Skill::count(),
             'experiences' => Experience::count(),
@@ -48,6 +57,7 @@ class AnalyticsController extends Controller
             'articles' => Article::count(),
             'contact_messages' => ContactMessage::count(),
             'unread_messages' => ContactMessage::whereNull('read_at')->count(),
+            
             // Analytics stats
             'total_articles' => Article::count(),
             'published_articles' => Article::published()->count(),
@@ -60,102 +70,101 @@ class AnalyticsController extends Controller
             'pending_comments' => \App\Models\ArticleComment::where('is_approved', false)->count(),
             'featured_articles' => Article::featured()->count(),
         ];
+    }
 
-        // Views by category
-        $viewsByCategory = Article::select('category', DB::raw('SUM(views) as total_views'))
-            ->whereNotNull('category')
-            ->groupBy('category')
-            ->orderByDesc('total_views')
+    /**
+     * Get detailed article analytics.
+     */
+    private function getArticleAnalytics(): array
+    {
+        $articleViews = Article::select(
+            DB::raw('DATE(created_at) as date'),
+            DB::raw('SUM(views) as total_views')
+        )
+            ->where('created_at', '>=', now()->subDays(30))
+            ->groupBy('date')
+            ->orderBy('date')
             ->get();
 
-        // Articles created this month
-        $articlesThisMonth = Article::whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
-            ->count();
-
-        // Scheduled articles
-        $scheduledArticles = Article::whereNotNull('published_at')
-            ->where('published_at', '>', now())
-            ->count();
-
-        // Series statistics
         $seriesStats = Article::select('series', DB::raw('COUNT(*) as article_count'))
             ->whereNotNull('series')
             ->groupBy('series')
             ->orderByDesc('article_count')
             ->get();
 
-        $totalSeries = $seriesStats->count();
-        $totalArticlesInSeries = $seriesStats->sum('article_count');
+        return [
+            'articleViews' => $articleViews,
+            'popularArticles' => Article::orderBy('views', 'desc')->limit(10)->get(['id', 'title', 'views', 'published_at']),
+            'recentArticles' => Article::latest()->limit(5)->get(['id', 'title', 'views', 'created_at']),
+            'viewsByCategory' => Article::select('category', DB::raw('SUM(views) as total_views'))
+                ->whereNotNull('category')
+                ->groupBy('category')
+                ->orderByDesc('total_views')
+                ->get(),
+            'articlesThisMonth' => Article::whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->count(),
+            'scheduledArticles' => Article::whereNotNull('published_at')->where('published_at', '>', now())->count(),
+            'seriesStats' => $seriesStats,
+            'totalSeries' => $seriesStats->count(),
+            'totalArticlesInSeries' => $seriesStats->sum('article_count'),
+        ];
+    }
 
-        // Recent activity - combine articles, messages, and comments
-        $recentActivity = collect();
-        
-        // Recent articles
-        $recentArticlesForActivity = Article::latest('created_at')
+    /**
+     * Get the unified recent activity feed.
+     * 
+     * @return \Illuminate\Support\Collection<int, array{type: string, title: string, date: \Illuminate\Support\Carbon, url: string, author: string|null, is_unread: bool, is_pending: bool}>
+     */
+    private function getRecentActivity(): \Illuminate\Support\Collection
+    {
+        $recentArticles = Article::latest('created_at')
             ->limit(3)
             ->get(['id', 'title', 'created_at'])
-            ->map(function ($article) {
-                return [
-                    'type' => 'article',
-                    'title' => $article->title,
-                    'date' => $article->created_at,
-                    'url' => route('admin.articles.edit', $article->id),
-                ];
-            });
+            ->map(fn ($article) => [
+                'type' => 'article',
+                'title' => $article->title,
+                'date' => $article->created_at,
+                'url' => route('admin.articles.edit', $article->id),
+                'author' => null,
+                'is_unread' => false,
+                'is_pending' => false,
+            ]);
         
-        // Recent messages
         $recentMessages = ContactMessage::latest('created_at')
             ->limit(3)
             ->get(['id', 'name', 'subject', 'created_at', 'read_at'])
-            ->map(function ($message) {
-                return [
-                    'type' => 'message',
-                    'title' => $message->subject ?: 'New message from ' . $message->name,
-                    'date' => $message->created_at,
-                    'is_unread' => is_null($message->read_at),
-                    'url' => route('admin.contact-messages.show', $message->id),
-                ];
-            });
+            ->map(fn ($message) => [
+                'type' => 'message',
+                'title' => $message->subject ?: 'New message from ' . $message->name,
+                'date' => $message->created_at,
+                'url' => route('admin.contact-messages.show', $message->id),
+                'author' => $message->name,
+                'is_unread' => is_null($message->read_at),
+                'is_pending' => false,
+            ]);
         
-        // Recent comments
         $recentComments = \App\Models\ArticleComment::latest('created_at')
-            ->with('article:id,title,slug')
+            ->with('article:id,title')
             ->limit(3)
             ->get(['id', 'author_name', 'content', 'article_id', 'created_at', 'is_approved'])
-            ->map(function ($comment) {
-                return [
-                    'type' => 'comment',
-                    'title' => 'Comment on: ' . ($comment->article->title ?? 'Unknown'),
-                    'author' => $comment->author_name,
-                    'date' => $comment->created_at,
-                    'is_pending' => !$comment->is_approved,
-                    'url' => route('admin.comments.index'),
-                ];
-            });
+            ->map(fn ($comment) => [
+                'type' => 'comment',
+                'title' => 'Comment on: ' . ($comment->article->title ?? 'Deleted Article'),
+                'date' => $comment->created_at,
+                'url' => route('admin.comments.index'),
+                'author' => $comment->author_name,
+                'is_unread' => false,
+                'is_pending' => !$comment->is_approved,
+            ]);
         
-        $recentActivity = $recentActivity
-            ->merge($recentArticlesForActivity)
+        return collect()
+            ->merge($recentArticles)
             ->merge($recentMessages)
             ->merge($recentComments)
             ->sortByDesc('date')
             ->take(10)
             ->values();
-
-        return Inertia::render('Dashboard', [
-            'stats' => $stats,
-            'articleViews' => $articleViews,
-            'popularArticles' => $popularArticles,
-            'recentArticles' => $recentArticles,
-            'viewsByCategory' => $viewsByCategory,
-            'articlesThisMonth' => $articlesThisMonth,
-            'scheduledArticles' => $scheduledArticles,
-            'seriesStats' => $seriesStats,
-            'totalSeries' => $totalSeries,
-            'totalArticlesInSeries' => $totalArticlesInSeries,
-            'recentActivity' => $recentActivity,
-        ]);
     }
+
 
     public function index()
     {

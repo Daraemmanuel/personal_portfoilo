@@ -5,9 +5,19 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
-class MediaController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class MediaController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('role:admin'),
+        ];
+    }
     /**
      * Upload an image for use in rich text editors
      */
@@ -27,7 +37,7 @@ class MediaController extends Controller
                 'path' => $path,
             ]);
         } catch (\Exception $e) {
-            \Log::error('Failed to upload media image', [
+            Log::error('Failed to upload media image', [
                 'error' => $e->getMessage(),
             ]);
             return response()->json([

@@ -14,15 +14,15 @@ return new class extends Migration
             $table->string('author_name');
             $table->string('author_email')->nullable();
             $table->text('content');
-            $table->boolean('is_approved')->default(false);
+            $table->boolean('is_approved')->default(false);      
             $table->foreignId('parent_id')->nullable()->constrained('article_comments')->onDelete('cascade');
             $table->string('ip_address')->nullable();
             $table->text('user_agent')->nullable();
             $table->timestamps();
-            
-            $table->index('article_id');
-            $table->index('is_approved');
-            $table->index('parent_id');
+
+            $table->index('article_id', 'article_comments_article_id_index');
+            $table->index('is_approved', 'article_comments_is_approved_index');
+            $table->index('parent_id', 'article_comments_parent_id_index');
         });
     }
 

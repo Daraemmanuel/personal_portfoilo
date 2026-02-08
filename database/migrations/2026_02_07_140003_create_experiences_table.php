@@ -6,28 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('experiences', function (Blueprint $table) {
             $table->id();
-            $table->string('role'); // e.g., Senior Frontend Engineer
-            $table->string('company'); // e.g., TechCorp Inc.
-            $table->string('period'); // e.g., 2023 — Present
-            $table->text('description'); // e.g., Leading the migration...
+            $table->string('role'); 
+            $table->string('company'); 
+            $table->string('period'); 
+            $table->text('description'); 
             $table->integer('sort_order')->default(0);
             $table->timestamps();
-            
-            $table->index('sort_order');
-            $table->index('created_at');
+
+            $table->index('sort_order', 'experiences_sort_order_index');
+            $table->index('created_at', 'experiences_created_at_index');
+            $table->index('role', 'experiences_role_index');
+            $table->index('company', 'experiences_company_index');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('experiences');

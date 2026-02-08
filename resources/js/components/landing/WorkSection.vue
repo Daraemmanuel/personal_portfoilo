@@ -102,11 +102,10 @@ const defaultProjects: any[] = [
                         >
                             {{ project.title }}
                         </h3>
-                        <p
+                        <div
                             class="mb-4 line-clamp-2 text-sm leading-relaxed text-muted-foreground"
-                        >
-                            {{ project.description }}
-                        </p>
+                            v-html="project.description"
+                        ></div>
                         <div class="mb-6 flex flex-wrap gap-2">
                             <span
                                 v-for="(tag, index) in project.tags"

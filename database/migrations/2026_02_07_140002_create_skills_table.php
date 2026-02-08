@@ -6,26 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('skills', function (Blueprint $table) {
+        Schema::create('skills', function (Blueprint $table) {   
             $table->id();
             $table->string('name');
             $table->string('icon'); // lucide icon name
-            $table->json('items'); // array of skill items
+            $table->json('items'); // array of skill items       
             $table->integer('sort_order')->default(0);
             $table->timestamps();
-            
-            $table->index('sort_order');
+
+            $table->index('sort_order', 'skills_sort_order_index');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('skills');

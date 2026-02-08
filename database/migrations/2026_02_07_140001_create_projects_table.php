@@ -6,12 +6,9 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('projects', function (Blueprint $table) {
+        Schema::create('projects', function (Blueprint $table) { 
             $table->id();
             $table->string('title');
             $table->text('description');
@@ -19,17 +16,15 @@ return new class extends Migration
             $table->string('link')->nullable();
             $table->json('tags')->nullable();
             $table->integer('sort_order')->default(0);
-            $table->boolean('is_archived')->default(false);
+            $table->boolean('is_archived')->default(false);      
             $table->timestamps();
-            
-            $table->index('sort_order');
-            $table->index('created_at');
+
+            $table->index('sort_order', 'projects_sort_order_index');
+            $table->index('created_at', 'projects_created_at_index');
+            $table->index('title', 'projects_title_index');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('projects');

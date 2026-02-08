@@ -7,10 +7,20 @@ use App\Models\Testimonial;
 use App\Traits\ClearsHomepageCache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
-class TestimonialController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class TestimonialController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('role:admin'),
+        ];
+    }
     use ClearsHomepageCache;
     public function index()
     {
@@ -49,10 +59,10 @@ class TestimonialController extends Controller
             try {
                 $data['avatar'] = $request->file('avatar')->store('testimonials', 'public');
             } catch (\Exception $e) {
-                \Log::error('Failed to upload testimonial avatar', [
-                    'error' => $e->getMessage(),
-                    'testimonial_name' => $validated['name'],
-                ]);
+            Log::error('Failed to upload testimonial avatar', [
+                'error' => $e->getMessage(),
+                'testimonial_name' => $validated['name'],
+            ]);
                 return back()->withErrors(['avatar' => 'Failed to upload image. Please try again.']);
             }
         }
@@ -99,10 +109,10 @@ class TestimonialController extends Controller
                 }
                 $data['avatar'] = $request->file('avatar')->store('testimonials', 'public');
             } catch (\Exception $e) {
-                \Log::error('Failed to upload testimonial avatar', [
-                    'error' => $e->getMessage(),
-                    'testimonial_id' => $testimonial->id,
-                ]);
+            Log::error('Failed to upload testimonial avatar', [
+                'error' => $e->getMessage(),
+                'testimonial_id' => $testimonial->id,
+            ]);
                 return back()->withErrors(['avatar' => 'Failed to upload image. Please try again.']);
             }
         }

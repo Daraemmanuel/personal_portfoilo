@@ -31,8 +31,9 @@ defineProps<{
             />
 
             <!-- Content Overlay -->
-            <div
-                class="relative z-20 flex items-center text-xl font-bold tracking-tight"
+            <Link
+                :href="route('home')"
+                class="relative z-20 flex items-center text-xl font-bold tracking-tight transition-opacity hover:opacity-80"
             >
                 <div
                     class="mr-3 flex h-10 w-10 items-center justify-center rounded-xl border border-white/20 bg-white/10 backdrop-blur-md"
@@ -40,7 +41,7 @@ defineProps<{
                     <AppLogoIcon class="size-6 fill-current text-white" />
                 </div>
                 {{ name }}
-            </div>
+            </Link>
 
             <div v-if="quote" class="relative z-20 mt-auto max-w-lg">
                 <div

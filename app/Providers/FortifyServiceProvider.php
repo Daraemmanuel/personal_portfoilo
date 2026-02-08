@@ -40,6 +40,30 @@ class FortifyServiceProvider extends ServiceProvider
     {
         Fortify::resetUserPasswordsUsing(ResetUserPassword::class);
         Fortify::createUsersUsing(CreateNewUser::class);
+
+        Fortify::authenticateUsing(function (Request $request) {
+            $user = \App\Models\User::where('email', $request->email)->first();
+
+            if (! $user) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'email' => ['We could not find a user with that email address.'],
+                ]);
+            }
+
+            if (! \Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'password' => ['The provided password is incorrect.'],
+                ]);
+            }
+
+            if (! $user->hasAnyRole(['admin', 'article manager', 'editor'])) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'email' => ['You are not authorized to access the admin panel.'],
+                ]);
+            }
+
+            return $user;
+        });
     }
 
     /**

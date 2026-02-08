@@ -10,6 +10,8 @@ use App\Models\Project;
 use App\Models\Skill;
 use App\Models\Testimonial;
 use Illuminate\Database\Seeder;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,6 +20,20 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Create Admin User
+        $adminEmail = config('portfolio.admin_email') ?? 'immanuelatwork@gmail.com';
+        if (!User::where('email', $adminEmail)->exists()) {
+            User::create([
+                'name' => 'DaraEmmanuel',
+                'email' => $adminEmail,
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+                'email_verified_at' => now(),
+            ]);
+        }
+
+        $this->call(RolesAndPermissionsSeeder::class);
+
         // Skills
         $skills = [
             [

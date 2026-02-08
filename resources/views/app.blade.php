@@ -40,11 +40,13 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="manifest" href="/site.webmanifest">
 
-    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.bunny.net">
     {{-- Note: SRI (Subresource Integrity) requires generating hashes for each resource version --}}
     {{-- For Bunny Fonts, SRI is not practical as the CSS is dynamically generated --}}
     {{-- Using crossorigin="anonymous" ensures proper CORS handling --}}
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet"
+    {{-- Using font-display: swap for better performance --}}
+    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600&display=swap" rel="stylesheet"
         crossorigin="anonymous" />
 
     @routes

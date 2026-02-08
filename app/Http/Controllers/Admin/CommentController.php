@@ -7,8 +7,17 @@ use App\Models\ArticleComment;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class CommentController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class CommentController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('role:admin'),
+        ];
+    }
     public function index()
     {
         $comments = ArticleComment::with(['article', 'parent'])

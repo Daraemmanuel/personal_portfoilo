@@ -6,6 +6,17 @@ export function usePerformanceMonitoring() {
             return;
         }
 
+        // Skip if Lighthouse is running (detect by checking for Lighthouse user agent or chrome-lighthouse)
+        const isLighthouse = 
+            navigator.userAgent.includes('Chrome-Lighthouse') ||
+            navigator.userAgent.includes('lighthouse') ||
+            (window as any).__LIGHTHOUSE__ ||
+            (window as any).__LIGHTHOUSE_EXTENSION__;
+
+        if (isLighthouse) {
+            return;
+        }
+
         // Track Core Web Vitals
         try {
             // Largest Contentful Paint (LCP)

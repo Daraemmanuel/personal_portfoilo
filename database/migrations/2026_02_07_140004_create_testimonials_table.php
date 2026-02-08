@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('testimonials', function (Blueprint $table) {
@@ -21,14 +18,12 @@ return new class extends Migration
             $table->integer('rating')->default(5);
             $table->integer('sort_order')->default(0);
             $table->timestamps();
-            
-            $table->index('sort_order');
+
+            $table->index('sort_order', 'testimonials_sort_order_index');
+            $table->index('rating', 'testimonials_rating_index');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('testimonials');

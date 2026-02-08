@@ -21,6 +21,39 @@ export default defineConfig({
             },
         }),
     ],
+    build: {
+        minify: 'esbuild', // esbuild is faster than terser
+        cssMinify: true,
+        sourcemap: false,
+        chunkSizeWarningLimit: 1000,
+        rollupOptions: {
+            output: {
+                manualChunks: (id) => {
+                    // Vendor chunks
+                    if (id.includes('node_modules')) {
+                        if (id.includes('vue') || id.includes('@inertiajs')) {
+                            return 'vendor-core';
+                        }
+                        if (id.includes('reka-ui') || id.includes('lucide-vue-next')) {
+                            return 'vendor-ui';
+                        }
+                        if (id.includes('@tiptap')) {
+                            return 'vendor-editor';
+                        }
+                        return 'vendor';
+                    }
+                },
+                // Optimize chunk names
+                chunkFileNames: 'js/[name]-[hash].js',
+                entryFileNames: 'js/[name]-[hash].js',
+                assetFileNames: 'assets/[name]-[hash].[ext]',
+            },
+        },
+        // Tree shaking
+        treeshake: true,
+        // Reduce bundle size
+        reportCompressedSize: false,
+    },
     server: {
         host: '127.0.0.1', 
         port: 5173,

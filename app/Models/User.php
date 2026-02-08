@@ -11,7 +11,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+    use HasFactory, Notifiable, TwoFactorAuthenticatable, \Spatie\Permission\Traits\HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -58,6 +59,10 @@ class User extends Authenticatable
      */
     public function isAdmin(): bool
     {
+        if ($this->role === 'admin' || $this->hasRole('admin')) {
+            return true;
+        }
+
         $adminEmail = config('portfolio.admin_email');
 
         return $adminEmail !== null && strcasecmp($this->email, $adminEmail) === 0;

@@ -15,7 +15,7 @@ class EnsureUserIsAdmin
     {
         $user = $request->user();
 
-        if (! $user || ! $user->isAdmin()) {
+        if (! $user || ! $user->hasAnyRole(['admin', 'article manager', 'editor'])) {
             abort(403, 'You are not authorized to access this area.');
         }
 

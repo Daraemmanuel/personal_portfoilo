@@ -13,12 +13,12 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->string('name')->nullable();
             $table->boolean('is_active')->default(true);
-            $table->timestamp('subscribed_at')->useCurrent();
-            $table->timestamp('unsubscribed_at')->nullable();
+            $table->timestamp('subscribed_at')->useCurrent();    
+            $table->timestamp('unsubscribed_at')->nullable();    
             $table->timestamps();
-            
-            $table->index('email');
-            $table->index('is_active');
+
+            $table->index('email', 'newsletter_subscribers_email_index');
+            $table->index('is_active', 'newsletter_subscribers_is_active_index');
         });
     }
 

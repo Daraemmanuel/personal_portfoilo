@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('contact_messages', function (Blueprint $table) {
@@ -19,15 +16,12 @@ return new class extends Migration
             $table->text('message');
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
-            
-            $table->index('read_at');
-            $table->index('created_at');
+
+            $table->index('read_at', 'contact_messages_read_at_index');
+            $table->index('created_at', 'contact_messages_created_at_index');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('contact_messages');

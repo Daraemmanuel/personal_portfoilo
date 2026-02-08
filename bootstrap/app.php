@@ -9,6 +9,11 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Inertia\Inertia;
+use Spatie\Permission\Middleware\PermissionMiddleware;
+use Spatie\Permission\Middleware\RoleMiddleware;
+use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -22,6 +27,9 @@ return Application::configure(basePath: dirname(__DIR__))
         // Route middleware aliases
         $middleware->alias([
             'admin' => EnsureUserIsAdmin::class,
+            'role' => RoleMiddleware::class,
+            'permission' => PermissionMiddleware::class,
+            'role_or_permission' => RoleOrPermissionMiddleware::class,
         ]);
 
         $middleware->web(append: [
@@ -33,14 +41,14 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         // Custom error pages
-        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\NotFoundHttpException $e, $request) {
+        $exceptions->render(function (NotFoundHttpException $e, $request) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'Not found'], 404);
             }
             return Inertia::render('Errors/404')->toResponse($request)->setStatusCode(404);
         });
 
-        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {
+        $exceptions->render(function (HttpException $e, $request) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => $e->getMessage()], $e->getStatusCode());
             }

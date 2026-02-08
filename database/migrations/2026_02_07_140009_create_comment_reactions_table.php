@@ -15,11 +15,11 @@ return new class extends Migration
             $table->string('ip_address')->nullable();
             $table->string('user_agent')->nullable();
             $table->timestamps();
-            
+
             // Prevent duplicate reactions from same IP
             $table->unique(['comment_id', 'reaction_type', 'ip_address'], 'unique_reaction');
-            $table->index('comment_id');
-            $table->index('reaction_type');
+            $table->index('comment_id', 'comment_reactions_comment_id_index');
+            $table->index('reaction_type', 'comment_reactions_reaction_type_index');
         });
     }
 

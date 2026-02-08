@@ -6,10 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Models\Cv;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
-class CvController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class CvController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('role:admin'),
+        ];
+    }
     public function index()
     {
         $cv = Cv::where('is_active', true)->latest()->first();
@@ -51,7 +61,7 @@ class CvController extends Controller
             return redirect()->route('admin.cv.index')
                 ->with('success', 'CV uploaded successfully.');
         } catch (\Exception $e) {
-            \Log::error('Failed to upload CV', [
+            Log::error('Failed to upload CV', [
                 'error' => $e->getMessage(),
             ]);
             return back()->withErrors(['cv_file' => 'Failed to upload CV. Please try again.']);
@@ -69,7 +79,7 @@ class CvController extends Controller
             return redirect()->route('admin.cv.index')
                 ->with('success', 'CV deleted successfully.');
         } catch (\Exception $e) {
-            \Log::error('Failed to delete CV', [
+            Log::error('Failed to delete CV', [
                 'error' => $e->getMessage(),
                 'cv_id' => $cv->id,
             ]);

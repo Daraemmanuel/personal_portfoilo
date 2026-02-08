@@ -157,6 +157,7 @@ A modern, full-featured portfolio website built with Laravel, Inertia.js, Vue.js
     ```
 
 9. **Build assets**
+
     ```bash
     npm run build
     ```
@@ -178,6 +179,7 @@ composer run dev
 ```
 
 This will start:
+
 - Laravel development server (http://localhost:8000)
 - Queue worker
 - Vite dev server
@@ -374,12 +376,12 @@ Access the admin panel at `/dashboard` after logging in.
 - **Experiences Management**: Manage work experience timeline
 - **Testimonials Management**: Add and manage testimonials with ratings
 - **Articles Management**: Full blog management system with:
-  - Rich text editor
-  - Auto-save functionality
-  - Featured articles
-  - Series support
-  - Bulk operations
-  - CSV export
+    - Rich text editor
+    - Auto-save functionality
+    - Featured articles
+    - Series support
+    - Bulk operations
+    - CSV export
 - **Comments Management**: Moderate comments (approve/reject/delete)
 - **Contact Messages**: View and manage contact form submissions
 - **Newsletter**: Manage subscribers and export lists
@@ -457,17 +459,17 @@ All API endpoints are prefixed with `/api` and return JSON responses.
 
 ```json
 {
-  "data": [
-    {
-      "id": 1,
-      "title": "Project Title",
-      "description": "Project description",
-      "image_url": "https://example.com/image.jpg",
-      "link": "https://example.com",
-      "tags": ["Laravel", "Vue.js"],
-      "created_at": "2024-01-01T00:00:00.000000Z"
-    }
-  ]
+    "data": [
+        {
+            "id": 1,
+            "title": "Project Title",
+            "description": "Project description",
+            "image_url": "https://example.com/image.jpg",
+            "link": "https://example.com",
+            "tags": ["Laravel", "Vue.js"],
+            "created_at": "2024-01-01T00:00:00.000000Z"
+        }
+    ]
 }
 ```
 
@@ -586,6 +588,7 @@ server {
 ### Security Headers
 
 The application includes security headers:
+
 - X-Frame-Options
 - X-Content-Type-Options
 - X-XSS-Protection
@@ -632,6 +635,9 @@ For issues, questions, or contributions, please open an issue on the repository.
 - Styled with [Tailwind CSS](https://tailwindcss.com)
 - Icons by [Lucide](https://lucide.dev)
 
----
+## Assigning roles to users
 
-Built with ❤️ using Laravel, Vue.js, and TypeScript
+- `php artisan tinker`
+- `$user = User::where('email', 'newuser@example.com')->first();`
+- `$user->assignRole('editor');`
+- `// or 'article manager', 'admin'`

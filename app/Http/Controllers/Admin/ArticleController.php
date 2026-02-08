@@ -11,10 +11,24 @@ use App\Traits\LogsActivity;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
-class ArticleController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class ArticleController extends Controller implements HasMiddleware
 {
     use LogsActivity;
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('permission:view articles', only: ['index', 'show', 'export']),
+            new Middleware('permission:create articles', only: ['create', 'store']),
+            new Middleware('permission:edit articles', only: ['edit', 'update']),
+            new Middleware('permission:delete articles', only: ['destroy', 'bulkDelete']),
+        ];
+    }
 
     public function index()
     {
@@ -61,7 +75,7 @@ class ArticleController extends Controller
             $image = $request->hasFile('featured_image') ? $request->file('featured_image') : null;
             $service->create($data, $image);
         } catch (\Exception $e) {
-            \Log::error('Failed to create article', [
+            Log::error('Failed to create article', [
                 'error' => $e->getMessage(),
                 'article_title' => $validated['title'],
             ]);
@@ -99,7 +113,7 @@ class ArticleController extends Controller
             $image = $request->hasFile('featured_image') ? $request->file('featured_image') : null;
             $service->update($article, $data, $image);
         } catch (\Exception $e) {
-            \Log::error('Failed to update article', [
+            Log::error('Failed to update article', [
                 'error' => $e->getMessage(),
                 'article_id' => $article->id,
             ]);
@@ -119,7 +133,7 @@ class ArticleController extends Controller
         try {
             $service->delete($article);
         } catch (\Exception $e) {
-            \Log::error('Failed to delete article', [
+            Log::error('Failed to delete article', [
                 'error' => $e->getMessage(),
                 'article_id' => $article->id,
             ]);
@@ -144,7 +158,7 @@ class ArticleController extends Controller
                 $service->delete($article);
             }
         } catch (\Exception $e) {
-            \Log::error('Failed to bulk delete articles', [
+            Log::error('Failed to bulk delete articles', [
                 'error' => $e->getMessage(),
                 'article_ids' => $request->ids,
             ]);

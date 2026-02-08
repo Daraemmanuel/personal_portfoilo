@@ -9,6 +9,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class SendContactEmailNotification implements ShouldQueue
 {
@@ -33,14 +34,17 @@ class SendContactEmailNotification implements ShouldQueue
             Mail::raw(
                 "Name: {$this->contactMessage->name}\nEmail: {$this->contactMessage->email}\nSubject: {$this->contactMessage->subject}\n\nMessage:\n{$this->contactMessage->message}",
                 function ($message) {
-                    $message->to(config('mail.from.address'))
+                    $adminEmail = config('portfolio.admin_email') ?? 'immanuelatwork@gmail.com';
+                    
+                    $message->to($adminEmail)
+                        ->from(config('mail.from.address'), config('app.name'))
                         ->subject('New Contact Form Message: ' . $this->contactMessage->subject)
                         ->replyTo($this->contactMessage->email, $this->contactMessage->name);
                 }
             );
         } catch (\Exception $e) {
             // Log error and re-throw to trigger retry mechanism
-            \Log::error('Failed to send contact email notification', [
+            Log::error('Failed to send contact email notification', [
                 'error' => $e->getMessage(),
                 'contact_message_id' => $this->contactMessage->id,
             ]);
@@ -55,7 +59,7 @@ class SendContactEmailNotification implements ShouldQueue
      */
     public function failed(\Throwable $exception): void
     {
-        \Log::error('Contact email notification job failed permanently', [
+        Log::error('Contact email notification job failed permanently', [
             'error' => $exception->getMessage(),
             'contact_message_id' => $this->contactMessage->id,
         ]);

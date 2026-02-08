@@ -55,3 +55,6 @@ class NewsletterSubscriberFactory extends Factory
 
 
 
+
+
+

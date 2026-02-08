@@ -8,8 +8,17 @@ use App\Traits\ClearsHomepageCache;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
-class SkillController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class SkillController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('role:admin'),
+        ];
+    }
     use ClearsHomepageCache;
     public function index()
     {

@@ -22,6 +22,13 @@ class SecurityHeaders
         $response->headers->set('X-XSS-Protection', '1; mode=block');
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+        
+        // Enable back/forward cache (bfcache) for HTML pages
+        // Don't set Cache-Control headers that prevent bfcache
+        // Only set restrictive cache headers for API/JSON responses
+        if ($request->expectsJson() || $request->is('api/*')) {
+            $response->headers->set('Cache-Control', 'no-cache, no-store, must-revalidate, private');
+        }
 
         // Content Security Policy (CSP)
         // - In production: strict, only your domain + analytics + Bunny fonts
