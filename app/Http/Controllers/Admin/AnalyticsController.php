@@ -112,14 +112,15 @@ class AnalyticsController extends Controller implements HasMiddleware
     /**
      * Get the unified recent activity feed.
      * 
-     * @return \Illuminate\Support\Collection<int, array{type: string, title: string, date: \Illuminate\Support\Carbon, url: string, author: string|null, is_unread: bool, is_pending: bool}>
+     * @return \Illuminate\Support\Collection
      */
     private function getRecentActivity(): \Illuminate\Support\Collection
     {
-        $recentArticles = Article::latest('created_at')
-            ->limit(3)
-            ->get(['id', 'title', 'created_at'])
-            ->map(fn ($article) => [
+        $activity = [];
+
+        // 1. Articles
+        foreach (Article::latest('created_at')->limit(3)->get(['id', 'title', 'created_at']) as $article) {
+            $activity[] = [
                 'type' => 'article',
                 'title' => $article->title,
                 'date' => $article->created_at,
@@ -127,12 +128,12 @@ class AnalyticsController extends Controller implements HasMiddleware
                 'author' => null,
                 'is_unread' => false,
                 'is_pending' => false,
-            ]);
-        
-        $recentMessages = ContactMessage::latest('created_at')
-            ->limit(3)
-            ->get(['id', 'name', 'subject', 'created_at', 'read_at'])
-            ->map(fn ($message) => [
+            ];
+        }
+
+        // 2. Messages
+        foreach (ContactMessage::latest('created_at')->limit(3)->get(['id', 'name', 'subject', 'created_at', 'read_at']) as $message) {
+            $activity[] = [
                 'type' => 'message',
                 'title' => $message->subject ?: 'New message from ' . $message->name,
                 'date' => $message->created_at,
@@ -140,13 +141,17 @@ class AnalyticsController extends Controller implements HasMiddleware
                 'author' => $message->name,
                 'is_unread' => is_null($message->read_at),
                 'is_pending' => false,
-            ]);
-        
-        $recentComments = \App\Models\ArticleComment::latest('created_at')
+            ];
+        }
+
+        // 3. Comments
+        $comments = \App\Models\ArticleComment::latest('created_at')
             ->with('article:id,title')
             ->limit(3)
-            ->get(['id', 'author_name', 'content', 'article_id', 'created_at', 'is_approved'])
-            ->map(fn ($comment) => [
+            ->get(['id', 'author_name', 'content', 'article_id', 'created_at', 'is_approved']);
+
+        foreach ($comments as $comment) {
+            $activity[] = [
                 'type' => 'comment',
                 'title' => 'Comment on: ' . ($comment->article->title ?? 'Deleted Article'),
                 'date' => $comment->created_at,
@@ -154,12 +159,10 @@ class AnalyticsController extends Controller implements HasMiddleware
                 'author' => $comment->author_name,
                 'is_unread' => false,
                 'is_pending' => !$comment->is_approved,
-            ]);
-        
-        return collect()
-            ->merge($recentArticles)
-            ->merge($recentMessages)
-            ->merge($recentComments)
+            ];
+        }
+
+        return collect($activity)
             ->sortByDesc('date')
             ->take(10)
             ->values();
