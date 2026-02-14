@@ -1,10 +1,24 @@
 ---
+# cPanel deployment configuration for Laravel
+
 deployment:
   tasks:
+    # Set deployment directory (repo location)
     - export DEPLOY_DIR=$HOME/personal_portfoilo
+    # Copy Laravel 'public' folder contents to cPanel web root
     - cp -r $DEPLOY_DIR/public/* $HOME/public_html/
-    - cp -r $DEPLOY_DIR/.htaccess $HOME/public_html/
+    - cp -r $DEPLOY_DIR/public/.htaccess $HOME/public_html/
+    # Optional: copy any public assets hidden in subfolders
+    - cp -r $DEPLOY_DIR/public/**/* $HOME/public_html/ || true
+    # Move to repo directory for Laravel commands
     - cd $DEPLOY_DIR
+    # Install Composer dependencies (production only)
     - composer install --no-dev --optimize-autoloader
+    # Generate Laravel application key if missing
+    - php artisan key:generate || true
+    # Clear & cache configuration
     - php artisan config:cache
     - php artisan route:cache
+    - php artisan view:cache
+    # Set storage and bootstrap permissions (if needed)
+    - chmod -R 775 storage bootstrap/cache
