@@ -13,7 +13,7 @@ deployment:
     # Move to repo directory for Laravel commands
     - cd $DEPLOY_DIR
     # Install Composer dependencies (production only)
-    #    - composer install --no-dev --optimize-autoloader
+    # - composer install --no-dev --optimize-autoloader
     # Generate Laravel application key if missing
     - php artisan key:generate || true
     # Clear & cache configuration
