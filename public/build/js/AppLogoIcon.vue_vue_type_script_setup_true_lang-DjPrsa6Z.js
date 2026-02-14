@@ -1,0 +1,1 @@
+import{y as e,Z as n,J as o,aj as t,ae as r}from"./vendor-core-CH6ggemF.js";const c=e({inheritAttrs:!1,__name:"AppLogoIcon",props:{className:{}},setup(a){return(l,s)=>(o(),n("span",{class:t(a.className)},[...s[0]||(s[0]=[r("span",null,"DE",-1)])],2))}});export{c as _};
