@@ -1,0 +1,10 @@
+---
+deployment:
+  tasks:
+    - export DEPLOY_DIR=$HOME/personal_portfoilo
+    - cp -r $DEPLOY_DIR/public/* $HOME/public_html/
+    - cp -r $DEPLOY_DIR/.htaccess $HOME/public_html/
+    - cd $DEPLOY_DIR
+    - composer install --no-dev --optimize-autoloader
+    - php artisan config:cache
+    - php artisan route:cache
