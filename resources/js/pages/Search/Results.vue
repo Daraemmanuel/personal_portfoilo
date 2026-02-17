@@ -2,9 +2,9 @@
 import LandingNav from '@/components/landing/LandingNav.vue';
 import SearchBar from '@/components/landing/SearchBar.vue';
 import type { Article, Project } from '@/types/portfolio';
+import { stripHtml } from '@/utils/stripHtml';
 import { Head, Link } from '@inertiajs/vue3';
 import { ArrowRight, Calendar, Code2, FileText, Search } from 'lucide-vue-next';
-import { stripHtml } from '@/utils/stripHtml';
 
 defineProps<{
     query: string;
@@ -167,7 +167,7 @@ defineProps<{
                                     <p
                                         class="mb-4 line-clamp-2 text-sm text-muted-foreground"
                                     >
-                                        {{ project.description }}
+                                        {{ stripHtml(project.description) }}
                                     </p>
                                     <div
                                         v-if="

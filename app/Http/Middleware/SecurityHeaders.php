@@ -31,29 +31,31 @@ class SecurityHeaders
         }
 
         // Content Security Policy (CSP)
-        // - In production: strict, only your domain + analytics + Bunny fonts
-        // - In local/dev: allow Vite dev server and Bunny fonts
-        if (config('app.env') === 'production') {
+        $isProduction = config('app.env') === 'production';
+        $isDebug = config('app.debug', false);
+        
+        $viteHosts = "http://localhost:5173 http://127.0.0.1:5173 ws://localhost:5173 ws://127.0.0.1:5173";
+        $analyticsHosts = "https://www.googletagmanager.com https://www.google-analytics.com";
+
+        if ($isProduction && !$isDebug) {
+            // Strict production policy
             $csp = implode('; ', [
                 "default-src 'self'",
-                "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com",
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' {$analyticsHosts}",
                 "style-src 'self' 'unsafe-inline' https://fonts.bunny.net",
                 "font-src 'self' https://fonts.bunny.net data:",
                 "img-src 'self' data: https: blob:",
                 "connect-src 'self' https://www.google-analytics.com",
             ]);
         } else {
-            // Local / non-production: allow Vite dev server + Bunny fonts
-            // Note: IPv6 [::1] format is not valid in CSP, so we use localhost and 127.0.0.1
-            $viteHosts = "http://localhost:5173 http://127.0.0.1:5173 ws://localhost:5173 ws://127.0.0.1:5173";
-
+            // Allow Vite and analytics for local/debug environments
             $csp = implode('; ', [
                 "default-src 'self' {$viteHosts}",
-                "script-src 'self' 'unsafe-inline' 'unsafe-eval' {$viteHosts}",
+                "script-src 'self' 'unsafe-inline' 'unsafe-eval' {$viteHosts} {$analyticsHosts}",
                 "style-src 'self' 'unsafe-inline' https://fonts.bunny.net",
                 "font-src 'self' data: https://fonts.bunny.net",
                 "img-src 'self' data: https: blob:",
-                "connect-src 'self' {$viteHosts}",
+                "connect-src 'self' {$viteHosts} https://www.google-analytics.com",
             ]);
         }
 

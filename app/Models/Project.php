@@ -18,12 +18,14 @@ class Project extends Model
         'image',
         'link',
         'tags',
+        'technologies',
         'sort_order',
         'is_archived',
     ];
 
     protected $casts = [
         'tags' => 'array',
+        'technologies' => 'array',
         'is_archived' => 'boolean',
     ];
 

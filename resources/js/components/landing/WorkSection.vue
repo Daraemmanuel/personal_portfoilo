@@ -115,10 +115,13 @@ const stripHtml = (html: string) => {
                         </div>
                         <div class="mb-6 flex flex-wrap gap-2">
                             <span
-                                v-for="(tag, index) in project.tags"
-                                :key="`${project.id || project.title}-tag-${index}-${tag}`"
+                                v-for="(tech, index) in project.technologies &&
+                                project.technologies.length
+                                    ? project.technologies
+                                    : project.tags"
+                                :key="`${project.id || project.title}-tech-${index}-${tech}`"
                                 class="font-mono text-xs text-muted-foreground/70"
-                                >#{{ tag }}</span
+                                >{{ tech }}</span
                             >
                         </div>
                         <div class="flex items-center gap-4">

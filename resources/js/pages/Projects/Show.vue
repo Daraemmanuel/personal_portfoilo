@@ -65,7 +65,8 @@ defineProps<{
                 ></div>
 
                 <div
-                    v-if="project.tags && project.tags.length"
+                    v-if="project.technologies && project.technologies.length"
+                    v-intersect.once
                     class="fade-in-up mb-8 animate-in delay-400"
                 >
                     <h3 class="mb-4 text-lg font-semibold text-foreground">
@@ -73,10 +74,25 @@ defineProps<{
                     </h3>
                     <div class="flex flex-wrap gap-2">
                         <span
+                            v-for="(tech, index) in project.technologies"
+                            :key="`${project.id}-tech-${index}-${tech}`"
+                            class="rounded-lg border border-border bg-card px-3 py-1 text-sm text-muted-foreground transition-all hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-indigo-500"
+                            :style="{ transitionDelay: `${index * 50}ms` }"
+                        >
+                            {{ tech }}
+                        </span>
+                    </div>
+                </div>
+
+                <div
+                    v-if="project.tags && project.tags.length"
+                    class="fade-in-up mb-8 animate-in delay-400"
+                >
+                    <div class="flex flex-wrap gap-2">
+                        <span
                             v-for="(tag, index) in project.tags"
                             :key="`${project.id}-tag-${index}-${tag}`"
-                            class="reveal rounded-lg border border-border bg-card px-3 py-1 text-sm text-muted-foreground transition-all hover:border-indigo-500/50 hover:bg-indigo-500/10 hover:text-indigo-500"
-                            :style="{ transitionDelay: `${index * 50}ms` }"
+                            class="text-xs font-medium text-muted-foreground/60"
                         >
                             #{{ tag }}
                         </span>

@@ -6,6 +6,7 @@ export interface Project {
     image_url?: string | null;
     link: string | null;
     tags: string[];
+    technologies: string[];
     sort_order: number;
     is_archived?: boolean;
     created_at: string;

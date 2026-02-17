@@ -54,6 +54,7 @@ class ProjectController extends Controller implements HasMiddleware
             'description' => $validated['description'],
             'link' => $validated['link'] ?? null,
             'tags' => $validated['tags'] ?? null,
+            'technologies' => $validated['technologies'] ?? null,
             'sort_order' => $validated['sort_order'] ?? 0,
             'is_archived' => $validated['is_archived'] ?? false,
         ];
@@ -88,6 +89,7 @@ class ProjectController extends Controller implements HasMiddleware
             'description' => $validated['description'],
             'link' => $validated['link'] ?? null,
             'tags' => $validated['tags'] ?? null,
+            'technologies' => $validated['technologies'] ?? null,
             'sort_order' => $validated['sort_order'] ?? 0,
             'is_archived' => $validated['is_archived'] ?? false,
         ];

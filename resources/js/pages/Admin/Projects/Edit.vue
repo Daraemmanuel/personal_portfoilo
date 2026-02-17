@@ -15,6 +15,7 @@ const props = defineProps<{
         image_url: string | null;
         link: string | null;
         tags: string[];
+        technologies: string[];
         sort_order: number;
         is_archived: boolean;
     };
@@ -29,6 +30,9 @@ const form = useForm({
     image: null as File | null,
     link: props.project.link || '',
     tags: props.project.tags ? props.project.tags.join(', ') : '',
+    technologies: props.project.technologies
+        ? props.project.technologies.join(', ')
+        : '',
     sort_order: props.project.sort_order || 0,
     is_archived: !!props.project.is_archived,
     _method: 'PUT',
@@ -40,6 +44,10 @@ const submit = () => {
         tags: data.tags
             .split(',')
             .map((tag) => tag.trim())
+            .filter(Boolean),
+        technologies: data.technologies
+            .split(',')
+            .map((tech) => tech.trim())
             .filter(Boolean),
     })).post(route('admin.projects.update', props.project.id));
 };
@@ -251,7 +259,7 @@ const clearImage = () => {
                             <input
                                 v-model="form.tags"
                                 type="text"
-                                placeholder="Vue, Tailwind, Laravel"
+                                placeholder="Web, Mobile, AI"
                                 class="w-full rounded-xl border-border bg-muted/50 px-4 py-3 text-foreground placeholder-muted-foreground/50 shadow-sm transition-all focus:border-primary focus:bg-background focus:ring-2 focus:ring-primary/20 sm:text-sm"
                             />
                             <span
@@ -259,6 +267,24 @@ const clearImage = () => {
                                 >Separate with commas</span
                             >
                             <InputError :message="form.errors.tags" />
+                        </div>
+
+                        <div class="space-y-2">
+                            <label
+                                class="text-xs font-bold tracking-widest text-muted-foreground uppercase"
+                                >Technologies</label
+                            >
+                            <input
+                                v-model="form.technologies"
+                                type="text"
+                                placeholder="Vue, Tailwind, Laravel"
+                                class="w-full rounded-xl border-border bg-muted/50 px-4 py-3 text-foreground placeholder-muted-foreground/50 shadow-sm transition-all focus:border-primary focus:bg-background focus:ring-2 focus:ring-primary/20 sm:text-sm"
+                            />
+                            <span
+                                class="text-[10px] font-bold tracking-widest text-muted-foreground/60 uppercase"
+                                >Separate with commas</span
+                            >
+                            <InputError :message="form.errors.technologies" />
                         </div>
 
                         <div

@@ -28,8 +28,25 @@ class StoreProjectRequest extends FormRequest
             'link' => ['nullable', 'url', 'max:255'],
             'tags' => ['nullable', 'array'],
             'tags.*' => ['string', 'max:50'],
+            'technologies' => ['nullable', 'array'],
+            'technologies.*' => ['string', 'max:50'],
             'sort_order' => ['nullable', 'integer'],
             'is_archived' => ['boolean'],
+        ];
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'tags' => 'tags',
+            'tags.*' => 'tag',
+            'technologies' => 'technologies',
+            'technologies.*' => 'technology',
         ];
     }
 }

@@ -12,6 +12,7 @@ defineProps<{
         image_url: string | null;
         link: string | null;
         tags: string[];
+        technologies: string[];
         is_archived?: boolean;
     }>;
 }>();
@@ -146,16 +147,41 @@ const stripHtml = (html: string) => {
                                     </td>
 
                                     <td class="p-5">
-                                        <div class="flex flex-wrap gap-1.5">
-                                            <span
-                                                v-for="(
-                                                    tag, index
-                                                ) in project.tags"
-                                                :key="`${project.id}-tag-${index}-${tag}`"
-                                                class="rounded-full border border-border bg-muted px-2.5 py-0.5 text-[10px] font-bold tracking-tight text-muted-foreground uppercase"
+                                        <div class="flex flex-col gap-2">
+                                            <div
+                                                v-if="
+                                                    project.technologies &&
+                                                    project.technologies.length
+                                                "
+                                                class="flex flex-wrap gap-1"
                                             >
-                                                {{ tag }}
-                                            </span>
+                                                <span
+                                                    v-for="(
+                                                        tech, index
+                                                    ) in project.technologies"
+                                                    :key="`${project.id}-tech-${index}-${tech}`"
+                                                    class="rounded-md border border-primary/20 bg-primary/5 px-1.5 py-0.5 text-[9px] font-bold tracking-tight text-primary uppercase"
+                                                >
+                                                    {{ tech }}
+                                                </span>
+                                            </div>
+                                            <div
+                                                v-if="
+                                                    project.tags &&
+                                                    project.tags.length
+                                                "
+                                                class="flex flex-wrap gap-1"
+                                            >
+                                                <span
+                                                    v-for="(
+                                                        tag, index
+                                                    ) in project.tags"
+                                                    :key="`${project.id}-tag-${index}-${tag}`"
+                                                    class="rounded-md border border-border bg-muted px-1.5 py-0.5 text-[9px] font-bold tracking-tight text-muted-foreground uppercase"
+                                                >
+                                                    {{ tag }}
+                                                </span>
+                                            </div>
                                         </div>
                                     </td>
                                     <td class="p-5">
