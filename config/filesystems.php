@@ -40,8 +40,9 @@ return [
 
         'public' => [
             'driver' => 'local',
-            'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            // Use UPLOADS_PATH when document root is different from Laravel's public/ (e.g. public_html)
+            'root' => env('UPLOADS_PATH') ?: public_path('uploads'),
+            'url' => env('APP_URL').'/uploads',
             'visibility' => 'public',
             'throw' => false,
             'report' => false,

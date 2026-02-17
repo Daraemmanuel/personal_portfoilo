@@ -24,13 +24,22 @@ class Project extends Model
 
     protected $casts = [
         'tags' => 'array',
+        'is_archived' => 'boolean',
     ];
 
     protected $appends = ['image_url'];
 
     public function getImageUrlAttribute()
     {
-        return $this->image ? asset('storage/' . $this->image) : null;
+        return $this->image ? asset('uploads/' . $this->image) : null;
+    }
+
+    /**
+     * Fix images embedded in the description HTML.
+     */
+    public function getDescriptionAttribute($value)
+    {
+        return str_replace('/storage/', '/uploads/', $value);
     }
 
     protected static function booted()

@@ -1,4 +1,5 @@
 <?php
+header("Content-Security-Policy: default-src 'self' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.bunny.net; font-src 'self' https://fonts.bunny.net data:; img-src 'self' data: https: blob:; connect-src 'self' https://www.google-analytics.com;");
 
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;

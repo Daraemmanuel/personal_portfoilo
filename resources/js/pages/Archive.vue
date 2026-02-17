@@ -9,6 +9,13 @@ defineProps<{
     projects: Project[];
     canLogin?: boolean;
 }>();
+
+const stripHtml = (html: string) => {
+    if (typeof document === 'undefined') return html;
+    const tmp = document.createElement('DIV');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
+};
 </script>
 
 <template>
@@ -73,8 +80,9 @@ defineProps<{
                             </h3>
                             <div
                                 class="mt-2 line-clamp-2 text-sm text-muted-foreground"
-                                v-html="project.description"
-                            ></div>
+                            >
+                                {{ stripHtml(project.description) }}
+                            </div>
 
                             <div class="mt-4 flex flex-wrap gap-2">
                                 <span

@@ -31,9 +31,9 @@ class MediaController extends Controller implements HasMiddleware
             $file = $request->file('image');
             $path = $file->store('projects', 'public');
 
-            // Return the public URL
+            // Return the relative URL (Bulletproof for shared hosting)
             return response()->json([
-                'url' => asset('storage/' . $path),
+                'url' => '/uploads/' . $path,
                 'path' => $path,
             ]);
         } catch (\Exception $e) {

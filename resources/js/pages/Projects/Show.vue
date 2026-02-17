@@ -83,7 +83,10 @@ defineProps<{
                     </div>
                 </div>
 
-                <div v-if="project.link" class="fade-in-up mt-8 animate-in delay-500">
+                <div
+                    v-if="project.link"
+                    class="fade-in-up mt-8 animate-in delay-500"
+                >
                     <a
                         :href="project.link"
                         target="_blank"
@@ -91,7 +94,9 @@ defineProps<{
                         class="group inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 font-semibold text-primary-foreground transition-all hover:scale-105 active:scale-95"
                     >
                         View Project
-                        <ExternalLink class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        <ExternalLink
+                            class="h-4 w-4 transition-transform group-hover:translate-x-1"
+                        />
                     </a>
                 </div>
             </article>

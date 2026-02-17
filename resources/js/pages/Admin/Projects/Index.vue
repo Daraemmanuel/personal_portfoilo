@@ -15,6 +15,13 @@ defineProps<{
         is_archived?: boolean;
     }>;
 }>();
+
+const stripHtml = (html: string) => {
+    if (typeof document === 'undefined') return html;
+    const tmp = document.createElement('DIV');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
+};
 </script>
 
 <template>
@@ -128,7 +135,11 @@ defineProps<{
                                                 <span
                                                     class="mt-0.5 line-clamp-1 max-w-sm text-sm text-muted-foreground"
                                                 >
-                                                    {{ project.description }}
+                                                    {{
+                                                        stripHtml(
+                                                            project.description,
+                                                        )
+                                                    }}
                                                 </span>
                                             </div>
                                         </div>

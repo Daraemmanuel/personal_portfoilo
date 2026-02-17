@@ -35,6 +35,12 @@ const defaultProjects: any[] = [
         image_url: null,
     },
 ];
+const stripHtml = (html: string) => {
+    if (typeof document === 'undefined') return html;
+    const tmp = document.createElement('DIV');
+    tmp.innerHTML = html;
+    return tmp.textContent || tmp.innerText || '';
+};
 </script>
 
 <template>
@@ -104,8 +110,9 @@ const defaultProjects: any[] = [
                         </h3>
                         <div
                             class="mb-4 line-clamp-2 text-sm leading-relaxed text-muted-foreground"
-                            v-html="project.description"
-                        ></div>
+                        >
+                            {{ stripHtml(project.description) }}
+                        </div>
                         <div class="mb-6 flex flex-wrap gap-2">
                             <span
                                 v-for="(tag, index) in project.tags"

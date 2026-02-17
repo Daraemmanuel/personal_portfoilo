@@ -39,7 +39,7 @@ class SecurityHeaders
                 "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com",
                 "style-src 'self' 'unsafe-inline' https://fonts.bunny.net",
                 "font-src 'self' https://fonts.bunny.net data:",
-                "img-src 'self' data: https:",
+                "img-src 'self' data: https: blob:",
                 "connect-src 'self' https://www.google-analytics.com",
             ]);
         } else {
@@ -52,7 +52,7 @@ class SecurityHeaders
                 "script-src 'self' 'unsafe-inline' 'unsafe-eval' {$viteHosts}",
                 "style-src 'self' 'unsafe-inline' https://fonts.bunny.net",
                 "font-src 'self' data: https://fonts.bunny.net",
-                "img-src 'self' data: https:",
+                "img-src 'self' data: https: blob:",
                 "connect-src 'self' {$viteHosts}",
             ]);
         }

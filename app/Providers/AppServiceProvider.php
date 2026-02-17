@@ -15,7 +15,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // Fix for shared hosting where the public folder is 'public_html'
+        $this->app->singleton('path.public', function () {
+            return dirname(base_path()) . '/public_html';
+        });
     }
 
     /**

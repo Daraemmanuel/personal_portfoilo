@@ -38,7 +38,15 @@ class Article extends Model
 
     public function getFeaturedImageUrlAttribute()
     {
-        return $this->featured_image ? asset('storage/' . $this->featured_image) : null;
+        return $this->featured_image ? asset('uploads/' . $this->featured_image) : null;
+    }
+
+    /**
+     * Fix images embedded in the article content HTML.
+     */
+    public function getContentAttribute($value)
+    {
+        return str_replace('/storage/', '/uploads/', $value);
     }
 
     public function getReadingTimeAttribute(): int
