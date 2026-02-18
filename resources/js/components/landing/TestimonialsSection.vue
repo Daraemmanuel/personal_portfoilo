@@ -34,7 +34,9 @@ const defaultTestimonials: any[] = [
     <section id="testimonials" class="bg-muted/30 py-16 sm:py-24">
         <div class="mx-auto max-w-7xl px-4 sm:px-6">
             <div class="mb-12 text-center sm:mb-16">
-                <h2 class="mb-2 text-2xl font-bold sm:mb-4 sm:text-3xl">What People Say</h2>
+                <h2 class="mb-2 text-2xl font-bold sm:mb-4 sm:text-3xl">
+                    What People Say
+                </h2>
                 <p class="text-sm text-muted-foreground sm:text-base">
                     Testimonials from clients and colleagues
                 </p>
@@ -53,8 +55,8 @@ const defaultTestimonials: any[] = [
                 >
                     <div class="mb-4 flex gap-1">
                         <Star
-                            v-for="(star, index) in testimonial.rating || 5"
-                            :key="`${testimonial.id || testimonial.name}-star-${index}`"
+                            v-for="i in Number(testimonial.rating || 5)"
+                            :key="`${testimonial.id || testimonial.name}-star-${i}`"
                             class="h-4 w-4 fill-yellow-500 text-yellow-500"
                         />
                     </div>

@@ -20,6 +20,11 @@ class Testimonial extends Model
         'sort_order',
     ];
 
+    protected $casts = [
+        'rating' => 'integer',
+        'sort_order' => 'integer',
+    ];
+
     protected $appends = ['avatar_url'];
 
     public function getAvatarUrlAttribute()
